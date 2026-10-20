@@ -3,3 +3,6 @@ target_link_libraries(core_validation_demo PRIVATE lob::core lob_project_options
 
 add_executable(book_demo book_demo.cpp)
 target_link_libraries(book_demo PRIVATE lob::book lob_project_options)
+
+add_executable(engine_demo engine_demo.cpp)
+target_link_libraries(engine_demo PRIVATE lob::engine lob_project_options)

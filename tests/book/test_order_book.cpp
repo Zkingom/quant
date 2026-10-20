@@ -168,6 +168,39 @@ TEST_F(OrderBookTest, FindReportsLocation) {
   EXPECT_EQ(book_.find(9), std::nullopt);
 }
 
+TEST_F(OrderBookTest, ForEachOrderWhileVisitsInPriorityOrderAndStopsEarly) {
+  add(sell(1, 102, 1));
+  add(sell(2, 101, 2));
+  add(sell(3, 101, 3));
+  add(sell(4, 103, 4));
+
+  std::vector<OrderId> all;
+  book_.for_each_order_while(Side::Sell, [&](Price, const RestingOrder& o) {
+    all.push_back(o.id);
+    return true;
+  });
+  EXPECT_EQ(all, (std::vector<OrderId>{2, 3, 1, 4}));  // same order as for_each_order
+
+  // Stop after the order that makes the running total reach 5: the visitor
+  // must not be called again once it returns false, even across levels.
+  std::vector<OrderId> visited;
+  Quantity total = 0;
+  book_.for_each_order_while(Side::Sell, [&](Price, const RestingOrder& o) {
+    visited.push_back(o.id);
+    total += o.remaining;
+    return total < 5;
+  });
+  EXPECT_EQ(visited, (std::vector<OrderId>{2, 3}));
+
+  int calls = 0;
+  book_.for_each_order_while(Side::Buy, [&](Price, const RestingOrder&) {
+    ++calls;
+    return true;
+  });
+  EXPECT_EQ(calls, 0);  // empty side
+  EXPECT_BOOK_CONSISTENT(book_);
+}
+
 TEST_F(OrderBookTest, PriceBandEdgesAreUsable) {
   add(buy(1, kConfig.min_price, kConfig.max_order_quantity));
   add(sell(2, kConfig.max_price, kConfig.max_order_quantity));

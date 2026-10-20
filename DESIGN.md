@@ -141,20 +141,143 @@ map 节点地址稳定，指针对两侧通用。代价是层被清空时需按�
 价格带较窄时用按价格下标的扁平数组找层（O(1) 代替 O(log L)）；关闭 Release 下的契约检查以测其开销。
 引入前须有剖析证据与基线对比。
 
-## 3. 撮合语义 📝（M3）
+## 3. 撮合引擎 ✅（M3）
 
-- 订单类型：仅限价单，GTC（未成交部分挂单）。不支持市价单、IOC/FOK、改单、冰山单。
-- 价格优先、同价时间优先（按引擎分配的 `SeqNum`）。
-- 买单可与 `ask ≤ limit` 的卖单成交；卖单可与 `bid ≥ limit` 的买单成交。
-- **成交价 = maker（挂单方）价格。**
-- 逐 maker 成交，`fill = min(taker.remaining, maker.remaining)`；maker 剩余为 0 即出队，层空即删层。
-- 无自成交保护（单标的、无账户概念）。
-- 重复 ID：与**当前活跃**订单的 ID 冲突时拒绝；已成交/已撤订单的 ID 允许复用（见 DECISIONS D-008）。
-- 撤单：ID 不在活跃索引中 → `UNKNOWN_ORDER_ID`。
-- 容量：接受新订单会使活跃订单数可能超过 `max_live_orders` 时拒绝（`BOOK_FULL`）。具体判定点（撮合前/后）在 M3 确定并写入 DECISIONS。
+实现：`include/lob/engine/{events,matching_engine}.hpp`、`src/engine/matching_engine.cpp`。
 
-事件（计划）：`Accepted`、`Rejected{reason}`、`Trade{taker, maker, price, qty}`、`Rested{remaining}`、`Cancelled{remaining}`，
-均带全局递增序号。
+### 3.1 接口
+
+```cpp
+class MatchingEngine {
+ public:
+  explicit MatchingEngine(const EngineConfig& config);      // 非法配置抛 invalid_argument
+  void process(const Command& command, std::vector<Event>& events);
+  void process(const NewOrder& order, std::vector<Event>& events);
+  void process(const CancelOrder& cancel, std::vector<Event>& events);
+  const OrderBook& book() const noexcept;
+  SeqNum last_seq() const noexcept;                          // 最近分配的事件序号；初始 0
+  std::optional<std::string> find_invariant_violation() const;
+};
+```
+
+- `process` 把本命令产生的事件**追加**到调用方的 `events`（不清空已有内容）。
+- 不可拷贝（内含 `OrderBook`），可 `noexcept` 移动；被移动后的引擎簿为空、保留 `last_seq()`，可继续使用。
+- 引擎只通过 M2 的公共接口操作订单簿；M2 为此只新增一个只读查询 `for_each_order_while`（D-018）。
+
+### 3.2 事件模型
+
+| 事件 | 字段 | 产生时机 |
+|---|---|---|
+| `OrderAccepted` | seq, id, side, price, quantity | 新订单通过全部校验 |
+| `OrderRejected` | seq, command(New/Cancel), id, reason | 任一校验失败；**簿不变** |
+| `TradeExecuted` | seq, taker_id, maker_id, taker_side, price, quantity, taker_remaining, maker_remaining | 每与一个 maker 成交一次 |
+| `OrderRested` | seq, id, side, price, remaining | taker 剩余量挂入簿 |
+| `OrderCancelled` | seq, id, side, price, remaining, reason(Requested / InsufficientResources) | 撤单成功；或剩余量因内存不足未能挂单（§3.5） |
+
+- **单一时钟**：每个事件分配一个 `seq`，从 1 开始逐一递增，不跳号；被拒命令也消耗一个 `seq`。
+- **时间优先 = 受理序号**：挂单在簿中的优先级 `seq` 等于该订单 `OrderAccepted.seq`（不是 `OrderRested.seq`）。
+  由于 `seq` 全局单调，这满足 M2 `add` 的"seq 严格递增"前置条件。
+- 一个新订单的事件序列恰为：`Accepted · Trade* · (Rested | ∅)`；`∅` 表示完全成交（最后一条 Trade 的 `taker_remaining == 0`）。
+  被拒时只有一条 `Rejected`。撤单为 `Cancelled(Requested)` 或 `Rejected`。
+- 全部事件类型可平凡拷贝；`Event = std::variant<...>` 的拷贝不分配、不抛出（`static_assert`）。
+
+### 3.3 撮合语义
+
+- 仅限价单、GTC。无市价单、IOC/FOK、改单、冰山单、自成交保护。
+- 可成交条件：买单与 `ask ≤ limit` 的卖单、卖单与 `bid ≥ limit` 的买单。**等价也成交**。
+- 价格优先，同价按受理 `seq` 先后；逐 maker 成交 `q = min(taker 剩余, maker 剩余)`；**成交价 = maker 价格**。
+- 一次可扫过多个价格层，直到 taker 剩余为 0、对手侧为空或对手最优价不再可成交。
+- 剩余量（若 > 0）以原限价、受理 `seq` 挂入簿。挂入时簿必然不交叉：可成交的流动性已被耗尽。
+
+### 3.4 校验与拒单（全部在任何状态改变之前完成）
+
+新订单按以下**固定顺序**判定，首个失败即拒：
+
+| 顺序 | 检查 | 拒单原因 |
+|---|---|---|
+| 1–5 | M1 无状态校验（id、side、价格带、数量 > 0、数量 ≤ 上限） | `INVALID_ORDER_ID` … `QUANTITY_TOO_LARGE` |
+| 6 | ID 与簿中**活跃**订单相同 | `DUPLICATE_ORDER_ID` |
+| 7 | 预演撮合后存在剩余量，且 `簿中订单数 − 将被完全成交的 maker 数 ≥ max_live_orders` | `BOOK_FULL` |
+
+撤单：`id == 0` → `INVALID_ORDER_ID`；ID 不在簿中 → `UNKNOWN_ORDER_ID`（含已成交、已撤销、从未出现）。
+
+`BOOK_FULL` 的取舍（D-021）：只在订单**确实需要挂单**且挂单后会超出上限时才拒绝；
+会完全成交、或通过成交腾出空间的订单不受影响。判定依赖预演结果，因此预演必须先于任何修改（§3.5）。
+被拒订单不产生任何成交（全有或全无），不会出现"先成交一部分、再因容量拒绝剩余"的情况。
+
+**推论：`BOOK_FULL` 只会拒绝完全不会成交的订单。** 证明：若剩余 > 0，则每个被触及的 maker 都被完全成交
+（否则剩余会继续与它成交），即 `makers_filled = trades`；簿中订单数始终 ≤ `max_live_orders`，
+所以若 `trades ≥ 1`，则 `count − makers_filled ≤ max − 1 < max`，条件不成立。差分测试对每一次 `BOOK_FULL` 断言
+"拒单前对手侧不存在可成交的挂单"（D-021）。
+
+`seq` 耗尽（`uint64` 回绕）在提交前检查，若本命令所需的事件数会使 `seq` 溢出则抛 `std::overflow_error`，状态不变。
+实际不可达（每秒 10⁹ 个事件也需约 584 年），但检查是 O(1) 的，且保证 `seq` 的单调性永不被破坏。
+
+### 3.5 两阶段处理与异常安全
+
+```
+process(NewOrder)
+ ── 准备阶段（只读；可能抛出；抛出时引擎状态与 events 内容均不变）──
+   1. 无状态校验 → 重复 ID → 预演撮合（for_each_order_while 只读遍历对手侧，O(k)）→ BOOK_FULL
+   2. 计算本命令的事件数 n = 1 + 成交数 + (剩余 > 0)；检查 seq 不溢出
+   3. 确保 events 容量 ≥ size + n（几何增长，避免逐命令精确 reserve 导致 O(N²)）
+ ── 提交阶段 ──
+   4. 追加 Accepted                                     不分配（容量已预留）
+   5. 循环 front(对手侧) + fill_front，追加 Trade       不分配（M2 实测）、前置条件由预演保证
+   6. 若剩余 > 0：book.add(剩余, 受理 seq)              唯一可能失败的步骤：仅 std::bad_alloc
+        成功 → 追加 Rested
+        bad_alloc → add 自身强保证（簿未改变）→ 追加 Cancelled(InsufficientResources) → 重抛
+```
+
+**保证级别（逐情形）**：
+
+| 情形 | 保证 |
+|---|---|
+| 被拒的新订单 / 撤单（含被拒撤单） | 强：准备阶段失败时什么都没发生；成功路径只追加一个事件 |
+| 新订单完全成交，或没有剩余 | 强：唯一可能的失败在准备阶段 |
+| 新订单有剩余，且 `add` 因内存不足失败 | **基本保证 + 完整审计**（不是强保证）：已执行的成交保留；剩余量未挂单；事件流以 `Cancelled(InsufficientResources)` 如实结束该订单的生命周期；不变量与数量守恒成立；`bad_alloc` 传播给调用方 |
+
+**为什么剩余挂单失败时无法提供强保证**：回滚需要把已被完全成交、已出队的 maker 以原 `seq` 放回其价格层的**队首**。
+M2 的 `add` 只能入队尾并要求 `seq` 严格递增，因此不存在这样的恢复操作；而剩余量只能在成交之后挂入
+（M2 拒绝交叉订单）。在不修改 M2 的前提下，强保证不可实现。可选的改进（预分配节点池使挂单不分配，从而整个提交阶段不抛出）
+列为 L2 候选，需另行论证。
+
+**提交阶段不分配的依据与验证**：`fill_front` 与 `front` 不分配（M2 分配注入测试，分配计数 0）；
+`events.push_back` 在已预留容量内不分配，且 `Event` 拷贝不抛出。M3 分配注入测试对每个注入点分类：
+要么 events 与引擎状态完全不变（准备阶段），要么属于上表第三行；断言不存在第三类结果。
+
+### 3.6 引擎级不变量
+
+由 `find_invariant_violation()` 检查（引擎内部）：
+
+- I1 订单簿结构不变量（M2 全部六条）。
+- I2 簿中每个挂单的 `seq ≤ last_seq()`。
+
+由测试侧的**事件审计器**从事件流独立验证（不依赖引擎内部状态）：
+
+- A1 `seq` 从 1 开始逐一递增。
+- A2 生命周期状态机：`Accepted → Trade(taker)* → {Rested | 完全成交 | Cancelled(InsufficientResources)}`；
+  `Rested → Trade(maker)* → {完全成交 | Cancelled(Requested)}`；终结后的订单不再出现在事件中（除非 ID 被重新受理）。
+- A3 每笔成交：maker 是审计器重建簿中该侧**当时的最优价最早单**（价格-时间优先）；成交价 = maker 价格；
+  价格对 taker 可成交；`0 < q ≤` 双方成交前剩余；`taker_remaining`/`maker_remaining` 与审计器计算一致。
+- A4 `Rested` 时对手侧不存在可与之成交的挂单（无"穿价挂单"）。
+- A5 数量守恒（每条命令后）：每个订单 `原始数量 = Σ成交 + 当前剩余/终结剩余`；
+  全局 `Σ受理数量 = 2·Σ成交数量 + Σ挂单剩余 + Σ撤销剩余`。
+- A6 审计器重建的簿（含每单 `seq`）与引擎的簿逐单相等。
+
+说明：A5 在审计器**自身**的重建上逐条命令检查时，由于每个数量都已逐事件核对，它在构造上必然成立，不构成独立证据；
+有独立意义的是针对**引擎**簿的形式：`Σ受理 = 2·Σ成交 + Σ引擎簿中剩余 + Σ撤销`，在 `matches()` 中检查。
+`BOOK_FULL` 的合法性（是否真的需要拒绝）审计器不判定，由差分测试与参考引擎比较。
+
+### 3.7 测试设计
+
+| 层次 | 内容 | 判定依据 |
+|---|---|---|
+| 单元测试 | §3.3/§3.4 的每条规则一个具名测试，事件序列逐字段断言 | 手算期望 |
+| 审计器自检 | 构造违反 A1–A5 的事件流，断言审计器报告对应条目 | 证明审计器能发现问题 |
+| 参考引擎 + 差分 | 独立的朴素实现（扁平 vector、线性扫描、在副本上模拟撮合）；固定种子随机命令流；每条命令后比较完整事件序列与完整簿；同时运行审计器 | 两个独立实现逐事件一致 + 性质检查 |
+| 分配失败注入 | 对 `process` 的每个分配点注入失败，按 §3.5 分类并与参考引擎比较 | 保证级别的实证 |
+| 变异测试 | 人工注入撮合/校验/异常处理缺陷，确认被杀死 | 测试的检出能力 |
 
 ## 4. 快照 📝（M5）
 

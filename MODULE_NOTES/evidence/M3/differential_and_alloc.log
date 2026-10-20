@@ -1,0 +1,24 @@
+== gcc-debug ==
+[coverage] seeds=20 commands=100000 accepted=68558 trades=54005 cancels=13555
+[coverage] multi_maker=12191 multi_level=8145 taker_full=19829 taker_partial_rested=5924 rested_no_trade=42805 maker_partial=18970
+[coverage] accepted_while_full=8518 reused_dead_id=3601 max_orders=40
+[coverage] rejects: invalid_id=1203 invalid_side=1200 price=1273 qty_invalid=1189 qty_large=1213 duplicate=136 unknown=5571 book_full=6102
+[       OK ] EngineDifferential.MatchesReferenceEngineOnFixedSeeds (3518 ms)
+[alloc] random stream: 150 commands x 2 buffer modes, 596 injection points: 150 PREPARE (strong), 446 RESIDUAL (basic + audit)
+[  PASSED  ] 7 tests.
+== gcc-asan ==
+[coverage] seeds=20 commands=100000 accepted=68558 trades=54005 cancels=13555
+[coverage] multi_maker=12191 multi_level=8145 taker_full=19829 taker_partial_rested=5924 rested_no_trade=42805 maker_partial=18970
+[coverage] accepted_while_full=8518 reused_dead_id=3601 max_orders=40
+[coverage] rejects: invalid_id=1203 invalid_side=1200 price=1273 qty_invalid=1189 qty_large=1213 duplicate=136 unknown=5571 book_full=6102
+[       OK ] EngineDifferential.MatchesReferenceEngineOnFixedSeeds (16769 ms)
+[alloc] random stream: 150 commands x 2 buffer modes, 596 injection points: 150 PREPARE (strong), 446 RESIDUAL (basic + audit)
+[  PASSED  ] 7 tests.
+== clang-release ==
+[coverage] seeds=20 commands=100000 accepted=68558 trades=54005 cancels=13555
+[coverage] multi_maker=12191 multi_level=8145 taker_full=19829 taker_partial_rested=5924 rested_no_trade=42805 maker_partial=18970
+[coverage] accepted_while_full=8518 reused_dead_id=3601 max_orders=40
+[coverage] rejects: invalid_id=1203 invalid_side=1200 price=1273 qty_invalid=1189 qty_large=1213 duplicate=136 unknown=5571 book_full=6102
+[       OK ] EngineDifferential.MatchesReferenceEngineOnFixedSeeds (403 ms)
+[alloc] random stream: 150 commands x 2 buffer modes, 596 injection points: 150 PREPARE (strong), 446 RESIDUAL (basic + audit)
+[  PASSED  ] 7 tests.

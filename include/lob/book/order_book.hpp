@@ -170,6 +170,23 @@ class OrderBook {
     });
   }
 
+  /// Like for_each_order, but stops as soon as visit(Price, const RestingOrder&)
+  /// returns false. Visits only the orders it needs to, in priority order;
+  /// the matching engine uses it to plan a match in O(orders touched)
+  /// without modifying the book (DECISIONS D-018).
+  template <typename F>
+  void for_each_order_while(Side side, F&& visit) const {
+    visit_side(side, [&](const auto& levels) {
+      for (const auto& [price, level] : levels) {
+        for (const RestingOrder& order : level.orders) {
+          if (!visit(price, order)) {
+            return;
+          }
+        }
+      }
+    });
+  }
+
   [[nodiscard]] const EngineConfig& config() const noexcept { return config_; }
 
   /// O(n) full consistency check. Returns a description of the first

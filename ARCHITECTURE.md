@@ -54,8 +54,8 @@
 |---|---|---|---|---|
 | M1 core | `lob::core` | 基本类型、命令、拒单原因、配置约束、无状态校验、溢出检查算术 | 无 | ✅ |
 | M2 book | `lob::book` | 订单簿数据结构：价格层、同价 FIFO、ID 索引、不变量检查；**不含撮合逻辑** | core | ✅ |
-| M3 engine | `lob::engine` | 命令处理：有状态校验（重复 ID、未知 ID、容量）、价格-时间优先撮合、事件生成、序号 | core, book | 📝 |
-| M4 testkit | `lob::testkit` | 固定种子工作负载生成器、朴素参考模型、差分测试驱动 | core, engine | 📝 |
+| M3 engine | `lob::engine` | 命令处理：有状态校验（重复 ID、未知 ID、容量）、价格-时间优先撮合、事件生成、序号 | core, book | ✅ |
+| M4 testkit | `lob::testkit` | 把 M3 测试中的生成器、参考引擎、事件审计器整理为可复用库（供 M5 回放、M6 基准）；大规模长跑（D-023） | core, engine | 📝 |
 | M5 io | `lob::io` | 文本命令格式解析、事件序列化、规范快照与哈希、回放驱动；`lob_replay` CLI；Golden Tests | core, engine | 📝 |
 | M6 bench | `lob_bench` | 吞吐与延迟分布（p50/p95/p99）测量 | engine, testkit | 📝 |
 | L3 gateway | `lob_gateway` | 单客户端 TCP 网关（有条件执行） | engine, io | 📝 |
@@ -107,6 +107,18 @@
   `fill_front` / `cancel` → 减量 → 必要时同时删除节点与索引项 → 层空即删层。
 - 测试结构：`lob_book_tests`（单元、Tamper、与参考模型的差分）+ `lob_book_alloc_tests`（独立进程，分配失败注入）。
 - 详见 [MODULE_NOTES/M2_book.md](MODULE_NOTES/M2_book.md)。
+
+### M3 engine
+
+- 头文件：`include/lob/engine/{events,matching_engine}.hpp`；源文件：`src/engine/matching_engine.cpp`。
+- 对外：`process(Command, std::vector<Event>&)` 把事件追加到调用方缓冲；`book()`、`last_seq()`、`find_invariant_violation()`。
+- 数据流：`process(NewOrder)` → 准备（无状态校验 → 重复 ID → `plan_match` 只读预演 → `BOOK_FULL` → seq 区间检查 → 预留事件容量）
+  → 提交（`Accepted` → 循环 `front` + `fill_front` 产生 `Trade` → `add` 剩余并发 `Rested`）。
+  `process(CancelOrder)` → 校验 → `book.cancel` → `Cancelled` / `Rejected`。
+- 只经 M2 公共接口访问订单簿；M2 为此新增只读 `for_each_order_while`（D-018）。
+- 测试结构：`lob_engine_tests`（单元、审计器自检、与参考引擎的差分）+ `lob_engine_alloc_tests`（独立进程，分配失败注入）；
+  测试支撑代码在 `tests/support/`（`rng.hpp`、`alloc_fault.{hpp,cpp}`，M2/M3 共用）。
+- 详见 [MODULE_NOTES/M3_engine.md](MODULE_NOTES/M3_engine.md)。
 
 ## 5. 构建拓扑
 

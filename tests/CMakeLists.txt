@@ -17,6 +17,7 @@ function(lob_add_test_suite name)
   cmake_parse_arguments(ARG "" "" "SOURCES;LIBS" ${ARGN})
   add_executable(${name} ${ARG_SOURCES})
   target_link_libraries(${name} PRIVATE ${ARG_LIBS} GTest::gtest_main lob_project_options)
+  target_include_directories(${name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})  # "support/..."
   gtest_discover_tests(${name} DISCOVERY_MODE PRE_TEST)
 endfunction()
 
@@ -35,8 +36,23 @@ lob_add_test_suite(lob_book_tests
     book/test_order_book_differential.cpp
   LIBS lob::book)
 
-# Separate executable: it replaces the global operator new/delete.
+lob_add_test_suite(lob_engine_tests
+  SOURCES
+    engine/test_matching_engine.cpp
+    engine/test_event_auditor.cpp
+    engine/test_engine_differential.cpp
+  LIBS lob::engine)
+
+# Separate executables: support/alloc_fault.cpp replaces the global
+# operator new/delete of the binary it is linked into.
 lob_add_test_suite(lob_book_alloc_tests
   SOURCES
     book/test_order_book_alloc_failure.cpp
+    support/alloc_fault.cpp
   LIBS lob::book)
+
+lob_add_test_suite(lob_engine_alloc_tests
+  SOURCES
+    engine/test_engine_alloc_failure.cpp
+    support/alloc_fault.cpp
+  LIBS lob::engine)
