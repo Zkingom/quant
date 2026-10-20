@@ -1,0 +1,12 @@
+[KILLED] FIFO: new order joins the front of the queue: 24 failing: OrderBookTest.SamePriceQueuesInArrivalOrder, OrderBookTest.PartialFillKeepsQueuePosition, OrderBookTest.CancelFromHeadMiddleAndTailPreservesFifo, OrderBookTest.MovedBookKeepsWorkingIndex, OrderBookContractTest.AddRejectsCrossingOrLockingPrice, TamperTest.DetectsEmptyLevel ...
+[KILLED] cancel leaves an empty level behind: 7 failing: OrderBookTest.CancelLastOrderRemovesLevel, OrderBookTest.CancelReturnsRemainingAfterPartialFill, OrderBookTest.CancelUnknownOrAlreadyRemovedIdReturnsNullopt, OrderBookTest.IdMayBeReusedOnceNoLongerResting, OrderBookTest.MovedFromBookIsEmptyConsistentAndReusable, OrderBookCapacity.AddRejectsWhenFullAndRecoversAfterRemoval ...
+[KILLED] fill_front forgets to reduce the level total: 3 failing: OrderBookTest.SamePriceQueuesInArrivalOrder, OrderBookTest.PartialFillKeepsQueuePosition, OrderBookDifferential.MatchesReferenceModelOnFixedSeeds
+[KILLED] crossing check allows a locked book (>= becomes >): 2 failing: OrderBookContractTest.AddRejectsCrossingOrLockingPrice, OrderBookDifferential.MatchesReferenceModelOnFixedSeeds
+[KILLED] fill_front rejects an exact complete fill: 7 failing: OrderBookTest.SamePriceQueuesInArrivalOrder, OrderBookTest.EmptiedLevelIsRemovedAndNextLevelBecomesBest, OrderBookTest.CancelUnknownOrAlreadyRemovedIdReturnsNullopt, OrderBookTest.MovedBookKeepsWorkingIndex, OrderBookContractTest.FillFrontRejectsBadQuantityAndEmptySide, OrderBookDifferential.MatchesReferenceModelOnFixedSeeds ...
+[KILLED] rollback: new level not erased when the list insert throws: 2 failing: OrderBookAllocFailure.AddNewLevelOnEmptyBookHasStrongGuarantee, OrderBookAllocFailure.AddSweepAcrossBookSizesIncludingRehash
+[KILLED] rollback: list node not removed when the index insert throws: 2 failing: OrderBookAllocFailure.AddToExistingLevelHasStrongGuarantee, OrderBookAllocFailure.AddSweepAcrossBookSizesIncludingRehash
+[SURVIVED] move constructor leaves the source index populated
+[KILLED] depth returns one level too many: 1 failing: OrderBookTest.BestPricesFollowPricePriority
+[KILLED] invariant checker skips the FIFO seq check: 1 failing: TamperTest.DetectsFifoSequenceInversion
+[BASELINE] unmutated tree: build rc=0 ctest rc=0
+survivors: 1/10

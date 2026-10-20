@@ -1,0 +1,30 @@
+== gcc-debug ==
+[coverage] seeds=20 steps/seed=5000 adds=28056 new_level=11865 reused_dead_id=3920
+[coverage] rejected: crossing=1698 duplicate=2188 capacity=9617 invalid=1753 stale_seq=1795
+[coverage] cancels hit=15730 miss=9279; fills partial=16147 complete=11571 rejected=2142
+[coverage] levels_removed=11512 max_orders=40
+[       OK ] OrderBookDifferential.MatchesReferenceModelOnFixedSeeds (6293 ms)
+[alloc] add to empty book: 4 allocations
+[alloc] add to existing level: 2 allocations
+[alloc] add sweep over sizes 0..64: 158 injection points, max 4 per add
+[  PASSED  ] 6 tests.
+== gcc-asan ==
+[coverage] seeds=20 steps/seed=5000 adds=28056 new_level=11865 reused_dead_id=3920
+[coverage] rejected: crossing=1698 duplicate=2188 capacity=9617 invalid=1753 stale_seq=1795
+[coverage] cancels hit=15730 miss=9279; fills partial=16147 complete=11571 rejected=2142
+[coverage] levels_removed=11512 max_orders=40
+[       OK ] OrderBookDifferential.MatchesReferenceModelOnFixedSeeds (30920 ms)
+[alloc] add to empty book: 4 allocations
+[alloc] add to existing level: 2 allocations
+[alloc] add sweep over sizes 0..64: 158 injection points, max 4 per add
+[  PASSED  ] 6 tests.
+== clang-release ==
+[coverage] seeds=20 steps/seed=5000 adds=28056 new_level=11865 reused_dead_id=3920
+[coverage] rejected: crossing=1698 duplicate=2188 capacity=9617 invalid=1753 stale_seq=1795
+[coverage] cancels hit=15730 miss=9279; fills partial=16147 complete=11571 rejected=2142
+[coverage] levels_removed=11512 max_orders=40
+[       OK ] OrderBookDifferential.MatchesReferenceModelOnFixedSeeds (624 ms)
+[alloc] add to empty book: 4 allocations
+[alloc] add to existing level: 2 allocations
+[alloc] add sweep over sizes 0..64: 158 injection points, max 4 per add
+[  PASSED  ] 6 tests.

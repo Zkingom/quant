@@ -46,39 +46,100 @@
 
 有状态的拒单原因（`DUPLICATE_ORDER_ID`、`UNKNOWN_ORDER_ID`、`BOOK_FULL`）已在 M1 定义，由 M3 判定。
 
-## 2. 订单簿结构 📝（M2，基线方案）
+## 2. 订单簿结构 ✅（M2）
+
+实现：`include/lob/book/order_book.hpp`、`src/book/order_book.cpp`。订单簿**不含撮合逻辑**，
+只负责按价格-时间优先存放挂单并维持结构一致；"吃哪一单、吃多少"由 M3 决定。
 
 ```
 OrderBook
- ├─ bids_ : std::map<Price, PriceLevel, std::greater<>>   // begin() = 最优买价
- ├─ asks_ : std::map<Price, PriceLevel, std::less<>>      // begin() = 最优卖价
- └─ index_: std::unordered_map<OrderId, Locator>
-PriceLevel { std::list<RestingOrder> queue; Quantity total; }
-RestingOrder { OrderId id; Quantity remaining; SeqNum seq; }
-Locator { Side side; map::iterator level; list::iterator pos; }
+ ├─ config_ : EngineConfig                                   // 构造时 validate_config
+ ├─ bids_   : std::map<Price, PriceLevel, std::greater<>>    // begin() = 最优买价
+ ├─ asks_   : std::map<Price, PriceLevel, std::less<>>       // begin() = 最优卖价
+ ├─ index_  : std::unordered_map<OrderId, Locator>
+ └─ last_seq_ : SeqNum                                       // 最近一次 add 的 seq
+PriceLevel   { Quantity total_quantity; std::list<RestingOrder> orders; }   // FIFO
+RestingOrder { OrderId id; Quantity remaining; SeqNum seq; }               // 侧与价由所在层隐含
+Locator      { Side side; Price price; PriceLevel* level; std::list<RestingOrder>::iterator order; }
 ```
 
-| 操作 | 复杂度 |
-|---|---|
-| 最优价查询 | O(1) |
-| 挂单（已有价格层） | O(log L) 找层 + O(1) 入队 |
-| 挂单（新价格层） | O(log L) |
-| 撤单 | O(1) 均摊（哈希查找 + 保存的迭代器直接删除） |
-| 成交一个 maker | O(1)；清空价格层 O(1) 均摊（`erase(begin())`） |
+`Locator` 保存 `PriceLevel*` + 价格，而不是 map 迭代器：两侧 map 的比较器类型不同，迭代器类型也不同；
+map 节点地址稳定，指针对两侧通用。代价是层被清空时需按价格 `erase(key)`，为 O(log L)（D-014）。
 
-L = 一侧价格层数。`std::map` 与 `std::list` 迭代器在其他元素增删时保持有效，这是 `Locator`
-可以缓存迭代器的前提；只有删除该元素本身才会使之失效，而删除时会同步删除索引项。
+### 2.1 接口与契约
 
-结构不变量（`check_invariants()` 逐条检查，测试中每步调用）：
+| 函数 | 作用 | 前置条件（违反 → `std::logic_error`，簿不变） | 异常保证 |
+|---|---|---|---|
+| `add(order, seq)` | 在价格层队尾挂单 | 通过 M1 无状态校验；ID 不在簿中；`order_count() < max_live_orders`；`seq > last_seq_`；不交叉也不锁定（买价 < 最优卖价，卖价 > 最优买价） | 强保证（含 `bad_alloc`） |
+| `fill_front(side, qty)` | 对 `side` 侧最优价、最早的订单成交 `qty`；减到 0 即出队，层空即删层 | `side` 合法、非空；`0 < qty ≤ 队首剩余` | 前置检查先于修改；成功路径不分配内存、不抛出 |
+| `cancel(id)` | 移除挂单，返回其撤单前状态 | 无：ID 不在簿中返回 `nullopt`（正常输入情形） | `noexcept`，不分配内存 |
+| 查询 | `find / front / best_price / quantity_at / depth / level_count / order_count / for_each_order` | 带 `Side` 参数者要求 `is_valid(side)` | 除 `depth` 外均 `noexcept` |
+| `find_invariant_violation()` | O(n) 全量一致性检查，返回首个违反项的描述 | — | 与 `NDEBUG` 无关 |
 
-1. 不存在空价格层。
-2. 每层 `total` = 队列中 `remaining` 之和；每个 `remaining ∈ (0, max_order_quantity]`。
-3. 每层队列 `seq` 严格递增（FIFO）。
-4. `index_.size()` = 两侧订单总数；每个索引项指回同 ID、同侧、同价的订单。
-5. 不交叉：两侧非空时 `best_bid < best_ask`。
+前置条件检查是 O(1) 的，Release 构建中同样执行（D-012）。违反意味着调用方（引擎）有 bug，而不是外部输入错误；
+外部输入错误应由 M3 在调用前转化为拒单。
 
-备选方案（列入 Level 2 实验候选，不在基线引入）：侵入式链表 + 对象池（去掉 `std::list` 逐节点分配）；
-按价格索引的扁平数组（价格带窄时 O(1) 找层）。
+### 2.2 复杂度（L = 一侧价格层数，n = 簿中订单数）
+
+| 操作 | 复杂度 | 堆分配次数（实测，见 §2.4） |
+|---|---|---|
+| `best_price` / `front` | O(1) | 0 |
+| `add` 到已有价格层 | O(log L) 找层 + 均摊 O(1) 入队与入索引 | 2（链表节点 + 索引节点），触发 rehash 时 +1 |
+| `add` 新价格层 | O(log L) | 3（+ map 节点），空簿首单或 rehash 时 +1 |
+| `fill_front` 部分成交 | O(1) | 0 |
+| `fill_front` 完全成交 | 均摊 O(1)（`erase(begin())`） | 0 |
+| `cancel` 层仍非空 | 均摊 O(1)（哈希查找 + 缓存迭代器） | 0 |
+| `cancel` 清空层 | O(log L)（按价格 `erase`） | 0 |
+| `quantity_at` | O(log L) | 0 |
+| `depth(k)` / `for_each_order` | O(k) / O(n) | `depth`：结果 vector 的增长分配；`for_each_order`：0 |
+| `find_invariant_violation` | O(n) 均摊 | 字符串构造 |
+
+### 2.3 迭代器 / 指针有效性论证
+
+`Locator` 能缓存 `PriceLevel*` 和链表迭代器，依赖三条标准保证：
+
+1. `std::map` 插入不使任何迭代器/引用失效；删除只使被删元素的迭代器/引用失效（[associative.reqmts]）。
+2. `std::list` 同理（[list.modifiers]）。
+3. `std::unordered_map` 的 rehash 使其**自身**迭代器失效，但不使元素的引用/指针失效（[unord.req]）；
+   我们从不保存 `index_` 的迭代器，只保存 map/list 中的位置，所以 rehash 无影响。
+
+所有删除路径（`fill_front` 完全成交、`cancel`）都在同一函数内同时删除订单节点和索引项，
+`index_` 因而永远不含悬空的 `Locator`。不变量 4（索引双射，见下）在测试中每步验证这一点。
+
+### 2.4 异常安全
+
+- `add`：先完成全部前置检查（无修改），再按 `try_emplace 层 → push_back 节点 → emplace 索引` 顺序修改；
+  每步只在后续步骤抛出时撤销前面已完成的步骤（删新建的空层、`pop_back` 节点），最后才更新 `total_quantity` 与 `last_seq_`
+  （这两步不抛出）。各单步本身具有标准规定的强保证（单元素插入失败无副作用）。
+- `fill_front` / `cancel`：成功路径只做减法与节点删除，不分配、不抛出；`fill_front` 的契约检查先于任何修改。
+- 验证：`lob_book_alloc_tests` 替换全局 `operator new`，对每个 `add` 场景逐一让第 k 次分配失败，
+  直到操作不再失败为止，并断言"注入点数 = 正常执行时的分配次数"——即每个分配点都被注入过一次；
+  每次失败后断言簿与操作前逐字节一致、不变量成立、同一操作随后可成功。对 0..64 个订单规模的扫描共 158 个注入点，
+  单次 `add` 最多 4 次分配（含 rehash）。`fill_front` / `cancel` 在"首次分配即失败"的条件下运行成功且分配计数为 0。
+
+### 2.5 生命周期
+
+- 禁止拷贝：成员逐一拷贝会让新对象的 `Locator` 指向源对象的节点。
+- 移动构造/移动赋值 `noexcept`：容器移动转移节点所有权而不搬迁节点，`Locator` 继续指向同一批节点，
+  归属变为目标对象。随后显式清空源对象的三个容器，使源对象成为与原配置、原 `last_seq_` 相同的**空且一致**的簿，
+  而不依赖标准库对"被移动容器"的未指定状态（D-013）。自移动赋值为空操作。
+
+### 2.6 结构不变量（`find_invariant_violation()`，测试中每步调用）
+
+1. 不存在空价格层；层价格在配置价格带内。
+2. 每层 `total_quantity` = 队列中 `remaining` 之和（求和用 `checked_add`，损坏状态下也不会溢出 UB）；每个 `remaining ∈ (0, max_order_quantity]`。
+3. 每层队列 `seq` 严格递增（FIFO），且不超过 `last_seq_`。
+4. 索引是到挂单的双射：每个挂单都有一个索引项，且该项的侧、价、层指针、节点地址都指向它；索引项总数 = 挂单总数。
+5. `order_count() ≤ max_live_orders`。
+6. 不交叉：两侧非空时 `best_bid < best_ask`。
+
+每条不变量都有对应的 Tamper Test（故意破坏一项，断言报告的正是该项），证明检查器本身能检出问题。
+
+### 2.7 备选方案（Level 2 实验候选，未引入）
+
+侵入式链表 + 对象池（消除 `std::list` 与哈希节点的逐单分配，即 §2.2 中每次 `add` 的 2–4 次分配）；
+价格带较窄时用按价格下标的扁平数组找层（O(1) 代替 O(log L)）；关闭 Release 下的契约检查以测其开销。
+引入前须有剖析证据与基线对比。
 
 ## 3. 撮合语义 📝（M3）
 

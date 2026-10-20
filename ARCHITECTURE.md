@@ -53,7 +53,7 @@
 | 模块 | CMake 目标 | 职责 | 依赖 | 状态 |
 |---|---|---|---|---|
 | M1 core | `lob::core` | 基本类型、命令、拒单原因、配置约束、无状态校验、溢出检查算术 | 无 | ✅ |
-| M2 book | `lob::book` | 订单簿数据结构：价格层、同价 FIFO、ID 索引、不变量检查；**不含撮合逻辑** | core | 📝 |
+| M2 book | `lob::book` | 订单簿数据结构：价格层、同价 FIFO、ID 索引、不变量检查；**不含撮合逻辑** | core | ✅ |
 | M3 engine | `lob::engine` | 命令处理：有状态校验（重复 ID、未知 ID、容量）、价格-时间优先撮合、事件生成、序号 | core, book | 📝 |
 | M4 testkit | `lob::testkit` | 固定种子工作负载生成器、朴素参考模型、差分测试驱动 | core, engine | 📝 |
 | M5 io | `lob::io` | 文本命令格式解析、事件序列化、规范快照与哈希、回放驱动；`lob_replay` CLI；Golden Tests | core, engine | 📝 |
@@ -95,6 +95,18 @@
 - 数据流：`NewOrder` / `CancelOrder` → `validate_new_order` / `validate_cancel_order`
   → `std::optional<RejectReason>`（空表示通过无状态校验）。
 - 详见 [MODULE_NOTES/M1_core.md](MODULE_NOTES/M1_core.md)。
+
+### M2 book
+
+- 头文件：`include/lob/book/order_book.hpp`；源文件：`src/book/order_book.cpp`。
+- 对上（M3）提供三个修改操作与一组查询：
+  `add(NewOrder, SeqNum)`（挂剩余量）、`fill_front(maker 侧, 数量)`（与对手方最优单成交）、`cancel(id)`；
+  `best_price / front / find / quantity_at / depth / for_each_order`。撮合循环将由 M3 用
+  `front(对手侧)` + `fill_front(对手侧, min(剩余, maker 剩余))` 组合实现，订单簿不感知 taker。
+- 内部数据流：`add` → 前置检查 → `try_emplace` 价格层 → 队尾入链表 → 写索引；
+  `fill_front` / `cancel` → 减量 → 必要时同时删除节点与索引项 → 层空即删层。
+- 测试结构：`lob_book_tests`（单元、Tamper、与参考模型的差分）+ `lob_book_alloc_tests`（独立进程，分配失败注入）。
+- 详见 [MODULE_NOTES/M2_book.md](MODULE_NOTES/M2_book.md)。
 
 ## 5. 构建拓扑
 

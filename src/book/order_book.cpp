@@ -3,6 +3,7 @@
 #include <iterator>
 #include <stdexcept>
 #include <string>
+#include <utility>
 
 #include "lob/core/checked.hpp"
 #include "lob/core/reject_reason.hpp"
@@ -20,6 +21,34 @@ namespace {
 
 OrderBook::OrderBook(const EngineConfig& config) : config_(config) {
   validate_config(config_);
+}
+
+OrderBook::OrderBook(OrderBook&& other) noexcept
+    : config_(other.config_),
+      bids_(std::move(other.bids_)),
+      asks_(std::move(other.asks_)),
+      index_(std::move(other.index_)),
+      last_seq_(other.last_seq_) {
+  // Make the source state specified rather than library-dependent.
+  other.bids_.clear();
+  other.asks_.clear();
+  other.index_.clear();
+}
+
+OrderBook& OrderBook::operator=(OrderBook&& other) noexcept {
+  if (this != &other) {
+    // The previous contents of *this are destroyed by the container move
+    // assignments; their locators go away with index_.
+    config_ = other.config_;
+    bids_ = std::move(other.bids_);
+    asks_ = std::move(other.asks_);
+    index_ = std::move(other.index_);
+    last_seq_ = other.last_seq_;
+    other.bids_.clear();
+    other.asks_.clear();
+    other.index_.clear();
+  }
+  return *this;
 }
 
 // ------------------------------------------------------------------ mutations

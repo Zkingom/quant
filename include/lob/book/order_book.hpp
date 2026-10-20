@@ -94,14 +94,19 @@ class OrderBook {
   explicit OrderBook(const EngineConfig& config);
 
   // Locators point into this object's own containers, so a member-wise copy
-  // would alias the source book. Copying is therefore disabled. Moving is
-  // safe: std::map / std::list / std::unordered_map move construction and
-  // (std::allocator) move assignment transfer nodes without relocating them.
-  // A moved-from book may only be destroyed or assigned to.
+  // would alias the source book. Copying is therefore disabled.
+  //
+  // Moving is safe: std::map / std::list / std::unordered_map move
+  // construction and (std::allocator) move assignment transfer nodes without
+  // relocating them, so every Locator keeps pointing at the same nodes, now
+  // owned by the destination. The standard leaves moved-from containers in
+  // a "valid but unspecified" state, so the move operations explicitly clear
+  // the source: afterwards it is an empty, consistent book with the same
+  // config and last seq, usable like any other book (DECISIONS D-013).
   OrderBook(const OrderBook&) = delete;
   OrderBook& operator=(const OrderBook&) = delete;
-  OrderBook(OrderBook&&) = default;
-  OrderBook& operator=(OrderBook&&) = default;
+  OrderBook(OrderBook&& other) noexcept;
+  OrderBook& operator=(OrderBook&& other) noexcept;
   ~OrderBook() = default;
 
   // ---------------------------------------------------------------- mutations
@@ -182,7 +187,10 @@ class OrderBook {
   [[nodiscard]] std::optional<std::string> find_invariant_violation() const;
 
  private:
-  friend struct OrderBookTestAccess;  // white-box tests corrupt state on purpose
+  // Defined only under tests/ (tamper tests corrupt state on purpose to prove
+  // that find_invariant_violation() detects it). Adds no member, no public
+  // API and no runtime cost; production code never defines it (D-015).
+  friend struct OrderBookTestAccess;
 
   using OrderList = std::list<RestingOrder>;
 

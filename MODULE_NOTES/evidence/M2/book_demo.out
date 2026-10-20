@@ -1,0 +1,33 @@
+--- after 6 adds ---
+             103 |    12  (1 orders)
+             102 |    12  (2 orders)
+  ------------------------
+     15 |    100          (2 orders)
+     20 |     99          (1 orders)
+  orders=6 invariants=OK
+fill maker=1 price=100 qty=10 maker_remaining=0
+fill maker=2 price=100 qty=2 maker_remaining=3
+--- after filling 12 against the bids ---
+             103 |    12  (1 orders)
+             102 |    12  (2 orders)
+  ------------------------
+      3 |    100          (1 orders)
+     20 |     99          (1 orders)
+  orders=5 invariants=OK
+cancel id=4 side=SELL price=102 remaining=8
+cancel id=4 again -> not resting
+--- after cancelling order 4 ---
+             103 |    12  (1 orders)
+             102 |     4  (1 orders)
+  ------------------------
+      3 |    100          (1 orders)
+     20 |     99          (1 orders)
+  orders=4 invariants=OK
+contract violation caught: OrderBook::add: order at 102 would cross the opposite best 102
+--- unchanged after the rejected add ---
+             103 |    12  (1 orders)
+             102 |     4  (1 orders)
+  ------------------------
+      3 |    100          (1 orders)
+     20 |     99          (1 orders)
+  orders=4 invariants=OK

@@ -31,4 +31,12 @@ lob_add_test_suite(lob_core_tests
 lob_add_test_suite(lob_book_tests
   SOURCES
     book/test_order_book.cpp
+    book/test_order_book_tamper.cpp
+    book/test_order_book_differential.cpp
+  LIBS lob::book)
+
+# Separate executable: it replaces the global operator new/delete.
+lob_add_test_suite(lob_book_alloc_tests
+  SOURCES
+    book/test_order_book_alloc_failure.cpp
   LIBS lob::book)

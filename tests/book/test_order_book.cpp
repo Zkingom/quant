@@ -17,8 +17,8 @@ using test::sell;
 
 static_assert(!std::is_copy_constructible_v<OrderBook>);
 static_assert(!std::is_copy_assignable_v<OrderBook>);
-static_assert(std::is_move_constructible_v<OrderBook>);
-static_assert(std::is_move_assignable_v<OrderBook>);
+static_assert(std::is_nothrow_move_constructible_v<OrderBook>);
+static_assert(std::is_nothrow_move_assignable_v<OrderBook>);
 
 constexpr EngineConfig kConfig{
     .min_price = 1, .max_price = 1'000, .max_order_quantity = 1'000, .max_live_orders = 100};
@@ -263,19 +263,72 @@ TEST_F(OrderBookTest, MovedBookKeepsWorkingIndex) {
 
   OrderBook moved{std::move(book_)};
   EXPECT_EQ(dump(moved), before);
+  // The invariant check compares every Locator's level pointer and list
+  // iterator against the address of the node it finds while walking the
+  // destination's own maps, so passing it proves the index was not left
+  // pointing into the source.
   EXPECT_BOOK_CONSISTENT(moved);
-  // Locators must refer to the moved-to containers: exercise them.
   EXPECT_EQ(moved.cancel(2), (CancelledOrder{2, Side::Buy, 100, 6}));
   EXPECT_EQ(moved.fill_front(Side::Sell, 7), (Fill{3, 101, 7, 0}));
   EXPECT_BOOK_CONSISTENT(moved);
+}
 
-  OrderBook assigned{kConfig};
-  assigned.add(sell(50, 500, 1), 1);
-  assigned = std::move(moved);
-  EXPECT_EQ(dump(assigned), "SELL:\nBUY: 100/1x5#1\n");
-  EXPECT_EQ(assigned.cancel(1), (CancelledOrder{1, Side::Buy, 100, 5}));
-  EXPECT_TRUE(assigned.empty());
-  EXPECT_BOOK_CONSISTENT(assigned);
+TEST_F(OrderBookTest, MovedFromBookIsEmptyConsistentAndReusable) {
+  add(buy(1, 100, 5));
+  add(sell(2, 101, 5));
+  OrderBook moved{std::move(book_)};
+
+  // NOLINTBEGIN(bugprone-use-after-move): the specified source state is the
+  // subject of this test.
+  EXPECT_TRUE(book_.empty());
+  EXPECT_EQ(book_.level_count(Side::Buy), 0U);
+  EXPECT_EQ(book_.level_count(Side::Sell), 0U);
+  EXPECT_EQ(book_.best_bid(), std::nullopt);
+  EXPECT_EQ(book_.cancel(1), std::nullopt);  // must not reach the moved nodes
+  EXPECT_EQ(book_.config(), kConfig);
+  EXPECT_BOOK_CONSISTENT(book_);
+
+  // The source keeps its last seq, so seq stays monotonic if it is reused.
+  EXPECT_THROW(book_.add(buy(1, 100, 5), seq_), std::logic_error);
+  book_.add(buy(1, 100, 5), ++seq_);  // same id as an order now owned by `moved`
+  EXPECT_BOOK_CONSISTENT(book_);
+  // NOLINTEND(bugprone-use-after-move)
+
+  // The two books are fully independent.
+  EXPECT_EQ(moved.find(1), (OrderView{1, Side::Buy, 100, 5, 1}));
+  EXPECT_TRUE(moved.cancel(1).has_value());
+  EXPECT_TRUE(book_.contains(1));
+  EXPECT_BOOK_CONSISTENT(moved);
+  EXPECT_BOOK_CONSISTENT(book_);
+}
+
+TEST_F(OrderBookTest, MoveAssignmentReplacesContentsAndClearsSource) {
+  add(buy(1, 100, 5));
+  OrderBook target{EngineConfig{
+      .min_price = 1, .max_price = 600, .max_order_quantity = 10, .max_live_orders = 3}};
+  target.add(sell(50, 500, 1), 1);
+  target.add(sell(51, 501, 1), 2);
+
+  target = std::move(book_);
+  EXPECT_EQ(dump(target), "SELL:\nBUY: 100/1x5#1\n");
+  EXPECT_EQ(target.config(), kConfig);  // config travels with the contents
+  EXPECT_FALSE(target.contains(50));    // previous contents destroyed
+  EXPECT_EQ(target.cancel(50), std::nullopt);
+  EXPECT_BOOK_CONSISTENT(target);
+  EXPECT_TRUE(book_.empty());  // NOLINT(bugprone-use-after-move)
+  EXPECT_BOOK_CONSISTENT(book_);
+
+  EXPECT_EQ(target.cancel(1), (CancelledOrder{1, Side::Buy, 100, 5}));
+  EXPECT_TRUE(target.empty());
+}
+
+TEST_F(OrderBookTest, SelfMoveAssignmentIsANoOp) {
+  add(buy(1, 100, 5));
+  const std::string before = dump(book_);
+  OrderBook& alias = book_;
+  book_ = std::move(alias);
+  EXPECT_EQ(dump(book_), before);
+  EXPECT_BOOK_CONSISTENT(book_);
 }
 
 }  // namespace
