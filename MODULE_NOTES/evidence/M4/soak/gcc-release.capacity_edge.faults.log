@@ -1,0 +1,16 @@
+$ lob_soak --profile capacity_edge --seeds 11-15 --commands 50000 --check-every 500 --fault-per-mille 20 --require-targets
+[run] profile=capacity_edge seed=11 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.018
+[run] profile=capacity_edge seed=12 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.017
+[run] profile=capacity_edge seed=13 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.018
+[run] profile=capacity_edge seed=14 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.017
+[run] profile=capacity_edge seed=15 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.017
+== profile capacity_edge: capacity 4: constant BOOK_FULL decisions, fills that free slots
+[coverage] commands=248658 accepted=122383 trades=82485 cancels=38245
+[coverage] multi_maker=15423 multi_level=12898 taker_full=32450 taker_partial_rested=30220 rested_no_trade=59713 maker_partial=31252
+[coverage] accepted_while_full=43849 reused_dead_id=6091 max_orders=4
+[coverage] rejects: INVALID_ORDER_ID=2959 INVALID_SIDE=3051 PRICE_OUT_OF_RANGE=2932 INVALID_QUANTITY=2975 QUANTITY_TOO_LARGE=2989 DUPLICATE_ORDER_ID=15 UNKNOWN_ORDER_ID=16956 BOOK_FULL=56153
+[state] max_levels_per_side=4 max_level_orders=4 max_level_quantity=313 max_trades_in_command=4 max_levels_swept=4 side_emptied=16416 band_edge_accepts=17423 band_edge_trades=14851 accepted_quantity=3903860 full_checks=1847
+[faults] prepare=452 residual=890 armed_without_effect=3706
+[time] seconds=0.088 commands_per_second(harness incl. reference+audit)=2850901
+[targets] all met
+[resources] max_rss_kib=5120 user_s=0.09 sys_s=0.00

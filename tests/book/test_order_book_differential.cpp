@@ -25,7 +25,7 @@
 #include "book_test_util.hpp"
 #include "lob/book/order_book.hpp"
 #include "reference_book.hpp"
-#include "support/rng.hpp"
+#include "lob/testkit/rng.hpp"
 
 namespace lob {
 namespace {
@@ -40,7 +40,7 @@ constexpr EngineConfig kConfig{
 constexpr int kSeeds = 20;
 constexpr int kStepsPerSeed = 5'000;
 
-using test::Rng;
+using testkit::Rng;
 
 struct Coverage {
   long adds = 0;

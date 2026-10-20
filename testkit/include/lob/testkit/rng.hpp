@@ -5,9 +5,9 @@
 
 #include "lob/core/types.hpp"
 
-namespace lob::test {
+namespace lob::testkit {
 
-/// Seeded generator for differential tests. Deterministic on every platform:
+/// Seeded generator for differential tests and workloads. Deterministic on every platform:
 /// std::mt19937_64 is fully specified by the standard, and the range
 /// reduction is ours (std::uniform_int_distribution's algorithm is not
 /// specified and differs between standard libraries). Modulo bias is
@@ -28,4 +28,4 @@ class Rng {
   std::mt19937_64 engine_;
 };
 
-}  // namespace lob::test
+}  // namespace lob::testkit

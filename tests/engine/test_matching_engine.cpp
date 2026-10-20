@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "engine_test_util.hpp"
-#include "event_auditor.hpp"
+#include "lob/testkit/event_auditor.hpp"
 #include "lob/engine/matching_engine.hpp"
 
 namespace lob {
@@ -76,14 +76,14 @@ struct Harness {
     const std::size_t before = log.size();
     engine.process(command, log);
     std::vector<Event> produced(log.begin() + static_cast<std::ptrdiff_t>(before), log.end());
-    EXPECT_TRUE(auditor.audit(command, produced)) << test::describe(produced);
-    EXPECT_TRUE(auditor.matches(engine.book()));
+    EXPECT_EQ(auditor.audit(command, produced), std::nullopt) << test::describe(produced);
+    EXPECT_EQ(auditor.matches(engine.book()), std::nullopt);
     EXPECT_EQ(engine.find_invariant_violation(), std::nullopt);
     return produced;
   }
 
   MatchingEngine engine;
-  test::EventAuditor auditor;
+  testkit::EventAuditor auditor;
   std::vector<Event> log;
 };
 

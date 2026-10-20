@@ -2,13 +2,15 @@
 
 // Allocation-failure injection for exception-safety tests.
 //
-// Linking support/alloc_fault.cpp into a test executable replaces the global
-// operator new/delete of THAT executable (only the *_alloc_tests binaries
-// do this). Injection is disarmed by default; a FaultWindow arms it around
+// Linking the lob_testkit_alloc_fault object library into an executable
+// replaces the global operator new/delete of THAT executable (only the
+// *_alloc_tests binaries and lob_soak do this). Injection is disarmed by default; a FaultWindow arms it around
 // exactly one operation and fails at most one allocation, so GoogleTest and
 // the test's own bookkeeping never see an injected failure.
 
-namespace lob::test::alloc {
+#include "lob/testkit/differential.hpp"
+
+namespace lob::testkit::alloc {
 
 void arm(long fail_after);       // let `fail_after` allocations through, fail the next
 void disarm() noexcept;
@@ -26,4 +28,12 @@ class FaultWindow {
   [[nodiscard]] bool injected() const noexcept { return alloc::injected(); }
 };
 
-}  // namespace lob::test::alloc
+/// Adapter for run_differential(): arms/disarms the global replacement.
+class Injector final : public FaultInjector {
+ public:
+  void arm(long fail_after) override { alloc::arm(fail_after); }
+  void disarm() noexcept override { alloc::disarm(); }
+  [[nodiscard]] bool injected() const noexcept override { return alloc::injected(); }
+};
+
+}  // namespace lob::testkit::alloc

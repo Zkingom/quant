@@ -1,0 +1,13 @@
+$ lob_soak --profile mixed --seeds 31-32 --commands 20000 --check-every 200 --fault-per-mille 20
+[run] profile=mixed seed=31 commands=20000 check_every=200 fault_per_mille=20 ok=1 seconds=0.685
+[run] profile=mixed seed=32 commands=20000 check_every=200 fault_per_mille=20 ok=1 seconds=0.681
+== profile mixed: M3 baseline mix: build/churn phases, sweeps, invalid input, capacity 40
+[coverage] commands=39764 accepted=27345 trades=21668 cancels=5264
+[coverage] multi_maker=4864 multi_level=3300 taker_full=7765 taker_partial_rested=2463 rested_no_trade=17117 maker_partial=7423
+[coverage] accepted_while_full=3362 reused_dead_id=1448 max_orders=40
+[coverage] rejects: INVALID_ORDER_ID=478 INVALID_SIDE=460 PRICE_OUT_OF_RANGE=485 INVALID_QUANTITY=476 QUANTITY_TOO_LARGE=501 DUPLICATE_ORDER_ID=24 UNKNOWN_ORDER_ID=2305 BOOK_FULL=2426
+[state] max_levels_per_side=23 max_level_orders=28 max_level_quantity=593 max_trades_in_command=12 max_levels_swept=7 side_emptied=737 band_edge_accepts=6478 band_edge_trades=5752 accepted_quantity=768897 full_checks=438
+[faults] prepare=81 residual=155 armed_without_effect=571
+[time] seconds=1.366 commands_per_second(harness incl. reference+audit)=29290
+[targets] all met
+[resources] max_rss_kib=146080 user_s=1.30 sys_s=0.20

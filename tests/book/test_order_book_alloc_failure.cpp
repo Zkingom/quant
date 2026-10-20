@@ -1,6 +1,6 @@
 // Allocation-failure injection for OrderBook's exception-safety guarantees.
 //
-// Uses the shared harness in support/alloc_fault.{hpp,cpp}, which replaces
+// Uses the shared harness lob/testkit/alloc_fault.hpp, which replaces
 // the global operator new/delete for this executable only
 // (lob_book_alloc_tests). Injection is disarmed by default; a FaultWindow
 // arms it around exactly one book operation and fails at most one
@@ -26,9 +26,9 @@
 
 #include "book_test_util.hpp"
 #include "lob/book/order_book.hpp"
-#include "support/alloc_fault.hpp"
+#include "lob/testkit/alloc_fault.hpp"
 
-using lob::test::alloc::FaultWindow;
+using lob::testkit::alloc::FaultWindow;
 
 namespace lob {
 namespace {

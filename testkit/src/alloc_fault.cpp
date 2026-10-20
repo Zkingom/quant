@@ -1,4 +1,4 @@
-#include "support/alloc_fault.hpp"
+#include "lob/testkit/alloc_fault.hpp"
 
 #include <cstddef>
 #include <cstdlib>
@@ -30,7 +30,7 @@ void* allocate(std::size_t size) {
 
 }  // namespace
 
-namespace lob::test::alloc {
+namespace lob::testkit::alloc {
 
 void arm(long fail_after) {
   g_allocations = 0;
@@ -42,7 +42,7 @@ void disarm() noexcept { g_armed = false; }
 long allocations() noexcept { return g_allocations; }
 bool injected() noexcept { return g_injected > 0; }
 
-}  // namespace lob::test::alloc
+}  // namespace lob::testkit::alloc
 
 // Replaceable global allocation functions ([new.delete]). Every plain and
 // nothrow form is replaced so that each allocation/deallocation pair goes

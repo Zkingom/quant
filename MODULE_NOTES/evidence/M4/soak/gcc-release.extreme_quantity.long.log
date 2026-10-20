@@ -1,0 +1,21 @@
+$ lob_soak --profile extreme_quantity --seeds 1-10 --commands 200000 --check-every 1000 --require-targets
+[run] profile=extreme_quantity seed=1 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.137
+[run] profile=extreme_quantity seed=2 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.136
+[run] profile=extreme_quantity seed=3 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.140
+[run] profile=extreme_quantity seed=4 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.137
+[run] profile=extreme_quantity seed=5 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.139
+[run] profile=extreme_quantity seed=6 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.138
+[run] profile=extreme_quantity seed=7 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.141
+[run] profile=extreme_quantity seed=8 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.139
+[run] profile=extreme_quantity seed=9 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.137
+[run] profile=extreme_quantity seed=10 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.138
+== profile extreme_quantity: quantities near INT64_MAX/64: level totals near INT64_MAX (D-006 bound)
+[coverage] commands=2000000 accepted=1366063 trades=1095931 cancels=270107
+[coverage] multi_maker=420192 multi_level=0 taker_full=544001 taker_partial_rested=63840 rested_no_trade=758222 maker_partial=544001
+[coverage] accepted_while_full=191549 reused_dead_id=75958 max_orders=64
+[coverage] rejects: INVALID_ORDER_ID=24003 INVALID_SIDE=24272 PRICE_OUT_OF_RANGE=24017 INVALID_QUANTITY=23998 QUANTITY_TOO_LARGE=23577 DUPLICATE_ORDER_ID=198 UNKNOWN_ORDER_ID=120463 BOOK_FULL=123302
+[state] max_levels_per_side=2 max_level_orders=63 max_level_quantity=6919747252664114099 max_trades_in_command=7 max_levels_swept=1 side_emptied=41037 band_edge_accepts=1366063 band_edge_trades=1095931 accepted_quantity=135550104246963548803181 full_checks=2010
+[faults] prepare=0 residual=0 armed_without_effect=0
+[time] seconds=1.383 commands_per_second(harness incl. reference+audit)=1446444
+[targets] all met
+[resources] max_rss_kib=10080 user_s=1.47 sys_s=0.00

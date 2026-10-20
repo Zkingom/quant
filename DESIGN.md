@@ -279,6 +279,80 @@ M2 的 `add` 只能入队尾并要求 `seq` 严格递增，因此不存在这样
 | 分配失败注入 | 对 `process` 的每个分配点注入失败，按 §3.5 分类并与参考引擎比较 | 保证级别的实证 |
 | 变异测试 | 人工注入撮合/校验/异常处理缺陷，确认被杀死 | 测试的检出能力 |
 
-## 4. 快照 📝（M5）
+## 4. 测试基础设施 ✅（M4）
+
+实现：`testkit/`（CMake 目标 `lob::testkit`、`lob_testkit_alloc_fault`、`lob_soak`）。只在 `LOB_BUILD_TESTS` 时构建，
+不进入任何生产目标；不依赖 GoogleTest（M5 回放测试与 M6 基准可直接复用）。
+
+### 4.1 组件与职责
+
+| 组件 | 文件 | 职责 | 消费者 |
+|---|---|---|---|
+| `Rng` | `rng.hpp` | 跨平台确定的种子随机数（`mt19937_64` + 自有区间映射） | 全部生成器 |
+| `ReferenceEngine` | `reference_engine.hpp` | 独立朴素实现（扁平 vector、线性扫描、副本上模拟撮合）；`best_price`（O(n)）；`drop_resting`（仅用于故障后对齐） | 差分、契约、生成器的状态视图 |
+| `EventAuditor` | `event_auditor.hpp/.cpp` | A1–A6 性质检查；128 位累计量 | 单元、差分、长跑 |
+| `WorkloadProfile` / `WorkloadGenerator` | `workload.hpp/.cpp` | 10 个工作负载画像；按当前模型状态生成命令 | 差分、长跑、契约；M6 基准（计划） |
+| `run_differential` / `Coverage` / `unmet_targets` | `differential.hpp/.cpp` | 引擎 vs 参考 + 审计；全量检查间隔；状态指标；可选故障注入；边界目标判定 | gtest 测试、`lob_soak` |
+| `alloc` 注入 | `alloc_fault.hpp/.cpp`（OBJECT 库） | 替换全局 `operator new/delete`；`FaultWindow`；`Injector` 适配器 | `*_alloc_tests`、`lob_soak` |
+| `describe` / `dump` | `describe.hpp/.cpp` | 事件、命令、簿的调试文本 | 失败信息、复现输出 |
+| `lob_soak` | `tools/soak.cpp` | 长跑 CLI：画像 × 种子区间、时间与资源、目标、复现命令 | `scripts/soak.sh` |
+
+仍留在 `tests/` 的：M2 订单簿参考模型 `tests/book/reference_book.hpp`（只有 M2 一个消费者）、GoogleTest 打印胶水 `engine_test_util.hpp`。
+
+### 4.2 差分执行器的检查节奏
+
+| 每条命令 | 每 `full_check_every` 条命令、每次注入故障后、运行结束时 |
+|---|---|
+| 引擎与参考的完整事件向量相等；审计器 A1–A5（审计器自身重建）；`BOOK_FULL` 只拒不可成交订单；两侧最优档位采样 | 两侧完整簿逐单相等（含 seq）；审计器 `matches()`（A5 针对引擎簿、A6）；引擎不变量（M2 六条 + I2）；全深度档位数采样 |
+
+全量检查不消耗随机数，故障注入使用独立的随机流（由种子派生），因此 **`--check-every` 不改变命令流**
+（测试 `CheckIntervalDoesNotChangeTheStream` 对 10 个画像逐一验证）：长跑中用稀疏检查发现的失败，用 `--check-every 1` 复现即可定位到确切步。
+
+### 4.3 长序列故障注入
+
+每条命令以 `fault_per_mille / 1000` 的概率武装"第 k 次分配失败"（k ∈ [0, 5]），一半情况下先清空事件缓冲区的容量。结果分类：
+
+- **PREPARE**：事件为空、`last_seq` 未变 → 参考引擎跳过该命令；立即全量检查（证明簿未变）。
+- **RESIDUAL**：参考引擎的事件（末尾 `Rested` 换成 `Cancelled(INSUFFICIENT_RESOURCES)`）必须与引擎完全一致；`last_seq` 等于该撤销事件的 seq；
+  参考引擎 `drop_resting` 对齐；审计器接受；立即全量检查。
+- 其他任何结果（吞掉注入的失败、非注入的 `bad_alloc`、其他异常、事件变化但参考不挂单）→ 失败。
+
+与 M3 的区别：M3 每个注入点后只验证一条后续命令；M4 在同一次运行中反复注入并**继续运行**数万条命令。
+
+### 4.4 工作负载画像与边界目标
+
+成功标准不是步数，而是**画像是否到达它声称的状态边界**；长跑以 `--require-targets` 运行，未达到即失败。
+
+| 画像 | 目标边界 | 目标（长跑须满足） |
+|---|---|---|
+| mixed | M3 基线（回归锚点） | 逐字复现 M3 的计数；全部 8 种拒单；满载受理；容量上限 |
+| deep_book | 深簿 | 单侧 ≥ 1000 档；≥ 90% 容量（4500 单）；单条命令扫过 ≥ 20 档 |
+| single_price | 价格带只有一个价（min = max） | 队列 ≥ 200 单；全部成交在该价；单条命令成交 ≥ 20 个 maker |
+| high_density | 多数订单到达即成交 | ≥ 70% 受理订单到达即成交；≥ 50% 成交使 maker 部分成交 |
+| thin_book | 对手侧被扫空 | ≥ 5% 的命令扫空一侧 |
+| cancel_heavy | 索引高频变动 | 成功撤单 ≥ 20% 命令；未知 ID 撤单 ≥ 10% |
+| id_churn | ID 生命周期（ID 空间 64） | 重复 ID 拒单 ≥ 5% 新单；失效 ID 复用 ≥ 5% 受理 |
+| capacity_edge | 容量边界（上限 4） | `BOOK_FULL` ≥ 10% 新单；满载受理 ≥ 1% 命令；达到上限 |
+| extreme_quantity | D-006 上界 | 某档位总量 ≥ INT64_MAX/4；累计受理量 > INT64_MAX（128 位记账） |
+| extreme_price | 价格接近表示上限 | 价格带边缘受理 ≥ 1%；边缘成交 > 0 |
+
+校准记录（未达标时修改画像而非目标；唯一一次修改目标附有结构性论证，见 MODULE_NOTES/M4 §6）。
+
+## 5. M5 接口契约（由 `tests/engine/test_replay_contract.cpp` 固定）
+
+M5（持久化、回放、恢复）调用 `MatchingEngine::process` 时可以依赖、也必须防范的行为：
+
+| 条款 | 内容 | 测试 |
+|---|---|---|
+| C1 | `process` 抛出且 `last_seq()` 未变 ⇒ 命令完全没有生效，可安全重试，结果与无故障运行相同 | `C1NotAppliedCommandCanBeRetried` |
+| C2 | `process` 抛出且 `last_seq()` 已变 ⇒ 命令**已生效**（成交保留，事件以 `Cancelled(INSUFFICIENT_RESOURCES)` 结束）。**不得重试**：重试会再次受理并成交（已演示） | `C2RetryAfterAppliedFailureExecutesTwice` |
+| C3 | 发生过资源失败的运行，**不能**通过重新执行命令日志复现：该命令的剩余量在重放中会挂单，之后的命令可能与之成交（已演示） | `C3CommandReplayDivergesAfterAResourceFailure` |
+| C4 | **事件日志单独**足以重建精确的簿（含优先级 seq），包括跨越多次资源失败 | `C4C5EventLogRebuildsBookAndSeqRangesAttributeEvents` |
+| C5 | 一次 `process` 产生的事件恰好是 seq 区间 `(last_seq 之前, last_seq 之后]`，连续，无论是否抛出 | 同上 |
+| C6 | 无资源失败时，相同命令日志在新引擎中重放得到逐字节相同的事件日志，与调用方缓冲区策略无关 | `C6FailureFreeCommandReplayIsExact` |
+
+由此得出的 M5 必须解决的问题，见 MODULE_NOTES/M4_testkit.md §8。
+
+## 6. 快照 📝（M5）
 
 规范文本：卖方价格升序、买方价格降序，层内按 FIFO 列出 `id remaining`；附 FNV-1a 64 位哈希。

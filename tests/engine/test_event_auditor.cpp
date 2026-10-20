@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "engine_test_util.hpp"
-#include "event_auditor.hpp"
+#include "lob/testkit/event_auditor.hpp"
 #include "lob/engine/matching_engine.hpp"
 
 namespace lob {
@@ -29,19 +29,19 @@ class AuditorTest : public ::testing::Test {
     for (const Command& c : {Command{sell(1, 101, 5)}, Command{sell(2, 100, 5)}}) {
       std::vector<Event> events;
       engine_.process(c, events);
-      ASSERT_TRUE(auditor_.audit(c, events));
+      ASSERT_EQ(auditor_.audit(c, events), std::nullopt);
     }
   }
 
   ::testing::AssertionResult expect_violation(const Command& command,
                                               const std::vector<Event>& events,
                                               const std::string& needle) {
-    const ::testing::AssertionResult result = auditor_.audit(command, events);
-    if (result) {
+    const std::optional<std::string> result = auditor_.audit(command, events);
+    if (!result) {
       return ::testing::AssertionFailure() << "auditor accepted a bad stream; expected '" << needle
                                            << "'";
     }
-    const std::string message = result.message();
+    const std::string& message = *result;
     if (message.find(needle) == std::string::npos) {
       return ::testing::AssertionFailure() << "auditor said '" << message << "', expected '"
                                            << needle << "'";
@@ -65,13 +65,13 @@ class AuditorTest : public ::testing::Test {
   }
 
   MatchingEngine engine_{kConfig};
-  test::EventAuditor auditor_{kConfig};
+  testkit::EventAuditor auditor_{kConfig};
 };
 
 TEST_F(AuditorTest, AcceptsTheCorrectStream) {
   const NewOrder o = buy(3, 100, 2);
   const std::vector<Event> events{accepted(5, o), trade(6, 3, 2, 100, 2, 0, 3)};
-  EXPECT_TRUE(auditor_.audit(o, events));
+  EXPECT_EQ(auditor_.audit(o, events), std::nullopt);
 }
 
 TEST_F(AuditorTest, DetectsSeqGap) {
@@ -163,10 +163,10 @@ TEST_F(AuditorTest, DetectsCancelWithWrongRemaining) {
 }
 
 TEST_F(AuditorTest, MatchesDetectsBookDivergence) {
-  EXPECT_TRUE(auditor_.matches(engine_.book()));
+  EXPECT_EQ(auditor_.matches(engine_.book()), std::nullopt);
   std::vector<Event> ignored;
   engine_.process(buy(3, 50, 1), ignored);  // the auditor never sees this
-  EXPECT_FALSE(auditor_.matches(engine_.book()));
+  EXPECT_NE(auditor_.matches(engine_.book()), std::nullopt);
 }
 
 }  // namespace

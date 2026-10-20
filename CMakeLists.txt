@@ -34,5 +34,6 @@ endif()
 
 if(LOB_BUILD_TESTS)
   enable_testing()
+  add_subdirectory(testkit)
   add_subdirectory(tests)
 endif()
