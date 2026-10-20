@@ -1,0 +1,1070 @@
+================ gcc-debug ================
+[1/19] Building CXX object examples/CMakeFiles/core_validation_demo.dir/core_validation_demo.cpp.o
+[2/19] Building CXX object src/CMakeFiles/lob_core.dir/core/config.cpp.o
+[3/19] Linking CXX static library src/liblob_core.a
+[4/19] Building CXX object examples/CMakeFiles/book_demo.dir/book_demo.cpp.o
+[5/19] Linking CXX executable examples/core_validation_demo
+[6/19] Building CXX object src/CMakeFiles/lob_book.dir/book/order_book.cpp.o
+[7/19] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_checked.cpp.o
+[8/19] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_validation.cpp.o
+[9/19] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_config.cpp.o
+[10/19] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_types.cpp.o
+[11/19] Linking CXX static library src/liblob_book.a
+[12/19] Building CXX object tests/CMakeFiles/lob_book_tests.dir/book/test_order_book_tamper.cpp.o
+[13/19] Building CXX object tests/CMakeFiles/lob_book_alloc_tests.dir/book/test_order_book_alloc_failure.cpp.o
+[14/19] Building CXX object tests/CMakeFiles/lob_book_tests.dir/book/test_order_book.cpp.o
+[15/19] Building CXX object tests/CMakeFiles/lob_book_tests.dir/book/test_order_book_differential.cpp.o
+[16/19] Linking CXX executable examples/book_demo
+[17/19] Linking CXX executable tests/lob_core_tests
+[18/19] Linking CXX executable tests/lob_book_alloc_tests
+[19/19] Linking CXX executable tests/lob_book_tests
+Test project /mnt/g/学习资料/quant/build/gcc-debug
+      Start  1: Side.OppositeIsAnInvolution
+ 1/76 Test  #1: Side.OppositeIsAnInvolution .....................................................   Passed    0.01 sec
+      Start  2: Side.OnlyTwoUnderlyingValuesAreValid
+ 2/76 Test  #2: Side.OnlyTwoUnderlyingValuesAreValid ............................................   Passed    0.01 sec
+      Start  3: Side.StableStrings
+ 3/76 Test  #3: Side.StableStrings ..............................................................   Passed    0.01 sec
+      Start  4: RejectReason.StringsAreStableAndUnique
+ 4/76 Test  #4: RejectReason.StringsAreStableAndUnique ..........................................   Passed    0.01 sec
+      Start  5: Command.DefaultsAreInvalidSentinels
+ 5/76 Test  #5: Command.DefaultsAreInvalidSentinels .............................................   Passed    0.01 sec
+      Start  6: Command.EqualityComparesAllFields
+ 6/76 Test  #6: Command.EqualityComparesAllFields ...............................................   Passed    0.01 sec
+      Start  7: Command.VariantHoldsEitherAlternative
+ 7/76 Test  #7: Command.VariantHoldsEitherAlternative ...........................................   Passed    0.01 sec
+      Start  8: Checked.AddBoundaries
+ 8/76 Test  #8: Checked.AddBoundaries ...........................................................   Passed    0.01 sec
+      Start  9: Checked.SubBoundaries
+ 9/76 Test  #9: Checked.SubBoundaries ...........................................................   Passed    0.01 sec
+      Start 10: Checked.MulBoundaries
+10/76 Test #10: Checked.MulBoundaries ...........................................................   Passed    0.01 sec
+      Start 11: Checked.NarrowTypes
+11/76 Test #11: Checked.NarrowTypes .............................................................   Passed    0.01 sec
+      Start 12: EngineConfig.DefaultIsValid
+12/76 Test #12: EngineConfig.DefaultIsValid .....................................................   Passed    0.01 sec
+      Start 13: EngineConfig.MinPriceMustBePositive
+13/76 Test #13: EngineConfig.MinPriceMustBePositive .............................................   Passed    0.01 sec
+      Start 14: EngineConfig.PriceBandMustNotBeInverted
+14/76 Test #14: EngineConfig.PriceBandMustNotBeInverted .........................................   Passed    0.01 sec
+      Start 15: EngineConfig.MaxOrderQuantityMustBePositive
+15/76 Test #15: EngineConfig.MaxOrderQuantityMustBePositive .....................................   Passed    0.01 sec
+      Start 16: EngineConfig.MaxLiveOrdersMustBePositive
+16/76 Test #16: EngineConfig.MaxLiveOrdersMustBePositive ........................................   Passed    0.01 sec
+      Start 17: EngineConfig.NotionalBoundIsExact
+17/76 Test #17: EngineConfig.NotionalBoundIsExact ...............................................   Passed    0.01 sec
+      Start 18: EngineConfig.AggregateQuantityBoundIsExact
+18/76 Test #18: EngineConfig.AggregateQuantityBoundIsExact ......................................   Passed    0.01 sec
+      Start 19: EngineConfig.ChecksAreReportedInDocumentedOrder
+19/76 Test #19: EngineConfig.ChecksAreReportedInDocumentedOrder .................................   Passed    0.01 sec
+      Start 20: ValidateNewOrder.AcceptsValidOrderOnBothSides
+20/76 Test #20: ValidateNewOrder.AcceptsValidOrderOnBothSides ...................................   Passed    0.01 sec
+      Start 21: ValidateNewOrder.OrderIdBoundaries
+21/76 Test #21: ValidateNewOrder.OrderIdBoundaries ..............................................   Passed    0.01 sec
+      Start 22: ValidateNewOrder.RejectsUnrepresentableSide
+22/76 Test #22: ValidateNewOrder.RejectsUnrepresentableSide .....................................   Passed    0.01 sec
+      Start 23: ValidateNewOrder.PriceBandBoundaries
+23/76 Test #23: ValidateNewOrder.PriceBandBoundaries ............................................   Passed    0.01 sec
+      Start 24: ValidateNewOrder.QuantityBoundaries
+24/76 Test #24: ValidateNewOrder.QuantityBoundaries .............................................   Passed    0.01 sec
+      Start 25: ValidateNewOrder.ReportsFirstViolationInDocumentedOrder
+25/76 Test #25: ValidateNewOrder.ReportsFirstViolationInDocumentedOrder .........................   Passed    0.01 sec
+      Start 26: ValidateNewOrder.DefaultConstructedOrderIsRejected
+26/76 Test #26: ValidateNewOrder.DefaultConstructedOrderIsRejected ..............................   Passed    0.01 sec
+      Start 27: ValidateNewOrder.SinglePriceBand
+27/76 Test #27: ValidateNewOrder.SinglePriceBand ................................................   Passed    0.01 sec
+      Start 28: ValidateNewOrder.DefaultConfigBoundaries
+28/76 Test #28: ValidateNewOrder.DefaultConfigBoundaries ........................................   Passed    0.01 sec
+      Start 29: ValidateCancelOrder.Boundaries
+29/76 Test #29: ValidateCancelOrder.Boundaries ..................................................   Passed    0.01 sec
+      Start 30: OrderBookConstruction.RejectsInvalidConfig
+30/76 Test #30: OrderBookConstruction.RejectsInvalidConfig ......................................   Passed    0.01 sec
+      Start 31: OrderBookTest.EmptyBook
+31/76 Test #31: OrderBookTest.EmptyBook .........................................................   Passed    0.01 sec
+      Start 32: OrderBookTest.BestPricesFollowPricePriority
+32/76 Test #32: OrderBookTest.BestPricesFollowPricePriority .....................................   Passed    0.01 sec
+      Start 33: OrderBookTest.SamePriceQueuesInArrivalOrder
+33/76 Test #33: OrderBookTest.SamePriceQueuesInArrivalOrder .....................................   Passed    0.01 sec
+      Start 34: OrderBookTest.PartialFillKeepsQueuePosition
+34/76 Test #34: OrderBookTest.PartialFillKeepsQueuePosition .....................................   Passed    0.01 sec
+      Start 35: OrderBookTest.EmptiedLevelIsRemovedAndNextLevelBecomesBest
+35/76 Test #35: OrderBookTest.EmptiedLevelIsRemovedAndNextLevelBecomesBest ......................   Passed    0.01 sec
+      Start 36: OrderBookTest.CancelFromHeadMiddleAndTailPreservesFifo
+36/76 Test #36: OrderBookTest.CancelFromHeadMiddleAndTailPreservesFifo ..........................   Passed    0.01 sec
+      Start 37: OrderBookTest.CancelLastOrderRemovesLevel
+37/76 Test #37: OrderBookTest.CancelLastOrderRemovesLevel .......................................   Passed    0.01 sec
+      Start 38: OrderBookTest.CancelReturnsRemainingAfterPartialFill
+38/76 Test #38: OrderBookTest.CancelReturnsRemainingAfterPartialFill ............................   Passed    0.01 sec
+      Start 39: OrderBookTest.CancelUnknownOrAlreadyRemovedIdReturnsNullopt
+39/76 Test #39: OrderBookTest.CancelUnknownOrAlreadyRemovedIdReturnsNullopt .....................   Passed    0.01 sec
+      Start 40: OrderBookTest.IdMayBeReusedOnceNoLongerResting
+40/76 Test #40: OrderBookTest.IdMayBeReusedOnceNoLongerResting ..................................   Passed    0.01 sec
+      Start 41: OrderBookTest.FindReportsLocation
+41/76 Test #41: OrderBookTest.FindReportsLocation ...............................................   Passed    0.01 sec
+      Start 42: OrderBookTest.PriceBandEdgesAreUsable
+42/76 Test #42: OrderBookTest.PriceBandEdgesAreUsable ...........................................   Passed    0.01 sec
+      Start 43: OrderBookTest.MovedBookKeepsWorkingIndex
+43/76 Test #43: OrderBookTest.MovedBookKeepsWorkingIndex ........................................   Passed    0.01 sec
+      Start 44: OrderBookTest.MovedFromBookIsEmptyConsistentAndReusable
+44/76 Test #44: OrderBookTest.MovedFromBookIsEmptyConsistentAndReusable .........................   Passed    0.01 sec
+      Start 45: OrderBookTest.MoveAssignmentReplacesContentsAndClearsSource
+45/76 Test #45: OrderBookTest.MoveAssignmentReplacesContentsAndClearsSource .....................   Passed    0.01 sec
+      Start 46: OrderBookTest.SelfMoveAssignmentIsANoOp
+46/76 Test #46: OrderBookTest.SelfMoveAssignmentIsANoOp .........................................   Passed    0.01 sec
+      Start 47: OrderBookContractTest.AddRejectsInvalidOrder
+47/76 Test #47: OrderBookContractTest.AddRejectsInvalidOrder ....................................   Passed    0.01 sec
+      Start 48: OrderBookContractTest.AddRejectsDuplicateRestingId
+48/76 Test #48: OrderBookContractTest.AddRejectsDuplicateRestingId ..............................   Passed    0.01 sec
+      Start 49: OrderBookContractTest.AddRejectsCrossingOrLockingPrice
+49/76 Test #49: OrderBookContractTest.AddRejectsCrossingOrLockingPrice ..........................   Passed    0.01 sec
+      Start 50: OrderBookContractTest.AddRejectsNonIncreasingSeq
+50/76 Test #50: OrderBookContractTest.AddRejectsNonIncreasingSeq ................................   Passed    0.01 sec
+      Start 51: OrderBookContractTest.FillFrontRejectsBadQuantityAndEmptySide
+51/76 Test #51: OrderBookContractTest.FillFrontRejectsBadQuantityAndEmptySide ...................   Passed    0.01 sec
+      Start 52: OrderBookCapacity.AddRejectsWhenFullAndRecoversAfterRemoval
+52/76 Test #52: OrderBookCapacity.AddRejectsWhenFullAndRecoversAfterRemoval .....................   Passed    0.01 sec
+      Start 53: TamperTest.DetectsEmptyLevel
+53/76 Test #53: TamperTest.DetectsEmptyLevel ....................................................   Passed    0.01 sec
+      Start 54: TamperTest.DetectsLevelPriceOutsideBand
+54/76 Test #54: TamperTest.DetectsLevelPriceOutsideBand .........................................   Passed    0.01 sec
+      Start 55: TamperTest.DetectsLevelTotalMismatch
+55/76 Test #55: TamperTest.DetectsLevelTotalMismatch ............................................   Passed    0.01 sec
+      Start 56: TamperTest.DetectsZeroRemaining
+56/76 Test #56: TamperTest.DetectsZeroRemaining .................................................   Passed    0.01 sec
+      Start 57: TamperTest.DetectsRemainingAboveMaxOrderQuantity
+57/76 Test #57: TamperTest.DetectsRemainingAboveMaxOrderQuantity ................................   Passed    0.01 sec
+      Start 58: TamperTest.DetectsFifoSequenceInversion
+58/76 Test #58: TamperTest.DetectsFifoSequenceInversion .........................................   Passed    0.01 sec
+      Start 59: TamperTest.DetectsSeqBeyondLastAdded
+59/76 Test #59: TamperTest.DetectsSeqBeyondLastAdded ............................................   Passed    0.01 sec
+      Start 60: TamperTest.DetectsOrderMissingFromIndex
+60/76 Test #60: TamperTest.DetectsOrderMissingFromIndex .........................................   Passed    0.01 sec
+      Start 61: TamperTest.DetectsIndexPointingAtWrongNode
+61/76 Test #61: TamperTest.DetectsIndexPointingAtWrongNode ......................................   Passed    0.01 sec
+      Start 62: TamperTest.DetectsIndexWithWrongPrice
+62/76 Test #62: TamperTest.DetectsIndexWithWrongPrice ...........................................   Passed    0.01 sec
+      Start 63: TamperTest.DetectsIndexWithWrongSide
+63/76 Test #63: TamperTest.DetectsIndexWithWrongSide ............................................   Passed    0.01 sec
+      Start 64: TamperTest.DetectsIndexWithWrongLevelPointer
+64/76 Test #64: TamperTest.DetectsIndexWithWrongLevelPointer ....................................   Passed    0.01 sec
+      Start 65: TamperTest.DetectsPhantomIndexEntry
+65/76 Test #65: TamperTest.DetectsPhantomIndexEntry .............................................   Passed    0.01 sec
+      Start 66: TamperTest.DetectsOrderCountAboveCapacity
+66/76 Test #66: TamperTest.DetectsOrderCountAboveCapacity .......................................   Passed    0.01 sec
+      Start 67: TamperTest.DetectsCrossedBook
+67/76 Test #67: TamperTest.DetectsCrossedBook ...................................................   Passed    0.01 sec
+      Start 68: TamperTest.DetectsQuantitySumOverflowWithoutUndefinedBehaviour
+68/76 Test #68: TamperTest.DetectsQuantitySumOverflowWithoutUndefinedBehaviour ..................   Passed    0.01 sec
+      Start 69: OrderBookDifferential.MatchesReferenceModelOnFixedSeeds
+69/76 Test #69: OrderBookDifferential.MatchesReferenceModelOnFixedSeeds .........................   Passed    6.43 sec
+      Start 70: ReferenceBook.PriorityRuleWorkedExample
+70/76 Test #70: ReferenceBook.PriorityRuleWorkedExample .........................................   Passed    0.01 sec
+      Start 71: OrderBookAllocFailure.InjectionHarnessWorks
+71/76 Test #71: OrderBookAllocFailure.InjectionHarnessWorks .....................................   Passed    0.01 sec
+      Start 72: OrderBookAllocFailure.AddNewLevelOnEmptyBookHasStrongGuarantee
+72/76 Test #72: OrderBookAllocFailure.AddNewLevelOnEmptyBookHasStrongGuarantee ..................   Passed    0.01 sec
+      Start 73: OrderBookAllocFailure.AddToExistingLevelHasStrongGuarantee
+73/76 Test #73: OrderBookAllocFailure.AddToExistingLevelHasStrongGuarantee ......................   Passed    0.01 sec
+      Start 74: OrderBookAllocFailure.AddSweepAcrossBookSizesIncludingRehash
+74/76 Test #74: OrderBookAllocFailure.AddSweepAcrossBookSizesIncludingRehash ....................   Passed    0.03 sec
+      Start 75: OrderBookAllocFailure.FillAndCancelNeverAllocate
+75/76 Test #75: OrderBookAllocFailure.FillAndCancelNeverAllocate ................................   Passed    0.01 sec
+      Start 76: OrderBookAllocFailure.ContractViolationUnderMemoryPressureLeavesBookUnchanged
+76/76 Test #76: OrderBookAllocFailure.ContractViolationUnderMemoryPressureLeavesBookUnchanged ...   Passed    0.01 sec
+
+100% tests passed, 0 tests failed out of 76
+
+Total Test time (real) =   7.85 sec
+[PASS] gcc-debug
+================ gcc-release ================
+[1/19] Building CXX object examples/CMakeFiles/core_validation_demo.dir/core_validation_demo.cpp.o
+[2/19] Building CXX object src/CMakeFiles/lob_core.dir/core/config.cpp.o
+[3/19] Linking CXX static library src/liblob_core.a
+[4/19] Building CXX object examples/CMakeFiles/book_demo.dir/book_demo.cpp.o
+[5/19] Linking CXX executable examples/core_validation_demo
+[6/19] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_checked.cpp.o
+[7/19] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_validation.cpp.o
+[8/19] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_config.cpp.o
+[9/19] Building CXX object src/CMakeFiles/lob_book.dir/book/order_book.cpp.o
+[10/19] Linking CXX static library src/liblob_book.a
+[11/19] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_types.cpp.o
+[12/19] Building CXX object tests/CMakeFiles/lob_book_tests.dir/book/test_order_book_tamper.cpp.o
+[13/19] Linking CXX executable examples/book_demo
+[14/19] Building CXX object tests/CMakeFiles/lob_book_tests.dir/book/test_order_book_differential.cpp.o
+[15/19] Building CXX object tests/CMakeFiles/lob_book_alloc_tests.dir/book/test_order_book_alloc_failure.cpp.o
+[16/19] Linking CXX executable tests/lob_core_tests
+[17/19] Building CXX object tests/CMakeFiles/lob_book_tests.dir/book/test_order_book.cpp.o
+[18/19] Linking CXX executable tests/lob_book_alloc_tests
+[19/19] Linking CXX executable tests/lob_book_tests
+Test project /mnt/g/学习资料/quant/build/gcc-release
+      Start  1: Side.OppositeIsAnInvolution
+ 1/76 Test  #1: Side.OppositeIsAnInvolution .....................................................   Passed    0.01 sec
+      Start  2: Side.OnlyTwoUnderlyingValuesAreValid
+ 2/76 Test  #2: Side.OnlyTwoUnderlyingValuesAreValid ............................................   Passed    0.01 sec
+      Start  3: Side.StableStrings
+ 3/76 Test  #3: Side.StableStrings ..............................................................   Passed    0.01 sec
+      Start  4: RejectReason.StringsAreStableAndUnique
+ 4/76 Test  #4: RejectReason.StringsAreStableAndUnique ..........................................   Passed    0.01 sec
+      Start  5: Command.DefaultsAreInvalidSentinels
+ 5/76 Test  #5: Command.DefaultsAreInvalidSentinels .............................................   Passed    0.01 sec
+      Start  6: Command.EqualityComparesAllFields
+ 6/76 Test  #6: Command.EqualityComparesAllFields ...............................................   Passed    0.01 sec
+      Start  7: Command.VariantHoldsEitherAlternative
+ 7/76 Test  #7: Command.VariantHoldsEitherAlternative ...........................................   Passed    0.01 sec
+      Start  8: Checked.AddBoundaries
+ 8/76 Test  #8: Checked.AddBoundaries ...........................................................   Passed    0.01 sec
+      Start  9: Checked.SubBoundaries
+ 9/76 Test  #9: Checked.SubBoundaries ...........................................................   Passed    0.01 sec
+      Start 10: Checked.MulBoundaries
+10/76 Test #10: Checked.MulBoundaries ...........................................................   Passed    0.01 sec
+      Start 11: Checked.NarrowTypes
+11/76 Test #11: Checked.NarrowTypes .............................................................   Passed    0.01 sec
+      Start 12: EngineConfig.DefaultIsValid
+12/76 Test #12: EngineConfig.DefaultIsValid .....................................................   Passed    0.01 sec
+      Start 13: EngineConfig.MinPriceMustBePositive
+13/76 Test #13: EngineConfig.MinPriceMustBePositive .............................................   Passed    0.01 sec
+      Start 14: EngineConfig.PriceBandMustNotBeInverted
+14/76 Test #14: EngineConfig.PriceBandMustNotBeInverted .........................................   Passed    0.01 sec
+      Start 15: EngineConfig.MaxOrderQuantityMustBePositive
+15/76 Test #15: EngineConfig.MaxOrderQuantityMustBePositive .....................................   Passed    0.01 sec
+      Start 16: EngineConfig.MaxLiveOrdersMustBePositive
+16/76 Test #16: EngineConfig.MaxLiveOrdersMustBePositive ........................................   Passed    0.01 sec
+      Start 17: EngineConfig.NotionalBoundIsExact
+17/76 Test #17: EngineConfig.NotionalBoundIsExact ...............................................   Passed    0.01 sec
+      Start 18: EngineConfig.AggregateQuantityBoundIsExact
+18/76 Test #18: EngineConfig.AggregateQuantityBoundIsExact ......................................   Passed    0.01 sec
+      Start 19: EngineConfig.ChecksAreReportedInDocumentedOrder
+19/76 Test #19: EngineConfig.ChecksAreReportedInDocumentedOrder .................................   Passed    0.01 sec
+      Start 20: ValidateNewOrder.AcceptsValidOrderOnBothSides
+20/76 Test #20: ValidateNewOrder.AcceptsValidOrderOnBothSides ...................................   Passed    0.01 sec
+      Start 21: ValidateNewOrder.OrderIdBoundaries
+21/76 Test #21: ValidateNewOrder.OrderIdBoundaries ..............................................   Passed    0.01 sec
+      Start 22: ValidateNewOrder.RejectsUnrepresentableSide
+22/76 Test #22: ValidateNewOrder.RejectsUnrepresentableSide .....................................   Passed    0.01 sec
+      Start 23: ValidateNewOrder.PriceBandBoundaries
+23/76 Test #23: ValidateNewOrder.PriceBandBoundaries ............................................   Passed    0.01 sec
+      Start 24: ValidateNewOrder.QuantityBoundaries
+24/76 Test #24: ValidateNewOrder.QuantityBoundaries .............................................   Passed    0.01 sec
+      Start 25: ValidateNewOrder.ReportsFirstViolationInDocumentedOrder
+25/76 Test #25: ValidateNewOrder.ReportsFirstViolationInDocumentedOrder .........................   Passed    0.01 sec
+      Start 26: ValidateNewOrder.DefaultConstructedOrderIsRejected
+26/76 Test #26: ValidateNewOrder.DefaultConstructedOrderIsRejected ..............................   Passed    0.01 sec
+      Start 27: ValidateNewOrder.SinglePriceBand
+27/76 Test #27: ValidateNewOrder.SinglePriceBand ................................................   Passed    0.01 sec
+      Start 28: ValidateNewOrder.DefaultConfigBoundaries
+28/76 Test #28: ValidateNewOrder.DefaultConfigBoundaries ........................................   Passed    0.01 sec
+      Start 29: ValidateCancelOrder.Boundaries
+29/76 Test #29: ValidateCancelOrder.Boundaries ..................................................   Passed    0.01 sec
+      Start 30: OrderBookConstruction.RejectsInvalidConfig
+30/76 Test #30: OrderBookConstruction.RejectsInvalidConfig ......................................   Passed    0.01 sec
+      Start 31: OrderBookTest.EmptyBook
+31/76 Test #31: OrderBookTest.EmptyBook .........................................................   Passed    0.01 sec
+      Start 32: OrderBookTest.BestPricesFollowPricePriority
+32/76 Test #32: OrderBookTest.BestPricesFollowPricePriority .....................................   Passed    0.01 sec
+      Start 33: OrderBookTest.SamePriceQueuesInArrivalOrder
+33/76 Test #33: OrderBookTest.SamePriceQueuesInArrivalOrder .....................................   Passed    0.01 sec
+      Start 34: OrderBookTest.PartialFillKeepsQueuePosition
+34/76 Test #34: OrderBookTest.PartialFillKeepsQueuePosition .....................................   Passed    0.01 sec
+      Start 35: OrderBookTest.EmptiedLevelIsRemovedAndNextLevelBecomesBest
+35/76 Test #35: OrderBookTest.EmptiedLevelIsRemovedAndNextLevelBecomesBest ......................   Passed    0.01 sec
+      Start 36: OrderBookTest.CancelFromHeadMiddleAndTailPreservesFifo
+36/76 Test #36: OrderBookTest.CancelFromHeadMiddleAndTailPreservesFifo ..........................   Passed    0.01 sec
+      Start 37: OrderBookTest.CancelLastOrderRemovesLevel
+37/76 Test #37: OrderBookTest.CancelLastOrderRemovesLevel .......................................   Passed    0.01 sec
+      Start 38: OrderBookTest.CancelReturnsRemainingAfterPartialFill
+38/76 Test #38: OrderBookTest.CancelReturnsRemainingAfterPartialFill ............................   Passed    0.01 sec
+      Start 39: OrderBookTest.CancelUnknownOrAlreadyRemovedIdReturnsNullopt
+39/76 Test #39: OrderBookTest.CancelUnknownOrAlreadyRemovedIdReturnsNullopt .....................   Passed    0.01 sec
+      Start 40: OrderBookTest.IdMayBeReusedOnceNoLongerResting
+40/76 Test #40: OrderBookTest.IdMayBeReusedOnceNoLongerResting ..................................   Passed    0.01 sec
+      Start 41: OrderBookTest.FindReportsLocation
+41/76 Test #41: OrderBookTest.FindReportsLocation ...............................................   Passed    0.01 sec
+      Start 42: OrderBookTest.PriceBandEdgesAreUsable
+42/76 Test #42: OrderBookTest.PriceBandEdgesAreUsable ...........................................   Passed    0.01 sec
+      Start 43: OrderBookTest.MovedBookKeepsWorkingIndex
+43/76 Test #43: OrderBookTest.MovedBookKeepsWorkingIndex ........................................   Passed    0.01 sec
+      Start 44: OrderBookTest.MovedFromBookIsEmptyConsistentAndReusable
+44/76 Test #44: OrderBookTest.MovedFromBookIsEmptyConsistentAndReusable .........................   Passed    0.01 sec
+      Start 45: OrderBookTest.MoveAssignmentReplacesContentsAndClearsSource
+45/76 Test #45: OrderBookTest.MoveAssignmentReplacesContentsAndClearsSource .....................   Passed    0.01 sec
+      Start 46: OrderBookTest.SelfMoveAssignmentIsANoOp
+46/76 Test #46: OrderBookTest.SelfMoveAssignmentIsANoOp .........................................   Passed    0.01 sec
+      Start 47: OrderBookContractTest.AddRejectsInvalidOrder
+47/76 Test #47: OrderBookContractTest.AddRejectsInvalidOrder ....................................   Passed    0.01 sec
+      Start 48: OrderBookContractTest.AddRejectsDuplicateRestingId
+48/76 Test #48: OrderBookContractTest.AddRejectsDuplicateRestingId ..............................   Passed    0.01 sec
+      Start 49: OrderBookContractTest.AddRejectsCrossingOrLockingPrice
+49/76 Test #49: OrderBookContractTest.AddRejectsCrossingOrLockingPrice ..........................   Passed    0.01 sec
+      Start 50: OrderBookContractTest.AddRejectsNonIncreasingSeq
+50/76 Test #50: OrderBookContractTest.AddRejectsNonIncreasingSeq ................................   Passed    0.01 sec
+      Start 51: OrderBookContractTest.FillFrontRejectsBadQuantityAndEmptySide
+51/76 Test #51: OrderBookContractTest.FillFrontRejectsBadQuantityAndEmptySide ...................   Passed    0.01 sec
+      Start 52: OrderBookCapacity.AddRejectsWhenFullAndRecoversAfterRemoval
+52/76 Test #52: OrderBookCapacity.AddRejectsWhenFullAndRecoversAfterRemoval .....................   Passed    0.01 sec
+      Start 53: TamperTest.DetectsEmptyLevel
+53/76 Test #53: TamperTest.DetectsEmptyLevel ....................................................   Passed    0.01 sec
+      Start 54: TamperTest.DetectsLevelPriceOutsideBand
+54/76 Test #54: TamperTest.DetectsLevelPriceOutsideBand .........................................   Passed    0.01 sec
+      Start 55: TamperTest.DetectsLevelTotalMismatch
+55/76 Test #55: TamperTest.DetectsLevelTotalMismatch ............................................   Passed    0.01 sec
+      Start 56: TamperTest.DetectsZeroRemaining
+56/76 Test #56: TamperTest.DetectsZeroRemaining .................................................   Passed    0.01 sec
+      Start 57: TamperTest.DetectsRemainingAboveMaxOrderQuantity
+57/76 Test #57: TamperTest.DetectsRemainingAboveMaxOrderQuantity ................................   Passed    0.01 sec
+      Start 58: TamperTest.DetectsFifoSequenceInversion
+58/76 Test #58: TamperTest.DetectsFifoSequenceInversion .........................................   Passed    0.01 sec
+      Start 59: TamperTest.DetectsSeqBeyondLastAdded
+59/76 Test #59: TamperTest.DetectsSeqBeyondLastAdded ............................................   Passed    0.01 sec
+      Start 60: TamperTest.DetectsOrderMissingFromIndex
+60/76 Test #60: TamperTest.DetectsOrderMissingFromIndex .........................................   Passed    0.01 sec
+      Start 61: TamperTest.DetectsIndexPointingAtWrongNode
+61/76 Test #61: TamperTest.DetectsIndexPointingAtWrongNode ......................................   Passed    0.01 sec
+      Start 62: TamperTest.DetectsIndexWithWrongPrice
+62/76 Test #62: TamperTest.DetectsIndexWithWrongPrice ...........................................   Passed    0.01 sec
+      Start 63: TamperTest.DetectsIndexWithWrongSide
+63/76 Test #63: TamperTest.DetectsIndexWithWrongSide ............................................   Passed    0.01 sec
+      Start 64: TamperTest.DetectsIndexWithWrongLevelPointer
+64/76 Test #64: TamperTest.DetectsIndexWithWrongLevelPointer ....................................   Passed    0.01 sec
+      Start 65: TamperTest.DetectsPhantomIndexEntry
+65/76 Test #65: TamperTest.DetectsPhantomIndexEntry .............................................   Passed    0.01 sec
+      Start 66: TamperTest.DetectsOrderCountAboveCapacity
+66/76 Test #66: TamperTest.DetectsOrderCountAboveCapacity .......................................   Passed    0.01 sec
+      Start 67: TamperTest.DetectsCrossedBook
+67/76 Test #67: TamperTest.DetectsCrossedBook ...................................................   Passed    0.01 sec
+      Start 68: TamperTest.DetectsQuantitySumOverflowWithoutUndefinedBehaviour
+68/76 Test #68: TamperTest.DetectsQuantitySumOverflowWithoutUndefinedBehaviour ..................   Passed    0.01 sec
+      Start 69: OrderBookDifferential.MatchesReferenceModelOnFixedSeeds
+69/76 Test #69: OrderBookDifferential.MatchesReferenceModelOnFixedSeeds .........................   Passed    0.60 sec
+      Start 70: ReferenceBook.PriorityRuleWorkedExample
+70/76 Test #70: ReferenceBook.PriorityRuleWorkedExample .........................................   Passed    0.01 sec
+      Start 71: OrderBookAllocFailure.InjectionHarnessWorks
+71/76 Test #71: OrderBookAllocFailure.InjectionHarnessWorks .....................................   Passed    0.01 sec
+      Start 72: OrderBookAllocFailure.AddNewLevelOnEmptyBookHasStrongGuarantee
+72/76 Test #72: OrderBookAllocFailure.AddNewLevelOnEmptyBookHasStrongGuarantee ..................   Passed    0.01 sec
+      Start 73: OrderBookAllocFailure.AddToExistingLevelHasStrongGuarantee
+73/76 Test #73: OrderBookAllocFailure.AddToExistingLevelHasStrongGuarantee ......................   Passed    0.01 sec
+      Start 74: OrderBookAllocFailure.AddSweepAcrossBookSizesIncludingRehash
+74/76 Test #74: OrderBookAllocFailure.AddSweepAcrossBookSizesIncludingRehash ....................   Passed    0.01 sec
+      Start 75: OrderBookAllocFailure.FillAndCancelNeverAllocate
+75/76 Test #75: OrderBookAllocFailure.FillAndCancelNeverAllocate ................................   Passed    0.01 sec
+      Start 76: OrderBookAllocFailure.ContractViolationUnderMemoryPressureLeavesBookUnchanged
+76/76 Test #76: OrderBookAllocFailure.ContractViolationUnderMemoryPressureLeavesBookUnchanged ...   Passed    0.01 sec
+
+100% tests passed, 0 tests failed out of 76
+
+Total Test time (real) =   2.13 sec
+[PASS] gcc-release
+================ gcc-asan ================
+[1/19] Building CXX object examples/CMakeFiles/core_validation_demo.dir/core_validation_demo.cpp.o
+[2/19] Building CXX object src/CMakeFiles/lob_core.dir/core/config.cpp.o
+[3/19] Linking CXX static library src/liblob_core.a
+[4/19] Building CXX object examples/CMakeFiles/book_demo.dir/book_demo.cpp.o
+[5/19] Linking CXX executable examples/core_validation_demo
+[6/19] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_checked.cpp.o
+[7/19] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_config.cpp.o
+[8/19] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_validation.cpp.o
+[9/19] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_types.cpp.o
+[10/19] Building CXX object src/CMakeFiles/lob_book.dir/book/order_book.cpp.o
+[11/19] Building CXX object tests/CMakeFiles/lob_book_tests.dir/book/test_order_book_tamper.cpp.o
+[12/19] Building CXX object tests/CMakeFiles/lob_book_alloc_tests.dir/book/test_order_book_alloc_failure.cpp.o
+[13/19] Linking CXX static library src/liblob_book.a
+[14/19] Building CXX object tests/CMakeFiles/lob_book_tests.dir/book/test_order_book.cpp.o
+[15/19] Building CXX object tests/CMakeFiles/lob_book_tests.dir/book/test_order_book_differential.cpp.o
+[16/19] Linking CXX executable tests/lob_core_tests
+[17/19] Linking CXX executable examples/book_demo
+[18/19] Linking CXX executable tests/lob_book_alloc_tests
+[19/19] Linking CXX executable tests/lob_book_tests
+Test project /mnt/g/学习资料/quant/build/gcc-asan
+      Start  1: Side.OppositeIsAnInvolution
+ 1/76 Test  #1: Side.OppositeIsAnInvolution .....................................................   Passed    0.02 sec
+      Start  2: Side.OnlyTwoUnderlyingValuesAreValid
+ 2/76 Test  #2: Side.OnlyTwoUnderlyingValuesAreValid ............................................   Passed    0.03 sec
+      Start  3: Side.StableStrings
+ 3/76 Test  #3: Side.StableStrings ..............................................................   Passed    0.03 sec
+      Start  4: RejectReason.StringsAreStableAndUnique
+ 4/76 Test  #4: RejectReason.StringsAreStableAndUnique ..........................................   Passed    0.03 sec
+      Start  5: Command.DefaultsAreInvalidSentinels
+ 5/76 Test  #5: Command.DefaultsAreInvalidSentinels .............................................   Passed    0.03 sec
+      Start  6: Command.EqualityComparesAllFields
+ 6/76 Test  #6: Command.EqualityComparesAllFields ...............................................   Passed    0.02 sec
+      Start  7: Command.VariantHoldsEitherAlternative
+ 7/76 Test  #7: Command.VariantHoldsEitherAlternative ...........................................   Passed    0.03 sec
+      Start  8: Checked.AddBoundaries
+ 8/76 Test  #8: Checked.AddBoundaries ...........................................................   Passed    0.03 sec
+      Start  9: Checked.SubBoundaries
+ 9/76 Test  #9: Checked.SubBoundaries ...........................................................   Passed    0.03 sec
+      Start 10: Checked.MulBoundaries
+10/76 Test #10: Checked.MulBoundaries ...........................................................   Passed    0.03 sec
+      Start 11: Checked.NarrowTypes
+11/76 Test #11: Checked.NarrowTypes .............................................................   Passed    0.03 sec
+      Start 12: EngineConfig.DefaultIsValid
+12/76 Test #12: EngineConfig.DefaultIsValid .....................................................   Passed    0.03 sec
+      Start 13: EngineConfig.MinPriceMustBePositive
+13/76 Test #13: EngineConfig.MinPriceMustBePositive .............................................   Passed    0.03 sec
+      Start 14: EngineConfig.PriceBandMustNotBeInverted
+14/76 Test #14: EngineConfig.PriceBandMustNotBeInverted .........................................   Passed    0.03 sec
+      Start 15: EngineConfig.MaxOrderQuantityMustBePositive
+15/76 Test #15: EngineConfig.MaxOrderQuantityMustBePositive .....................................   Passed    0.03 sec
+      Start 16: EngineConfig.MaxLiveOrdersMustBePositive
+16/76 Test #16: EngineConfig.MaxLiveOrdersMustBePositive ........................................   Passed    0.02 sec
+      Start 17: EngineConfig.NotionalBoundIsExact
+17/76 Test #17: EngineConfig.NotionalBoundIsExact ...............................................   Passed    0.03 sec
+      Start 18: EngineConfig.AggregateQuantityBoundIsExact
+18/76 Test #18: EngineConfig.AggregateQuantityBoundIsExact ......................................   Passed    0.03 sec
+      Start 19: EngineConfig.ChecksAreReportedInDocumentedOrder
+19/76 Test #19: EngineConfig.ChecksAreReportedInDocumentedOrder .................................   Passed    0.03 sec
+      Start 20: ValidateNewOrder.AcceptsValidOrderOnBothSides
+20/76 Test #20: ValidateNewOrder.AcceptsValidOrderOnBothSides ...................................   Passed    0.02 sec
+      Start 21: ValidateNewOrder.OrderIdBoundaries
+21/76 Test #21: ValidateNewOrder.OrderIdBoundaries ..............................................   Passed    0.02 sec
+      Start 22: ValidateNewOrder.RejectsUnrepresentableSide
+22/76 Test #22: ValidateNewOrder.RejectsUnrepresentableSide .....................................   Passed    0.03 sec
+      Start 23: ValidateNewOrder.PriceBandBoundaries
+23/76 Test #23: ValidateNewOrder.PriceBandBoundaries ............................................   Passed    0.02 sec
+      Start 24: ValidateNewOrder.QuantityBoundaries
+24/76 Test #24: ValidateNewOrder.QuantityBoundaries .............................................   Passed    0.03 sec
+      Start 25: ValidateNewOrder.ReportsFirstViolationInDocumentedOrder
+25/76 Test #25: ValidateNewOrder.ReportsFirstViolationInDocumentedOrder .........................   Passed    0.02 sec
+      Start 26: ValidateNewOrder.DefaultConstructedOrderIsRejected
+26/76 Test #26: ValidateNewOrder.DefaultConstructedOrderIsRejected ..............................   Passed    0.02 sec
+      Start 27: ValidateNewOrder.SinglePriceBand
+27/76 Test #27: ValidateNewOrder.SinglePriceBand ................................................   Passed    0.02 sec
+      Start 28: ValidateNewOrder.DefaultConfigBoundaries
+28/76 Test #28: ValidateNewOrder.DefaultConfigBoundaries ........................................   Passed    0.03 sec
+      Start 29: ValidateCancelOrder.Boundaries
+29/76 Test #29: ValidateCancelOrder.Boundaries ..................................................   Passed    0.03 sec
+      Start 30: OrderBookConstruction.RejectsInvalidConfig
+30/76 Test #30: OrderBookConstruction.RejectsInvalidConfig ......................................   Passed    0.05 sec
+      Start 31: OrderBookTest.EmptyBook
+31/76 Test #31: OrderBookTest.EmptyBook .........................................................   Passed    0.06 sec
+      Start 32: OrderBookTest.BestPricesFollowPricePriority
+32/76 Test #32: OrderBookTest.BestPricesFollowPricePriority .....................................   Passed    0.05 sec
+      Start 33: OrderBookTest.SamePriceQueuesInArrivalOrder
+33/76 Test #33: OrderBookTest.SamePriceQueuesInArrivalOrder .....................................   Passed    0.05 sec
+      Start 34: OrderBookTest.PartialFillKeepsQueuePosition
+34/76 Test #34: OrderBookTest.PartialFillKeepsQueuePosition .....................................   Passed    0.05 sec
+      Start 35: OrderBookTest.EmptiedLevelIsRemovedAndNextLevelBecomesBest
+35/76 Test #35: OrderBookTest.EmptiedLevelIsRemovedAndNextLevelBecomesBest ......................   Passed    0.05 sec
+      Start 36: OrderBookTest.CancelFromHeadMiddleAndTailPreservesFifo
+36/76 Test #36: OrderBookTest.CancelFromHeadMiddleAndTailPreservesFifo ..........................   Passed    0.05 sec
+      Start 37: OrderBookTest.CancelLastOrderRemovesLevel
+37/76 Test #37: OrderBookTest.CancelLastOrderRemovesLevel .......................................   Passed    0.05 sec
+      Start 38: OrderBookTest.CancelReturnsRemainingAfterPartialFill
+38/76 Test #38: OrderBookTest.CancelReturnsRemainingAfterPartialFill ............................   Passed    0.05 sec
+      Start 39: OrderBookTest.CancelUnknownOrAlreadyRemovedIdReturnsNullopt
+39/76 Test #39: OrderBookTest.CancelUnknownOrAlreadyRemovedIdReturnsNullopt .....................   Passed    0.05 sec
+      Start 40: OrderBookTest.IdMayBeReusedOnceNoLongerResting
+40/76 Test #40: OrderBookTest.IdMayBeReusedOnceNoLongerResting ..................................   Passed    0.04 sec
+      Start 41: OrderBookTest.FindReportsLocation
+41/76 Test #41: OrderBookTest.FindReportsLocation ...............................................   Passed    0.05 sec
+      Start 42: OrderBookTest.PriceBandEdgesAreUsable
+42/76 Test #42: OrderBookTest.PriceBandEdgesAreUsable ...........................................   Passed    0.04 sec
+      Start 43: OrderBookTest.MovedBookKeepsWorkingIndex
+43/76 Test #43: OrderBookTest.MovedBookKeepsWorkingIndex ........................................   Passed    0.04 sec
+      Start 44: OrderBookTest.MovedFromBookIsEmptyConsistentAndReusable
+44/76 Test #44: OrderBookTest.MovedFromBookIsEmptyConsistentAndReusable .........................   Passed    0.04 sec
+      Start 45: OrderBookTest.MoveAssignmentReplacesContentsAndClearsSource
+45/76 Test #45: OrderBookTest.MoveAssignmentReplacesContentsAndClearsSource .....................   Passed    0.05 sec
+      Start 46: OrderBookTest.SelfMoveAssignmentIsANoOp
+46/76 Test #46: OrderBookTest.SelfMoveAssignmentIsANoOp .........................................   Passed    0.04 sec
+      Start 47: OrderBookContractTest.AddRejectsInvalidOrder
+47/76 Test #47: OrderBookContractTest.AddRejectsInvalidOrder ....................................   Passed    0.04 sec
+      Start 48: OrderBookContractTest.AddRejectsDuplicateRestingId
+48/76 Test #48: OrderBookContractTest.AddRejectsDuplicateRestingId ..............................   Passed    0.04 sec
+      Start 49: OrderBookContractTest.AddRejectsCrossingOrLockingPrice
+49/76 Test #49: OrderBookContractTest.AddRejectsCrossingOrLockingPrice ..........................   Passed    0.04 sec
+      Start 50: OrderBookContractTest.AddRejectsNonIncreasingSeq
+50/76 Test #50: OrderBookContractTest.AddRejectsNonIncreasingSeq ................................   Passed    0.04 sec
+      Start 51: OrderBookContractTest.FillFrontRejectsBadQuantityAndEmptySide
+51/76 Test #51: OrderBookContractTest.FillFrontRejectsBadQuantityAndEmptySide ...................   Passed    0.05 sec
+      Start 52: OrderBookCapacity.AddRejectsWhenFullAndRecoversAfterRemoval
+52/76 Test #52: OrderBookCapacity.AddRejectsWhenFullAndRecoversAfterRemoval .....................   Passed    0.04 sec
+      Start 53: TamperTest.DetectsEmptyLevel
+53/76 Test #53: TamperTest.DetectsEmptyLevel ....................................................   Passed    0.04 sec
+      Start 54: TamperTest.DetectsLevelPriceOutsideBand
+54/76 Test #54: TamperTest.DetectsLevelPriceOutsideBand .........................................   Passed    0.04 sec
+      Start 55: TamperTest.DetectsLevelTotalMismatch
+55/76 Test #55: TamperTest.DetectsLevelTotalMismatch ............................................   Passed    0.04 sec
+      Start 56: TamperTest.DetectsZeroRemaining
+56/76 Test #56: TamperTest.DetectsZeroRemaining .................................................   Passed    0.04 sec
+      Start 57: TamperTest.DetectsRemainingAboveMaxOrderQuantity
+57/76 Test #57: TamperTest.DetectsRemainingAboveMaxOrderQuantity ................................   Passed    0.04 sec
+      Start 58: TamperTest.DetectsFifoSequenceInversion
+58/76 Test #58: TamperTest.DetectsFifoSequenceInversion .........................................   Passed    0.04 sec
+      Start 59: TamperTest.DetectsSeqBeyondLastAdded
+59/76 Test #59: TamperTest.DetectsSeqBeyondLastAdded ............................................   Passed    0.04 sec
+      Start 60: TamperTest.DetectsOrderMissingFromIndex
+60/76 Test #60: TamperTest.DetectsOrderMissingFromIndex .........................................   Passed    0.04 sec
+      Start 61: TamperTest.DetectsIndexPointingAtWrongNode
+61/76 Test #61: TamperTest.DetectsIndexPointingAtWrongNode ......................................   Passed    0.04 sec
+      Start 62: TamperTest.DetectsIndexWithWrongPrice
+62/76 Test #62: TamperTest.DetectsIndexWithWrongPrice ...........................................   Passed    0.04 sec
+      Start 63: TamperTest.DetectsIndexWithWrongSide
+63/76 Test #63: TamperTest.DetectsIndexWithWrongSide ............................................   Passed    0.04 sec
+      Start 64: TamperTest.DetectsIndexWithWrongLevelPointer
+64/76 Test #64: TamperTest.DetectsIndexWithWrongLevelPointer ....................................   Passed    0.04 sec
+      Start 65: TamperTest.DetectsPhantomIndexEntry
+65/76 Test #65: TamperTest.DetectsPhantomIndexEntry .............................................   Passed    0.04 sec
+      Start 66: TamperTest.DetectsOrderCountAboveCapacity
+66/76 Test #66: TamperTest.DetectsOrderCountAboveCapacity .......................................   Passed    0.04 sec
+      Start 67: TamperTest.DetectsCrossedBook
+67/76 Test #67: TamperTest.DetectsCrossedBook ...................................................   Passed    0.04 sec
+      Start 68: TamperTest.DetectsQuantitySumOverflowWithoutUndefinedBehaviour
+68/76 Test #68: TamperTest.DetectsQuantitySumOverflowWithoutUndefinedBehaviour ..................   Passed    0.04 sec
+      Start 69: OrderBookDifferential.MatchesReferenceModelOnFixedSeeds
+69/76 Test #69: OrderBookDifferential.MatchesReferenceModelOnFixedSeeds .........................   Passed   29.88 sec
+      Start 70: ReferenceBook.PriorityRuleWorkedExample
+70/76 Test #70: ReferenceBook.PriorityRuleWorkedExample .........................................   Passed    0.04 sec
+      Start 71: OrderBookAllocFailure.InjectionHarnessWorks
+71/76 Test #71: OrderBookAllocFailure.InjectionHarnessWorks .....................................   Passed    0.02 sec
+      Start 72: OrderBookAllocFailure.AddNewLevelOnEmptyBookHasStrongGuarantee
+72/76 Test #72: OrderBookAllocFailure.AddNewLevelOnEmptyBookHasStrongGuarantee ..................   Passed    0.02 sec
+      Start 73: OrderBookAllocFailure.AddToExistingLevelHasStrongGuarantee
+73/76 Test #73: OrderBookAllocFailure.AddToExistingLevelHasStrongGuarantee ......................   Passed    0.02 sec
+      Start 74: OrderBookAllocFailure.AddSweepAcrossBookSizesIncludingRehash
+74/76 Test #74: OrderBookAllocFailure.AddSweepAcrossBookSizesIncludingRehash ....................   Passed    0.09 sec
+      Start 75: OrderBookAllocFailure.FillAndCancelNeverAllocate
+75/76 Test #75: OrderBookAllocFailure.FillAndCancelNeverAllocate ................................   Passed    0.02 sec
+      Start 76: OrderBookAllocFailure.ContractViolationUnderMemoryPressureLeavesBookUnchanged
+76/76 Test #76: OrderBookAllocFailure.ContractViolationUnderMemoryPressureLeavesBookUnchanged ...   Passed    0.02 sec
+
+100% tests passed, 0 tests failed out of 76
+
+Total Test time (real) =  33.56 sec
+[PASS] gcc-asan
+================ clang-debug ================
+[1/19] Building CXX object examples/CMakeFiles/core_validation_demo.dir/core_validation_demo.cpp.o
+[2/19] Building CXX object src/CMakeFiles/lob_core.dir/core/config.cpp.o
+[3/19] Linking CXX static library src/liblob_core.a
+[4/19] Building CXX object examples/CMakeFiles/book_demo.dir/book_demo.cpp.o
+[5/19] Linking CXX executable examples/core_validation_demo
+[6/19] Building CXX object src/CMakeFiles/lob_book.dir/book/order_book.cpp.o
+[7/19] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_config.cpp.o
+[8/19] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_checked.cpp.o
+[9/19] Linking CXX static library src/liblob_book.a
+[10/19] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_validation.cpp.o
+[11/19] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_types.cpp.o
+[12/19] Building CXX object tests/CMakeFiles/lob_book_tests.dir/book/test_order_book_tamper.cpp.o
+[13/19] Building CXX object tests/CMakeFiles/lob_book_alloc_tests.dir/book/test_order_book_alloc_failure.cpp.o
+[14/19] Building CXX object tests/CMakeFiles/lob_book_tests.dir/book/test_order_book.cpp.o
+[15/19] Building CXX object tests/CMakeFiles/lob_book_tests.dir/book/test_order_book_differential.cpp.o
+[16/19] Linking CXX executable examples/book_demo
+[17/19] Linking CXX executable tests/lob_core_tests
+[18/19] Linking CXX executable tests/lob_book_alloc_tests
+[19/19] Linking CXX executable tests/lob_book_tests
+Test project /mnt/g/学习资料/quant/build/clang-debug
+      Start  1: Side.OppositeIsAnInvolution
+ 1/76 Test  #1: Side.OppositeIsAnInvolution .....................................................   Passed    0.01 sec
+      Start  2: Side.OnlyTwoUnderlyingValuesAreValid
+ 2/76 Test  #2: Side.OnlyTwoUnderlyingValuesAreValid ............................................   Passed    0.01 sec
+      Start  3: Side.StableStrings
+ 3/76 Test  #3: Side.StableStrings ..............................................................   Passed    0.01 sec
+      Start  4: RejectReason.StringsAreStableAndUnique
+ 4/76 Test  #4: RejectReason.StringsAreStableAndUnique ..........................................   Passed    0.01 sec
+      Start  5: Command.DefaultsAreInvalidSentinels
+ 5/76 Test  #5: Command.DefaultsAreInvalidSentinels .............................................   Passed    0.01 sec
+      Start  6: Command.EqualityComparesAllFields
+ 6/76 Test  #6: Command.EqualityComparesAllFields ...............................................   Passed    0.01 sec
+      Start  7: Command.VariantHoldsEitherAlternative
+ 7/76 Test  #7: Command.VariantHoldsEitherAlternative ...........................................   Passed    0.01 sec
+      Start  8: Checked.AddBoundaries
+ 8/76 Test  #8: Checked.AddBoundaries ...........................................................   Passed    0.01 sec
+      Start  9: Checked.SubBoundaries
+ 9/76 Test  #9: Checked.SubBoundaries ...........................................................   Passed    0.01 sec
+      Start 10: Checked.MulBoundaries
+10/76 Test #10: Checked.MulBoundaries ...........................................................   Passed    0.01 sec
+      Start 11: Checked.NarrowTypes
+11/76 Test #11: Checked.NarrowTypes .............................................................   Passed    0.01 sec
+      Start 12: EngineConfig.DefaultIsValid
+12/76 Test #12: EngineConfig.DefaultIsValid .....................................................   Passed    0.01 sec
+      Start 13: EngineConfig.MinPriceMustBePositive
+13/76 Test #13: EngineConfig.MinPriceMustBePositive .............................................   Passed    0.01 sec
+      Start 14: EngineConfig.PriceBandMustNotBeInverted
+14/76 Test #14: EngineConfig.PriceBandMustNotBeInverted .........................................   Passed    0.01 sec
+      Start 15: EngineConfig.MaxOrderQuantityMustBePositive
+15/76 Test #15: EngineConfig.MaxOrderQuantityMustBePositive .....................................   Passed    0.01 sec
+      Start 16: EngineConfig.MaxLiveOrdersMustBePositive
+16/76 Test #16: EngineConfig.MaxLiveOrdersMustBePositive ........................................   Passed    0.01 sec
+      Start 17: EngineConfig.NotionalBoundIsExact
+17/76 Test #17: EngineConfig.NotionalBoundIsExact ...............................................   Passed    0.01 sec
+      Start 18: EngineConfig.AggregateQuantityBoundIsExact
+18/76 Test #18: EngineConfig.AggregateQuantityBoundIsExact ......................................   Passed    0.01 sec
+      Start 19: EngineConfig.ChecksAreReportedInDocumentedOrder
+19/76 Test #19: EngineConfig.ChecksAreReportedInDocumentedOrder .................................   Passed    0.01 sec
+      Start 20: ValidateNewOrder.AcceptsValidOrderOnBothSides
+20/76 Test #20: ValidateNewOrder.AcceptsValidOrderOnBothSides ...................................   Passed    0.01 sec
+      Start 21: ValidateNewOrder.OrderIdBoundaries
+21/76 Test #21: ValidateNewOrder.OrderIdBoundaries ..............................................   Passed    0.01 sec
+      Start 22: ValidateNewOrder.RejectsUnrepresentableSide
+22/76 Test #22: ValidateNewOrder.RejectsUnrepresentableSide .....................................   Passed    0.01 sec
+      Start 23: ValidateNewOrder.PriceBandBoundaries
+23/76 Test #23: ValidateNewOrder.PriceBandBoundaries ............................................   Passed    0.01 sec
+      Start 24: ValidateNewOrder.QuantityBoundaries
+24/76 Test #24: ValidateNewOrder.QuantityBoundaries .............................................   Passed    0.01 sec
+      Start 25: ValidateNewOrder.ReportsFirstViolationInDocumentedOrder
+25/76 Test #25: ValidateNewOrder.ReportsFirstViolationInDocumentedOrder .........................   Passed    0.01 sec
+      Start 26: ValidateNewOrder.DefaultConstructedOrderIsRejected
+26/76 Test #26: ValidateNewOrder.DefaultConstructedOrderIsRejected ..............................   Passed    0.01 sec
+      Start 27: ValidateNewOrder.SinglePriceBand
+27/76 Test #27: ValidateNewOrder.SinglePriceBand ................................................   Passed    0.01 sec
+      Start 28: ValidateNewOrder.DefaultConfigBoundaries
+28/76 Test #28: ValidateNewOrder.DefaultConfigBoundaries ........................................   Passed    0.01 sec
+      Start 29: ValidateCancelOrder.Boundaries
+29/76 Test #29: ValidateCancelOrder.Boundaries ..................................................   Passed    0.01 sec
+      Start 30: OrderBookConstruction.RejectsInvalidConfig
+30/76 Test #30: OrderBookConstruction.RejectsInvalidConfig ......................................   Passed    0.01 sec
+      Start 31: OrderBookTest.EmptyBook
+31/76 Test #31: OrderBookTest.EmptyBook .........................................................   Passed    0.01 sec
+      Start 32: OrderBookTest.BestPricesFollowPricePriority
+32/76 Test #32: OrderBookTest.BestPricesFollowPricePriority .....................................   Passed    0.01 sec
+      Start 33: OrderBookTest.SamePriceQueuesInArrivalOrder
+33/76 Test #33: OrderBookTest.SamePriceQueuesInArrivalOrder .....................................   Passed    0.01 sec
+      Start 34: OrderBookTest.PartialFillKeepsQueuePosition
+34/76 Test #34: OrderBookTest.PartialFillKeepsQueuePosition .....................................   Passed    0.01 sec
+      Start 35: OrderBookTest.EmptiedLevelIsRemovedAndNextLevelBecomesBest
+35/76 Test #35: OrderBookTest.EmptiedLevelIsRemovedAndNextLevelBecomesBest ......................   Passed    0.01 sec
+      Start 36: OrderBookTest.CancelFromHeadMiddleAndTailPreservesFifo
+36/76 Test #36: OrderBookTest.CancelFromHeadMiddleAndTailPreservesFifo ..........................   Passed    0.01 sec
+      Start 37: OrderBookTest.CancelLastOrderRemovesLevel
+37/76 Test #37: OrderBookTest.CancelLastOrderRemovesLevel .......................................   Passed    0.01 sec
+      Start 38: OrderBookTest.CancelReturnsRemainingAfterPartialFill
+38/76 Test #38: OrderBookTest.CancelReturnsRemainingAfterPartialFill ............................   Passed    0.01 sec
+      Start 39: OrderBookTest.CancelUnknownOrAlreadyRemovedIdReturnsNullopt
+39/76 Test #39: OrderBookTest.CancelUnknownOrAlreadyRemovedIdReturnsNullopt .....................   Passed    0.01 sec
+      Start 40: OrderBookTest.IdMayBeReusedOnceNoLongerResting
+40/76 Test #40: OrderBookTest.IdMayBeReusedOnceNoLongerResting ..................................   Passed    0.01 sec
+      Start 41: OrderBookTest.FindReportsLocation
+41/76 Test #41: OrderBookTest.FindReportsLocation ...............................................   Passed    0.01 sec
+      Start 42: OrderBookTest.PriceBandEdgesAreUsable
+42/76 Test #42: OrderBookTest.PriceBandEdgesAreUsable ...........................................   Passed    0.01 sec
+      Start 43: OrderBookTest.MovedBookKeepsWorkingIndex
+43/76 Test #43: OrderBookTest.MovedBookKeepsWorkingIndex ........................................   Passed    0.01 sec
+      Start 44: OrderBookTest.MovedFromBookIsEmptyConsistentAndReusable
+44/76 Test #44: OrderBookTest.MovedFromBookIsEmptyConsistentAndReusable .........................   Passed    0.01 sec
+      Start 45: OrderBookTest.MoveAssignmentReplacesContentsAndClearsSource
+45/76 Test #45: OrderBookTest.MoveAssignmentReplacesContentsAndClearsSource .....................   Passed    0.01 sec
+      Start 46: OrderBookTest.SelfMoveAssignmentIsANoOp
+46/76 Test #46: OrderBookTest.SelfMoveAssignmentIsANoOp .........................................   Passed    0.01 sec
+      Start 47: OrderBookContractTest.AddRejectsInvalidOrder
+47/76 Test #47: OrderBookContractTest.AddRejectsInvalidOrder ....................................   Passed    0.01 sec
+      Start 48: OrderBookContractTest.AddRejectsDuplicateRestingId
+48/76 Test #48: OrderBookContractTest.AddRejectsDuplicateRestingId ..............................   Passed    0.01 sec
+      Start 49: OrderBookContractTest.AddRejectsCrossingOrLockingPrice
+49/76 Test #49: OrderBookContractTest.AddRejectsCrossingOrLockingPrice ..........................   Passed    0.01 sec
+      Start 50: OrderBookContractTest.AddRejectsNonIncreasingSeq
+50/76 Test #50: OrderBookContractTest.AddRejectsNonIncreasingSeq ................................   Passed    0.01 sec
+      Start 51: OrderBookContractTest.FillFrontRejectsBadQuantityAndEmptySide
+51/76 Test #51: OrderBookContractTest.FillFrontRejectsBadQuantityAndEmptySide ...................   Passed    0.01 sec
+      Start 52: OrderBookCapacity.AddRejectsWhenFullAndRecoversAfterRemoval
+52/76 Test #52: OrderBookCapacity.AddRejectsWhenFullAndRecoversAfterRemoval .....................   Passed    0.01 sec
+      Start 53: TamperTest.DetectsEmptyLevel
+53/76 Test #53: TamperTest.DetectsEmptyLevel ....................................................   Passed    0.01 sec
+      Start 54: TamperTest.DetectsLevelPriceOutsideBand
+54/76 Test #54: TamperTest.DetectsLevelPriceOutsideBand .........................................   Passed    0.01 sec
+      Start 55: TamperTest.DetectsLevelTotalMismatch
+55/76 Test #55: TamperTest.DetectsLevelTotalMismatch ............................................   Passed    0.01 sec
+      Start 56: TamperTest.DetectsZeroRemaining
+56/76 Test #56: TamperTest.DetectsZeroRemaining .................................................   Passed    0.01 sec
+      Start 57: TamperTest.DetectsRemainingAboveMaxOrderQuantity
+57/76 Test #57: TamperTest.DetectsRemainingAboveMaxOrderQuantity ................................   Passed    0.01 sec
+      Start 58: TamperTest.DetectsFifoSequenceInversion
+58/76 Test #58: TamperTest.DetectsFifoSequenceInversion .........................................   Passed    0.01 sec
+      Start 59: TamperTest.DetectsSeqBeyondLastAdded
+59/76 Test #59: TamperTest.DetectsSeqBeyondLastAdded ............................................   Passed    0.01 sec
+      Start 60: TamperTest.DetectsOrderMissingFromIndex
+60/76 Test #60: TamperTest.DetectsOrderMissingFromIndex .........................................   Passed    0.01 sec
+      Start 61: TamperTest.DetectsIndexPointingAtWrongNode
+61/76 Test #61: TamperTest.DetectsIndexPointingAtWrongNode ......................................   Passed    0.01 sec
+      Start 62: TamperTest.DetectsIndexWithWrongPrice
+62/76 Test #62: TamperTest.DetectsIndexWithWrongPrice ...........................................   Passed    0.01 sec
+      Start 63: TamperTest.DetectsIndexWithWrongSide
+63/76 Test #63: TamperTest.DetectsIndexWithWrongSide ............................................   Passed    0.01 sec
+      Start 64: TamperTest.DetectsIndexWithWrongLevelPointer
+64/76 Test #64: TamperTest.DetectsIndexWithWrongLevelPointer ....................................   Passed    0.01 sec
+      Start 65: TamperTest.DetectsPhantomIndexEntry
+65/76 Test #65: TamperTest.DetectsPhantomIndexEntry .............................................   Passed    0.01 sec
+      Start 66: TamperTest.DetectsOrderCountAboveCapacity
+66/76 Test #66: TamperTest.DetectsOrderCountAboveCapacity .......................................   Passed    0.01 sec
+      Start 67: TamperTest.DetectsCrossedBook
+67/76 Test #67: TamperTest.DetectsCrossedBook ...................................................   Passed    0.01 sec
+      Start 68: TamperTest.DetectsQuantitySumOverflowWithoutUndefinedBehaviour
+68/76 Test #68: TamperTest.DetectsQuantitySumOverflowWithoutUndefinedBehaviour ..................   Passed    0.01 sec
+      Start 69: OrderBookDifferential.MatchesReferenceModelOnFixedSeeds
+69/76 Test #69: OrderBookDifferential.MatchesReferenceModelOnFixedSeeds .........................   Passed    5.38 sec
+      Start 70: ReferenceBook.PriorityRuleWorkedExample
+70/76 Test #70: ReferenceBook.PriorityRuleWorkedExample .........................................   Passed    0.02 sec
+      Start 71: OrderBookAllocFailure.InjectionHarnessWorks
+71/76 Test #71: OrderBookAllocFailure.InjectionHarnessWorks .....................................   Passed    0.01 sec
+      Start 72: OrderBookAllocFailure.AddNewLevelOnEmptyBookHasStrongGuarantee
+72/76 Test #72: OrderBookAllocFailure.AddNewLevelOnEmptyBookHasStrongGuarantee ..................   Passed    0.01 sec
+      Start 73: OrderBookAllocFailure.AddToExistingLevelHasStrongGuarantee
+73/76 Test #73: OrderBookAllocFailure.AddToExistingLevelHasStrongGuarantee ......................   Passed    0.01 sec
+      Start 74: OrderBookAllocFailure.AddSweepAcrossBookSizesIncludingRehash
+74/76 Test #74: OrderBookAllocFailure.AddSweepAcrossBookSizesIncludingRehash ....................   Passed    0.03 sec
+      Start 75: OrderBookAllocFailure.FillAndCancelNeverAllocate
+75/76 Test #75: OrderBookAllocFailure.FillAndCancelNeverAllocate ................................   Passed    0.01 sec
+      Start 76: OrderBookAllocFailure.ContractViolationUnderMemoryPressureLeavesBookUnchanged
+76/76 Test #76: OrderBookAllocFailure.ContractViolationUnderMemoryPressureLeavesBookUnchanged ...   Passed    0.01 sec
+
+100% tests passed, 0 tests failed out of 76
+
+Total Test time (real) =   6.84 sec
+[PASS] clang-debug
+================ clang-release ================
+[1/19] Building CXX object examples/CMakeFiles/core_validation_demo.dir/core_validation_demo.cpp.o
+[2/19] Building CXX object src/CMakeFiles/lob_core.dir/core/config.cpp.o
+[3/19] Linking CXX static library src/liblob_core.a
+[4/19] Building CXX object examples/CMakeFiles/book_demo.dir/book_demo.cpp.o
+[5/19] Linking CXX executable examples/core_validation_demo
+[6/19] Building CXX object src/CMakeFiles/lob_book.dir/book/order_book.cpp.o
+[7/19] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_checked.cpp.o
+[8/19] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_config.cpp.o
+[9/19] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_validation.cpp.o
+[10/19] Linking CXX static library src/liblob_book.a
+[11/19] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_types.cpp.o
+[12/19] Building CXX object tests/CMakeFiles/lob_book_tests.dir/book/test_order_book_tamper.cpp.o
+[13/19] Building CXX object tests/CMakeFiles/lob_book_alloc_tests.dir/book/test_order_book_alloc_failure.cpp.o
+[14/19] Linking CXX executable examples/book_demo
+[15/19] Linking CXX executable tests/lob_core_tests
+[16/19] Building CXX object tests/CMakeFiles/lob_book_tests.dir/book/test_order_book.cpp.o
+[17/19] Building CXX object tests/CMakeFiles/lob_book_tests.dir/book/test_order_book_differential.cpp.o
+[18/19] Linking CXX executable tests/lob_book_alloc_tests
+[19/19] Linking CXX executable tests/lob_book_tests
+Test project /mnt/g/学习资料/quant/build/clang-release
+      Start  1: Side.OppositeIsAnInvolution
+ 1/76 Test  #1: Side.OppositeIsAnInvolution .....................................................   Passed    0.01 sec
+      Start  2: Side.OnlyTwoUnderlyingValuesAreValid
+ 2/76 Test  #2: Side.OnlyTwoUnderlyingValuesAreValid ............................................   Passed    0.01 sec
+      Start  3: Side.StableStrings
+ 3/76 Test  #3: Side.StableStrings ..............................................................   Passed    0.01 sec
+      Start  4: RejectReason.StringsAreStableAndUnique
+ 4/76 Test  #4: RejectReason.StringsAreStableAndUnique ..........................................   Passed    0.01 sec
+      Start  5: Command.DefaultsAreInvalidSentinels
+ 5/76 Test  #5: Command.DefaultsAreInvalidSentinels .............................................   Passed    0.01 sec
+      Start  6: Command.EqualityComparesAllFields
+ 6/76 Test  #6: Command.EqualityComparesAllFields ...............................................   Passed    0.01 sec
+      Start  7: Command.VariantHoldsEitherAlternative
+ 7/76 Test  #7: Command.VariantHoldsEitherAlternative ...........................................   Passed    0.01 sec
+      Start  8: Checked.AddBoundaries
+ 8/76 Test  #8: Checked.AddBoundaries ...........................................................   Passed    0.01 sec
+      Start  9: Checked.SubBoundaries
+ 9/76 Test  #9: Checked.SubBoundaries ...........................................................   Passed    0.01 sec
+      Start 10: Checked.MulBoundaries
+10/76 Test #10: Checked.MulBoundaries ...........................................................   Passed    0.01 sec
+      Start 11: Checked.NarrowTypes
+11/76 Test #11: Checked.NarrowTypes .............................................................   Passed    0.01 sec
+      Start 12: EngineConfig.DefaultIsValid
+12/76 Test #12: EngineConfig.DefaultIsValid .....................................................   Passed    0.01 sec
+      Start 13: EngineConfig.MinPriceMustBePositive
+13/76 Test #13: EngineConfig.MinPriceMustBePositive .............................................   Passed    0.01 sec
+      Start 14: EngineConfig.PriceBandMustNotBeInverted
+14/76 Test #14: EngineConfig.PriceBandMustNotBeInverted .........................................   Passed    0.01 sec
+      Start 15: EngineConfig.MaxOrderQuantityMustBePositive
+15/76 Test #15: EngineConfig.MaxOrderQuantityMustBePositive .....................................   Passed    0.01 sec
+      Start 16: EngineConfig.MaxLiveOrdersMustBePositive
+16/76 Test #16: EngineConfig.MaxLiveOrdersMustBePositive ........................................   Passed    0.01 sec
+      Start 17: EngineConfig.NotionalBoundIsExact
+17/76 Test #17: EngineConfig.NotionalBoundIsExact ...............................................   Passed    0.01 sec
+      Start 18: EngineConfig.AggregateQuantityBoundIsExact
+18/76 Test #18: EngineConfig.AggregateQuantityBoundIsExact ......................................   Passed    0.01 sec
+      Start 19: EngineConfig.ChecksAreReportedInDocumentedOrder
+19/76 Test #19: EngineConfig.ChecksAreReportedInDocumentedOrder .................................   Passed    0.01 sec
+      Start 20: ValidateNewOrder.AcceptsValidOrderOnBothSides
+20/76 Test #20: ValidateNewOrder.AcceptsValidOrderOnBothSides ...................................   Passed    0.01 sec
+      Start 21: ValidateNewOrder.OrderIdBoundaries
+21/76 Test #21: ValidateNewOrder.OrderIdBoundaries ..............................................   Passed    0.01 sec
+      Start 22: ValidateNewOrder.RejectsUnrepresentableSide
+22/76 Test #22: ValidateNewOrder.RejectsUnrepresentableSide .....................................   Passed    0.01 sec
+      Start 23: ValidateNewOrder.PriceBandBoundaries
+23/76 Test #23: ValidateNewOrder.PriceBandBoundaries ............................................   Passed    0.01 sec
+      Start 24: ValidateNewOrder.QuantityBoundaries
+24/76 Test #24: ValidateNewOrder.QuantityBoundaries .............................................   Passed    0.01 sec
+      Start 25: ValidateNewOrder.ReportsFirstViolationInDocumentedOrder
+25/76 Test #25: ValidateNewOrder.ReportsFirstViolationInDocumentedOrder .........................   Passed    0.01 sec
+      Start 26: ValidateNewOrder.DefaultConstructedOrderIsRejected
+26/76 Test #26: ValidateNewOrder.DefaultConstructedOrderIsRejected ..............................   Passed    0.01 sec
+      Start 27: ValidateNewOrder.SinglePriceBand
+27/76 Test #27: ValidateNewOrder.SinglePriceBand ................................................   Passed    0.01 sec
+      Start 28: ValidateNewOrder.DefaultConfigBoundaries
+28/76 Test #28: ValidateNewOrder.DefaultConfigBoundaries ........................................   Passed    0.01 sec
+      Start 29: ValidateCancelOrder.Boundaries
+29/76 Test #29: ValidateCancelOrder.Boundaries ..................................................   Passed    0.01 sec
+      Start 30: OrderBookConstruction.RejectsInvalidConfig
+30/76 Test #30: OrderBookConstruction.RejectsInvalidConfig ......................................   Passed    0.01 sec
+      Start 31: OrderBookTest.EmptyBook
+31/76 Test #31: OrderBookTest.EmptyBook .........................................................   Passed    0.01 sec
+      Start 32: OrderBookTest.BestPricesFollowPricePriority
+32/76 Test #32: OrderBookTest.BestPricesFollowPricePriority .....................................   Passed    0.01 sec
+      Start 33: OrderBookTest.SamePriceQueuesInArrivalOrder
+33/76 Test #33: OrderBookTest.SamePriceQueuesInArrivalOrder .....................................   Passed    0.01 sec
+      Start 34: OrderBookTest.PartialFillKeepsQueuePosition
+34/76 Test #34: OrderBookTest.PartialFillKeepsQueuePosition .....................................   Passed    0.01 sec
+      Start 35: OrderBookTest.EmptiedLevelIsRemovedAndNextLevelBecomesBest
+35/76 Test #35: OrderBookTest.EmptiedLevelIsRemovedAndNextLevelBecomesBest ......................   Passed    0.01 sec
+      Start 36: OrderBookTest.CancelFromHeadMiddleAndTailPreservesFifo
+36/76 Test #36: OrderBookTest.CancelFromHeadMiddleAndTailPreservesFifo ..........................   Passed    0.01 sec
+      Start 37: OrderBookTest.CancelLastOrderRemovesLevel
+37/76 Test #37: OrderBookTest.CancelLastOrderRemovesLevel .......................................   Passed    0.01 sec
+      Start 38: OrderBookTest.CancelReturnsRemainingAfterPartialFill
+38/76 Test #38: OrderBookTest.CancelReturnsRemainingAfterPartialFill ............................   Passed    0.01 sec
+      Start 39: OrderBookTest.CancelUnknownOrAlreadyRemovedIdReturnsNullopt
+39/76 Test #39: OrderBookTest.CancelUnknownOrAlreadyRemovedIdReturnsNullopt .....................   Passed    0.01 sec
+      Start 40: OrderBookTest.IdMayBeReusedOnceNoLongerResting
+40/76 Test #40: OrderBookTest.IdMayBeReusedOnceNoLongerResting ..................................   Passed    0.01 sec
+      Start 41: OrderBookTest.FindReportsLocation
+41/76 Test #41: OrderBookTest.FindReportsLocation ...............................................   Passed    0.01 sec
+      Start 42: OrderBookTest.PriceBandEdgesAreUsable
+42/76 Test #42: OrderBookTest.PriceBandEdgesAreUsable ...........................................   Passed    0.01 sec
+      Start 43: OrderBookTest.MovedBookKeepsWorkingIndex
+43/76 Test #43: OrderBookTest.MovedBookKeepsWorkingIndex ........................................   Passed    0.01 sec
+      Start 44: OrderBookTest.MovedFromBookIsEmptyConsistentAndReusable
+44/76 Test #44: OrderBookTest.MovedFromBookIsEmptyConsistentAndReusable .........................   Passed    0.01 sec
+      Start 45: OrderBookTest.MoveAssignmentReplacesContentsAndClearsSource
+45/76 Test #45: OrderBookTest.MoveAssignmentReplacesContentsAndClearsSource .....................   Passed    0.01 sec
+      Start 46: OrderBookTest.SelfMoveAssignmentIsANoOp
+46/76 Test #46: OrderBookTest.SelfMoveAssignmentIsANoOp .........................................   Passed    0.01 sec
+      Start 47: OrderBookContractTest.AddRejectsInvalidOrder
+47/76 Test #47: OrderBookContractTest.AddRejectsInvalidOrder ....................................   Passed    0.01 sec
+      Start 48: OrderBookContractTest.AddRejectsDuplicateRestingId
+48/76 Test #48: OrderBookContractTest.AddRejectsDuplicateRestingId ..............................   Passed    0.01 sec
+      Start 49: OrderBookContractTest.AddRejectsCrossingOrLockingPrice
+49/76 Test #49: OrderBookContractTest.AddRejectsCrossingOrLockingPrice ..........................   Passed    0.01 sec
+      Start 50: OrderBookContractTest.AddRejectsNonIncreasingSeq
+50/76 Test #50: OrderBookContractTest.AddRejectsNonIncreasingSeq ................................   Passed    0.01 sec
+      Start 51: OrderBookContractTest.FillFrontRejectsBadQuantityAndEmptySide
+51/76 Test #51: OrderBookContractTest.FillFrontRejectsBadQuantityAndEmptySide ...................   Passed    0.01 sec
+      Start 52: OrderBookCapacity.AddRejectsWhenFullAndRecoversAfterRemoval
+52/76 Test #52: OrderBookCapacity.AddRejectsWhenFullAndRecoversAfterRemoval .....................   Passed    0.01 sec
+      Start 53: TamperTest.DetectsEmptyLevel
+53/76 Test #53: TamperTest.DetectsEmptyLevel ....................................................   Passed    0.01 sec
+      Start 54: TamperTest.DetectsLevelPriceOutsideBand
+54/76 Test #54: TamperTest.DetectsLevelPriceOutsideBand .........................................   Passed    0.01 sec
+      Start 55: TamperTest.DetectsLevelTotalMismatch
+55/76 Test #55: TamperTest.DetectsLevelTotalMismatch ............................................   Passed    0.01 sec
+      Start 56: TamperTest.DetectsZeroRemaining
+56/76 Test #56: TamperTest.DetectsZeroRemaining .................................................   Passed    0.01 sec
+      Start 57: TamperTest.DetectsRemainingAboveMaxOrderQuantity
+57/76 Test #57: TamperTest.DetectsRemainingAboveMaxOrderQuantity ................................   Passed    0.01 sec
+      Start 58: TamperTest.DetectsFifoSequenceInversion
+58/76 Test #58: TamperTest.DetectsFifoSequenceInversion .........................................   Passed    0.01 sec
+      Start 59: TamperTest.DetectsSeqBeyondLastAdded
+59/76 Test #59: TamperTest.DetectsSeqBeyondLastAdded ............................................   Passed    0.01 sec
+      Start 60: TamperTest.DetectsOrderMissingFromIndex
+60/76 Test #60: TamperTest.DetectsOrderMissingFromIndex .........................................   Passed    0.01 sec
+      Start 61: TamperTest.DetectsIndexPointingAtWrongNode
+61/76 Test #61: TamperTest.DetectsIndexPointingAtWrongNode ......................................   Passed    0.01 sec
+      Start 62: TamperTest.DetectsIndexWithWrongPrice
+62/76 Test #62: TamperTest.DetectsIndexWithWrongPrice ...........................................   Passed    0.01 sec
+      Start 63: TamperTest.DetectsIndexWithWrongSide
+63/76 Test #63: TamperTest.DetectsIndexWithWrongSide ............................................   Passed    0.01 sec
+      Start 64: TamperTest.DetectsIndexWithWrongLevelPointer
+64/76 Test #64: TamperTest.DetectsIndexWithWrongLevelPointer ....................................   Passed    0.01 sec
+      Start 65: TamperTest.DetectsPhantomIndexEntry
+65/76 Test #65: TamperTest.DetectsPhantomIndexEntry .............................................   Passed    0.01 sec
+      Start 66: TamperTest.DetectsOrderCountAboveCapacity
+66/76 Test #66: TamperTest.DetectsOrderCountAboveCapacity .......................................   Passed    0.01 sec
+      Start 67: TamperTest.DetectsCrossedBook
+67/76 Test #67: TamperTest.DetectsCrossedBook ...................................................   Passed    0.01 sec
+      Start 68: TamperTest.DetectsQuantitySumOverflowWithoutUndefinedBehaviour
+68/76 Test #68: TamperTest.DetectsQuantitySumOverflowWithoutUndefinedBehaviour ..................   Passed    0.01 sec
+      Start 69: OrderBookDifferential.MatchesReferenceModelOnFixedSeeds
+69/76 Test #69: OrderBookDifferential.MatchesReferenceModelOnFixedSeeds .........................   Passed    0.63 sec
+      Start 70: ReferenceBook.PriorityRuleWorkedExample
+70/76 Test #70: ReferenceBook.PriorityRuleWorkedExample .........................................   Passed    0.01 sec
+      Start 71: OrderBookAllocFailure.InjectionHarnessWorks
+71/76 Test #71: OrderBookAllocFailure.InjectionHarnessWorks .....................................   Passed    0.01 sec
+      Start 72: OrderBookAllocFailure.AddNewLevelOnEmptyBookHasStrongGuarantee
+72/76 Test #72: OrderBookAllocFailure.AddNewLevelOnEmptyBookHasStrongGuarantee ..................   Passed    0.01 sec
+      Start 73: OrderBookAllocFailure.AddToExistingLevelHasStrongGuarantee
+73/76 Test #73: OrderBookAllocFailure.AddToExistingLevelHasStrongGuarantee ......................   Passed    0.01 sec
+      Start 74: OrderBookAllocFailure.AddSweepAcrossBookSizesIncludingRehash
+74/76 Test #74: OrderBookAllocFailure.AddSweepAcrossBookSizesIncludingRehash ....................   Passed    0.01 sec
+      Start 75: OrderBookAllocFailure.FillAndCancelNeverAllocate
+75/76 Test #75: OrderBookAllocFailure.FillAndCancelNeverAllocate ................................   Passed    0.01 sec
+      Start 76: OrderBookAllocFailure.ContractViolationUnderMemoryPressureLeavesBookUnchanged
+76/76 Test #76: OrderBookAllocFailure.ContractViolationUnderMemoryPressureLeavesBookUnchanged ...   Passed    0.01 sec
+
+100% tests passed, 0 tests failed out of 76
+
+Total Test time (real) =   1.96 sec
+[PASS] clang-release
+================ clang-asan ================
+[1/19] Building CXX object examples/CMakeFiles/core_validation_demo.dir/core_validation_demo.cpp.o
+[2/19] Building CXX object src/CMakeFiles/lob_core.dir/core/config.cpp.o
+[3/19] Linking CXX static library src/liblob_core.a
+[4/19] Building CXX object examples/CMakeFiles/book_demo.dir/book_demo.cpp.o
+[5/19] Building CXX object src/CMakeFiles/lob_book.dir/book/order_book.cpp.o
+[6/19] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_config.cpp.o
+[7/19] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_checked.cpp.o
+[8/19] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_validation.cpp.o
+[9/19] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_types.cpp.o
+[10/19] Building CXX object tests/CMakeFiles/lob_book_tests.dir/book/test_order_book_tamper.cpp.o
+[11/19] Linking CXX static library src/liblob_book.a
+[12/19] Building CXX object tests/CMakeFiles/lob_book_alloc_tests.dir/book/test_order_book_alloc_failure.cpp.o
+[13/19] Building CXX object tests/CMakeFiles/lob_book_tests.dir/book/test_order_book_differential.cpp.o
+[14/19] Building CXX object tests/CMakeFiles/lob_book_tests.dir/book/test_order_book.cpp.o
+[15/19] Linking CXX executable examples/core_validation_demo
+[16/19] Linking CXX executable examples/book_demo
+[17/19] Linking CXX executable tests/lob_core_tests
+[18/19] Linking CXX executable tests/lob_book_alloc_tests
+[19/19] Linking CXX executable tests/lob_book_tests
+Test project /mnt/g/学习资料/quant/build/clang-asan
+      Start  1: Side.OppositeIsAnInvolution
+ 1/76 Test  #1: Side.OppositeIsAnInvolution .....................................................   Passed    0.03 sec
+      Start  2: Side.OnlyTwoUnderlyingValuesAreValid
+ 2/76 Test  #2: Side.OnlyTwoUnderlyingValuesAreValid ............................................   Passed    0.03 sec
+      Start  3: Side.StableStrings
+ 3/76 Test  #3: Side.StableStrings ..............................................................   Passed    0.03 sec
+      Start  4: RejectReason.StringsAreStableAndUnique
+ 4/76 Test  #4: RejectReason.StringsAreStableAndUnique ..........................................   Passed    0.03 sec
+      Start  5: Command.DefaultsAreInvalidSentinels
+ 5/76 Test  #5: Command.DefaultsAreInvalidSentinels .............................................   Passed    0.03 sec
+      Start  6: Command.EqualityComparesAllFields
+ 6/76 Test  #6: Command.EqualityComparesAllFields ...............................................   Passed    0.03 sec
+      Start  7: Command.VariantHoldsEitherAlternative
+ 7/76 Test  #7: Command.VariantHoldsEitherAlternative ...........................................   Passed    0.03 sec
+      Start  8: Checked.AddBoundaries
+ 8/76 Test  #8: Checked.AddBoundaries ...........................................................   Passed    0.03 sec
+      Start  9: Checked.SubBoundaries
+ 9/76 Test  #9: Checked.SubBoundaries ...........................................................   Passed    0.03 sec
+      Start 10: Checked.MulBoundaries
+10/76 Test #10: Checked.MulBoundaries ...........................................................   Passed    0.03 sec
+      Start 11: Checked.NarrowTypes
+11/76 Test #11: Checked.NarrowTypes .............................................................   Passed    0.03 sec
+      Start 12: EngineConfig.DefaultIsValid
+12/76 Test #12: EngineConfig.DefaultIsValid .....................................................   Passed    0.03 sec
+      Start 13: EngineConfig.MinPriceMustBePositive
+13/76 Test #13: EngineConfig.MinPriceMustBePositive .............................................   Passed    0.03 sec
+      Start 14: EngineConfig.PriceBandMustNotBeInverted
+14/76 Test #14: EngineConfig.PriceBandMustNotBeInverted .........................................   Passed    0.03 sec
+      Start 15: EngineConfig.MaxOrderQuantityMustBePositive
+15/76 Test #15: EngineConfig.MaxOrderQuantityMustBePositive .....................................   Passed    0.03 sec
+      Start 16: EngineConfig.MaxLiveOrdersMustBePositive
+16/76 Test #16: EngineConfig.MaxLiveOrdersMustBePositive ........................................   Passed    0.03 sec
+      Start 17: EngineConfig.NotionalBoundIsExact
+17/76 Test #17: EngineConfig.NotionalBoundIsExact ...............................................   Passed    0.03 sec
+      Start 18: EngineConfig.AggregateQuantityBoundIsExact
+18/76 Test #18: EngineConfig.AggregateQuantityBoundIsExact ......................................   Passed    0.03 sec
+      Start 19: EngineConfig.ChecksAreReportedInDocumentedOrder
+19/76 Test #19: EngineConfig.ChecksAreReportedInDocumentedOrder .................................   Passed    0.03 sec
+      Start 20: ValidateNewOrder.AcceptsValidOrderOnBothSides
+20/76 Test #20: ValidateNewOrder.AcceptsValidOrderOnBothSides ...................................   Passed    0.03 sec
+      Start 21: ValidateNewOrder.OrderIdBoundaries
+21/76 Test #21: ValidateNewOrder.OrderIdBoundaries ..............................................   Passed    0.03 sec
+      Start 22: ValidateNewOrder.RejectsUnrepresentableSide
+22/76 Test #22: ValidateNewOrder.RejectsUnrepresentableSide .....................................   Passed    0.03 sec
+      Start 23: ValidateNewOrder.PriceBandBoundaries
+23/76 Test #23: ValidateNewOrder.PriceBandBoundaries ............................................   Passed    0.03 sec
+      Start 24: ValidateNewOrder.QuantityBoundaries
+24/76 Test #24: ValidateNewOrder.QuantityBoundaries .............................................   Passed    0.03 sec
+      Start 25: ValidateNewOrder.ReportsFirstViolationInDocumentedOrder
+25/76 Test #25: ValidateNewOrder.ReportsFirstViolationInDocumentedOrder .........................   Passed    0.03 sec
+      Start 26: ValidateNewOrder.DefaultConstructedOrderIsRejected
+26/76 Test #26: ValidateNewOrder.DefaultConstructedOrderIsRejected ..............................   Passed    0.03 sec
+      Start 27: ValidateNewOrder.SinglePriceBand
+27/76 Test #27: ValidateNewOrder.SinglePriceBand ................................................   Passed    0.03 sec
+      Start 28: ValidateNewOrder.DefaultConfigBoundaries
+28/76 Test #28: ValidateNewOrder.DefaultConfigBoundaries ........................................   Passed    0.03 sec
+      Start 29: ValidateCancelOrder.Boundaries
+29/76 Test #29: ValidateCancelOrder.Boundaries ..................................................   Passed    0.03 sec
+      Start 30: OrderBookConstruction.RejectsInvalidConfig
+30/76 Test #30: OrderBookConstruction.RejectsInvalidConfig ......................................   Passed    0.04 sec
+      Start 31: OrderBookTest.EmptyBook
+31/76 Test #31: OrderBookTest.EmptyBook .........................................................   Passed    0.03 sec
+      Start 32: OrderBookTest.BestPricesFollowPricePriority
+32/76 Test #32: OrderBookTest.BestPricesFollowPricePriority .....................................   Passed    0.04 sec
+      Start 33: OrderBookTest.SamePriceQueuesInArrivalOrder
+33/76 Test #33: OrderBookTest.SamePriceQueuesInArrivalOrder .....................................   Passed    0.04 sec
+      Start 34: OrderBookTest.PartialFillKeepsQueuePosition
+34/76 Test #34: OrderBookTest.PartialFillKeepsQueuePosition .....................................   Passed    0.03 sec
+      Start 35: OrderBookTest.EmptiedLevelIsRemovedAndNextLevelBecomesBest
+35/76 Test #35: OrderBookTest.EmptiedLevelIsRemovedAndNextLevelBecomesBest ......................   Passed    0.04 sec
+      Start 36: OrderBookTest.CancelFromHeadMiddleAndTailPreservesFifo
+36/76 Test #36: OrderBookTest.CancelFromHeadMiddleAndTailPreservesFifo ..........................   Passed    0.03 sec
+      Start 37: OrderBookTest.CancelLastOrderRemovesLevel
+37/76 Test #37: OrderBookTest.CancelLastOrderRemovesLevel .......................................   Passed    0.03 sec
+      Start 38: OrderBookTest.CancelReturnsRemainingAfterPartialFill
+38/76 Test #38: OrderBookTest.CancelReturnsRemainingAfterPartialFill ............................   Passed    0.03 sec
+      Start 39: OrderBookTest.CancelUnknownOrAlreadyRemovedIdReturnsNullopt
+39/76 Test #39: OrderBookTest.CancelUnknownOrAlreadyRemovedIdReturnsNullopt .....................   Passed    0.03 sec
+      Start 40: OrderBookTest.IdMayBeReusedOnceNoLongerResting
+40/76 Test #40: OrderBookTest.IdMayBeReusedOnceNoLongerResting ..................................   Passed    0.03 sec
+      Start 41: OrderBookTest.FindReportsLocation
+41/76 Test #41: OrderBookTest.FindReportsLocation ...............................................   Passed    0.03 sec
+      Start 42: OrderBookTest.PriceBandEdgesAreUsable
+42/76 Test #42: OrderBookTest.PriceBandEdgesAreUsable ...........................................   Passed    0.03 sec
+      Start 43: OrderBookTest.MovedBookKeepsWorkingIndex
+43/76 Test #43: OrderBookTest.MovedBookKeepsWorkingIndex ........................................   Passed    0.04 sec
+      Start 44: OrderBookTest.MovedFromBookIsEmptyConsistentAndReusable
+44/76 Test #44: OrderBookTest.MovedFromBookIsEmptyConsistentAndReusable .........................   Passed    0.04 sec
+      Start 45: OrderBookTest.MoveAssignmentReplacesContentsAndClearsSource
+45/76 Test #45: OrderBookTest.MoveAssignmentReplacesContentsAndClearsSource .....................   Passed    0.03 sec
+      Start 46: OrderBookTest.SelfMoveAssignmentIsANoOp
+46/76 Test #46: OrderBookTest.SelfMoveAssignmentIsANoOp .........................................   Passed    0.03 sec
+      Start 47: OrderBookContractTest.AddRejectsInvalidOrder
+47/76 Test #47: OrderBookContractTest.AddRejectsInvalidOrder ....................................   Passed    0.04 sec
+      Start 48: OrderBookContractTest.AddRejectsDuplicateRestingId
+48/76 Test #48: OrderBookContractTest.AddRejectsDuplicateRestingId ..............................   Passed    0.04 sec
+      Start 49: OrderBookContractTest.AddRejectsCrossingOrLockingPrice
+49/76 Test #49: OrderBookContractTest.AddRejectsCrossingOrLockingPrice ..........................   Passed    0.04 sec
+      Start 50: OrderBookContractTest.AddRejectsNonIncreasingSeq
+50/76 Test #50: OrderBookContractTest.AddRejectsNonIncreasingSeq ................................   Passed    0.04 sec
+      Start 51: OrderBookContractTest.FillFrontRejectsBadQuantityAndEmptySide
+51/76 Test #51: OrderBookContractTest.FillFrontRejectsBadQuantityAndEmptySide ...................   Passed    0.04 sec
+      Start 52: OrderBookCapacity.AddRejectsWhenFullAndRecoversAfterRemoval
+52/76 Test #52: OrderBookCapacity.AddRejectsWhenFullAndRecoversAfterRemoval .....................   Passed    0.04 sec
+      Start 53: TamperTest.DetectsEmptyLevel
+53/76 Test #53: TamperTest.DetectsEmptyLevel ....................................................   Passed    0.03 sec
+      Start 54: TamperTest.DetectsLevelPriceOutsideBand
+54/76 Test #54: TamperTest.DetectsLevelPriceOutsideBand .........................................   Passed    0.04 sec
+      Start 55: TamperTest.DetectsLevelTotalMismatch
+55/76 Test #55: TamperTest.DetectsLevelTotalMismatch ............................................   Passed    0.04 sec
+      Start 56: TamperTest.DetectsZeroRemaining
+56/76 Test #56: TamperTest.DetectsZeroRemaining .................................................   Passed    0.04 sec
+      Start 57: TamperTest.DetectsRemainingAboveMaxOrderQuantity
+57/76 Test #57: TamperTest.DetectsRemainingAboveMaxOrderQuantity ................................   Passed    0.04 sec
+      Start 58: TamperTest.DetectsFifoSequenceInversion
+58/76 Test #58: TamperTest.DetectsFifoSequenceInversion .........................................   Passed    0.04 sec
+      Start 59: TamperTest.DetectsSeqBeyondLastAdded
+59/76 Test #59: TamperTest.DetectsSeqBeyondLastAdded ............................................   Passed    0.03 sec
+      Start 60: TamperTest.DetectsOrderMissingFromIndex
+60/76 Test #60: TamperTest.DetectsOrderMissingFromIndex .........................................   Passed    0.04 sec
+      Start 61: TamperTest.DetectsIndexPointingAtWrongNode
+61/76 Test #61: TamperTest.DetectsIndexPointingAtWrongNode ......................................   Passed    0.03 sec
+      Start 62: TamperTest.DetectsIndexWithWrongPrice
+62/76 Test #62: TamperTest.DetectsIndexWithWrongPrice ...........................................   Passed    0.03 sec
+      Start 63: TamperTest.DetectsIndexWithWrongSide
+63/76 Test #63: TamperTest.DetectsIndexWithWrongSide ............................................   Passed    0.03 sec
+      Start 64: TamperTest.DetectsIndexWithWrongLevelPointer
+64/76 Test #64: TamperTest.DetectsIndexWithWrongLevelPointer ....................................   Passed    0.03 sec
+      Start 65: TamperTest.DetectsPhantomIndexEntry
+65/76 Test #65: TamperTest.DetectsPhantomIndexEntry .............................................   Passed    0.04 sec
+      Start 66: TamperTest.DetectsOrderCountAboveCapacity
+66/76 Test #66: TamperTest.DetectsOrderCountAboveCapacity .......................................   Passed    0.04 sec
+      Start 67: TamperTest.DetectsCrossedBook
+67/76 Test #67: TamperTest.DetectsCrossedBook ...................................................   Passed    0.04 sec
+      Start 68: TamperTest.DetectsQuantitySumOverflowWithoutUndefinedBehaviour
+68/76 Test #68: TamperTest.DetectsQuantitySumOverflowWithoutUndefinedBehaviour ..................   Passed    0.04 sec
+      Start 69: OrderBookDifferential.MatchesReferenceModelOnFixedSeeds
+69/76 Test #69: OrderBookDifferential.MatchesReferenceModelOnFixedSeeds .........................   Passed   24.11 sec
+      Start 70: ReferenceBook.PriorityRuleWorkedExample
+70/76 Test #70: ReferenceBook.PriorityRuleWorkedExample .........................................   Passed    0.03 sec
+      Start 71: OrderBookAllocFailure.InjectionHarnessWorks
+71/76 Test #71: OrderBookAllocFailure.InjectionHarnessWorks .....................................   Passed    0.02 sec
+      Start 72: OrderBookAllocFailure.AddNewLevelOnEmptyBookHasStrongGuarantee
+72/76 Test #72: OrderBookAllocFailure.AddNewLevelOnEmptyBookHasStrongGuarantee ..................   Passed    0.03 sec
+      Start 73: OrderBookAllocFailure.AddToExistingLevelHasStrongGuarantee
+73/76 Test #73: OrderBookAllocFailure.AddToExistingLevelHasStrongGuarantee ......................   Passed    0.03 sec
+      Start 74: OrderBookAllocFailure.AddSweepAcrossBookSizesIncludingRehash
+74/76 Test #74: OrderBookAllocFailure.AddSweepAcrossBookSizesIncludingRehash ....................   Passed    0.09 sec
+      Start 75: OrderBookAllocFailure.FillAndCancelNeverAllocate
+75/76 Test #75: OrderBookAllocFailure.FillAndCancelNeverAllocate ................................   Passed    0.03 sec
+      Start 76: OrderBookAllocFailure.ContractViolationUnderMemoryPressureLeavesBookUnchanged
+76/76 Test #76: OrderBookAllocFailure.ContractViolationUnderMemoryPressureLeavesBookUnchanged ...   Passed    0.03 sec
+
+100% tests passed, 0 tests failed out of 76
+
+Total Test time (real) =  27.44 sec
+[PASS] clang-asan
+================ summary ================
+all presets passed: gcc-debug gcc-release gcc-asan clang-debug clang-release clang-asan
