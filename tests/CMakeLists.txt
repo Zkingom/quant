@@ -27,3 +27,8 @@ lob_add_test_suite(lob_core_tests
     core/test_config.cpp
     core/test_validation.cpp
   LIBS lob::core)
+
+lob_add_test_suite(lob_book_tests
+  SOURCES
+    book/test_order_book.cpp
+  LIBS lob::book)
