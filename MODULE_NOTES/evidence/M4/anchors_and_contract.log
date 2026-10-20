@@ -1,0 +1,62 @@
+Running main() from ./googletest/src/gtest_main.cc
+Note: Google Test filter = EngineDifferential.*
+[==========] Running 2 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 2 tests from EngineDifferential
+[ RUN      ] EngineDifferential.MixedProfileReproducesTheM3Stream
+[coverage] commands=100000 accepted=68558 trades=54005 cancels=13555
+[coverage] multi_maker=12191 multi_level=8145 taker_full=19829 taker_partial_rested=5924 rested_no_trade=42805 maker_partial=18970
+[coverage] accepted_while_full=8518 reused_dead_id=3601 max_orders=40
+[coverage] rejects: INVALID_ORDER_ID=1203 INVALID_SIDE=1200 PRICE_OUT_OF_RANGE=1273 INVALID_QUANTITY=1189 QUANTITY_TOO_LARGE=1213 DUPLICATE_ORDER_ID=136 UNKNOWN_ORDER_ID=5571 BOOK_FULL=6102
+[state] max_levels_per_side=28 max_level_orders=29 max_level_quantity=783 max_trades_in_command=13 max_levels_swept=9 side_emptied=1905 band_edge_accepts=15290 band_edge_trades=14080 accepted_quantity=1918124 full_checks=100020
+[faults] prepare=0 residual=0 armed_without_effect=0
+[       OK ] EngineDifferential.MixedProfileReproducesTheM3Stream (450 ms)
+[ RUN      ] EngineDifferential.CheckIntervalDoesNotChangeTheStream
+[       OK ] EngineDifferential.CheckIntervalDoesNotChangeTheStream (508 ms)
+[----------] 2 tests from EngineDifferential (961 ms total)
+
+[----------] Global test environment tear-down
+[==========] 2 tests from 1 test suite ran. (963 ms total)
+[  PASSED  ] 2 tests.
+Running main() from ./googletest/src/gtest_main.cc
+Note: Google Test filter = OrderBookDifferential.*
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OrderBookDifferential
+[ RUN      ] OrderBookDifferential.MatchesReferenceModelOnFixedSeeds
+[coverage] seeds=20 steps/seed=5000 adds=28056 new_level=11865 reused_dead_id=3920
+[coverage] rejected: crossing=1698 duplicate=2188 capacity=9617 invalid=1753 stale_seq=1795
+[coverage] cancels hit=15730 miss=9279; fills partial=16147 complete=11571 rejected=2142
+[coverage] levels_removed=11512 max_orders=40
+[       OK ] OrderBookDifferential.MatchesReferenceModelOnFixedSeeds (709 ms)
+[----------] 1 test from OrderBookDifferential (710 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (711 ms total)
+[  PASSED  ] 1 test.
+Running main() from ./googletest/src/gtest_main.cc
+Note: Google Test filter = EngineAllocFailure.LongRuns*:ReplayContract.*
+[==========] Running 6 tests from 2 test suites.
+[----------] Global test environment set-up.
+[----------] 1 test from EngineAllocFailure
+[ RUN      ] EngineAllocFailure.LongRunsWithRepeatedFaultsStayConsistent
+[alloc] long runs, all profiles x 2 seeds x 4000 commands, 5% armed: prepare=412 residual=873 armed_without_effect=3015
+[       OK ] EngineAllocFailure.LongRunsWithRepeatedFaultsStayConsistent (393 ms)
+[----------] 1 test from EngineAllocFailure (393 ms total)
+
+[----------] 5 tests from ReplayContract
+[ RUN      ] ReplayContract.C1NotAppliedCommandCanBeRetried
+[       OK ] ReplayContract.C1NotAppliedCommandCanBeRetried (0 ms)
+[ RUN      ] ReplayContract.C2RetryAfterAppliedFailureExecutesTwice
+[       OK ] ReplayContract.C2RetryAfterAppliedFailureExecutesTwice (0 ms)
+[ RUN      ] ReplayContract.C3CommandReplayDivergesAfterAResourceFailure
+[       OK ] ReplayContract.C3CommandReplayDivergesAfterAResourceFailure (0 ms)
+[ RUN      ] ReplayContract.C4C5EventLogRebuildsBookAndSeqRangesAttributeEvents
+[       OK ] ReplayContract.C4C5EventLogRebuildsBookAndSeqRangesAttributeEvents (17 ms)
+[ RUN      ] ReplayContract.C6FailureFreeCommandReplayIsExact
+[       OK ] ReplayContract.C6FailureFreeCommandReplayIsExact (3 ms)
+[----------] 5 tests from ReplayContract (24 ms total)
+
+[----------] Global test environment tear-down
+[==========] 6 tests from 2 test suites ran. (420 ms total)
+[  PASSED  ] 6 tests.

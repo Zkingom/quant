@@ -55,7 +55,7 @@
 | M1 core | `lob::core` | 基本类型、命令、拒单原因、配置约束、无状态校验、溢出检查算术 | 无 | ✅ |
 | M2 book | `lob::book` | 订单簿数据结构：价格层、同价 FIFO、ID 索引、不变量检查；**不含撮合逻辑** | core | ✅ |
 | M3 engine | `lob::engine` | 命令处理：有状态校验（重复 ID、未知 ID、容量）、价格-时间优先撮合、事件生成、序号 | core, book | ✅ |
-| M4 testkit | `lob::testkit` | 把 M3 测试中的生成器、参考引擎、事件审计器整理为可复用库（供 M5 回放、M6 基准）；大规模长跑（D-023） | core, engine | 📝 |
+| M4 testkit | `lob::testkit`（仅测试） | 参考引擎、事件审计器、工作负载画像与生成器、差分执行器、分配故障注入、长跑工具 `lob_soak` | core, book, engine | ✅ |
 | M5 io | `lob::io` | 文本命令格式解析、事件序列化、规范快照与哈希、回放驱动；`lob_replay` CLI；Golden Tests | core, engine | 📝 |
 | M6 bench | `lob_bench` | 吞吐与延迟分布（p50/p95/p99）测量 | engine, testkit | 📝 |
 | L3 gateway | `lob_gateway` | 单客户端 TCP 网关（有条件执行） | engine, io | 📝 |
@@ -119,6 +119,20 @@
 - 测试结构：`lob_engine_tests`（单元、审计器自检、与参考引擎的差分）+ `lob_engine_alloc_tests`（独立进程，分配失败注入）；
   测试支撑代码在 `tests/support/`（`rng.hpp`、`alloc_fault.{hpp,cpp}`，M2/M3 共用）。
 - 详见 [MODULE_NOTES/M3_engine.md](MODULE_NOTES/M3_engine.md)。
+
+### M4 testkit（仅测试，不进入生产目标）
+
+```
+testkit/include/lob/testkit/   rng · reference_engine · event_auditor · workload · differential · describe · alloc_fault
+testkit/src/                   对应实现；alloc_fault.cpp 为 OBJECT 库（替换全局 operator new/delete）
+testkit/tools/soak.cpp         lob_soak：画像 × 种子区间的长跑 CLI
+```
+
+- 依赖方向：`lob::testkit → lob::engine → lob::book → lob::core`；`tests/` 与 `lob_soak` 依赖 testkit；生产目标从不依赖它。
+- 数据流：`WorkloadGenerator(画像, 种子)` 读取 `ReferenceEngine` 状态生成命令 → 同一命令送入 `MatchingEngine` 与 `ReferenceEngine`
+  → 事件逐条比较、`EventAuditor` 逐条审计 → 周期性全量检查（簿、守恒、不变量）→ `Coverage` 与边界目标判定。
+- 故障注入通过 `FaultInjector` 接口接入执行器，实现在 `lob_testkit_alloc_fault`，只链接进 `*_alloc_tests` 与 `lob_soak`。
+- 详见 [MODULE_NOTES/M4_testkit.md](MODULE_NOTES/M4_testkit.md)。
 
 ## 5. 构建拓扑
 

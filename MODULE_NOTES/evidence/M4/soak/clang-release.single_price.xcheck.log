@@ -1,0 +1,14 @@
+$ lob_soak --profile single_price --seeds 21-23 --commands 50000 --check-every 1000
+[run] profile=single_price seed=21 commands=50000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.051
+[run] profile=single_price seed=22 commands=50000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.051
+[run] profile=single_price seed=23 commands=50000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.050
+== profile single_price: band of one price (min == max): long FIFO queues, equal-price trades only
+[coverage] commands=150000 accepted=110561 trades=87304 cancels=21192
+[coverage] multi_maker=8967 multi_level=0 taker_full=44510 taker_partial_rested=165 rested_no_trade=65886 maker_partial=42680
+[coverage] accepted_while_full=46 reused_dead_id=9989 max_orders=400
+[coverage] rejects: INVALID_ORDER_ID=1843 INVALID_SIDE=1759 PRICE_OUT_OF_RANGE=1748 INVALID_QUANTITY=1819 QUANTITY_TOO_LARGE=1796 DUPLICATE_ORDER_ID=266 UNKNOWN_ORDER_ID=8837 BOOK_FULL=179
+[state] max_levels_per_side=1 max_level_orders=400 max_level_quantity=12996 max_trades_in_command=41 max_levels_swept=1 side_emptied=186 band_edge_accepts=110561 band_edge_trades=87304 accepted_quantity=3023299 full_checks=153
+[faults] prepare=0 residual=0 armed_without_effect=0
+[time] seconds=0.152 commands_per_second(harness incl. reference+audit)=984419
+[targets] all met
+[resources] max_rss_kib=5440 user_s=0.16 sys_s=0.00

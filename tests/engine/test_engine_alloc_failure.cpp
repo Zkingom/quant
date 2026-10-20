@@ -27,16 +27,18 @@
 #include <vector>
 
 #include "engine_test_util.hpp"
-#include "event_auditor.hpp"
+#include "lob/testkit/event_auditor.hpp"
 #include "lob/engine/matching_engine.hpp"
-#include "reference_engine.hpp"
-#include "support/alloc_fault.hpp"
-#include "support/rng.hpp"
+#include "lob/testkit/alloc_fault.hpp"
+#include "lob/testkit/differential.hpp"
+#include "lob/testkit/reference_engine.hpp"
+#include "lob/testkit/rng.hpp"
+#include "lob/testkit/workload.hpp"
 
 namespace lob {
 namespace {
 
-using test::alloc::FaultWindow;
+using testkit::alloc::FaultWindow;
 using test::buy;
 using test::dump;
 using test::sell;
@@ -55,8 +57,8 @@ struct SweepResult {
 
 struct World {
   MatchingEngine engine{kConfig};
-  test::ReferenceEngine ref{kConfig};
-  test::EventAuditor auditor{kConfig};
+  testkit::ReferenceEngine ref{kConfig};
+  testkit::EventAuditor auditor{kConfig};
 };
 
 void replay(World& w, const std::vector<Command>& prefix) {
@@ -66,12 +68,12 @@ void replay(World& w, const std::vector<Command>& prefix) {
     w.engine.process(c, scratch);
     const auto expected = w.ref.process(c);
     ASSERT_EQ(scratch, expected);
-    ASSERT_TRUE(w.auditor.audit(c, scratch));
+    ASSERT_EQ(w.auditor.audit(c, scratch), std::nullopt);
   }
 }
 
-std::vector<test::ReferenceEngine::Resting> engine_orders(const OrderBook& book, Side side) {
-  std::vector<test::ReferenceEngine::Resting> out;
+std::vector<testkit::ReferenceEngine::Resting> engine_orders(const OrderBook& book, Side side) {
+  std::vector<testkit::ReferenceEngine::Resting> out;
   book.for_each_order(side, [&](Price price, const RestingOrder& o) {
     out.push_back({o.id, side, price, o.remaining, o.seq});
   });
@@ -148,8 +150,8 @@ SweepResult sweep(const std::vector<Command>& prefix, const Command& command, Bu
         EXPECT_EQ(engine_orders(w.engine.book(), side), w.ref.side_in_priority(side));
       }
       EXPECT_EQ(w.engine.find_invariant_violation(), std::nullopt);
-      EXPECT_TRUE(w.auditor.audit(command, appended));
-      EXPECT_TRUE(w.auditor.matches(w.engine.book()));
+      EXPECT_EQ(w.auditor.audit(command, appended), std::nullopt);
+      EXPECT_EQ(w.auditor.matches(w.engine.book()), std::nullopt);
 
       // Still fully usable afterwards.
       std::vector<Event> more;
@@ -222,7 +224,7 @@ TEST(EngineAllocFailure, BookFullRejectionHasStrongGuarantee) {
 // Broad sweep: every command of a seeded random stream, swept at every
 // allocation point, with the stream so far as prefix.
 TEST(EngineAllocFailure, EveryCommandOfARandomStream) {
-  test::Rng rng{2026};
+  testkit::Rng rng{2026};
   std::vector<Command> stream;
   OrderId next_id = 1;
   for (int i = 0; i < 150; ++i) {
@@ -253,6 +255,33 @@ TEST(EngineAllocFailure, EveryCommandOfARandomStream) {
               stream.size(), total.points, total.prepare, total.residual);
   EXPECT_GT(total.prepare, 0);
   EXPECT_GT(total.residual, 0);
+}
+
+// Long horizon (M4): faults injected throughout long runs of every profile;
+// after each PREPARE / RESIDUAL outcome the run CONTINUES and must keep
+// agreeing with the (realigned) reference on every later command. M3 only
+// checked one command after a single failure.
+TEST(EngineAllocFailure, LongRunsWithRepeatedFaultsStayConsistent) {
+  testkit::alloc::Injector injector;
+  testkit::Coverage merged;
+  for (const auto& profile : testkit::standard_profiles()) {
+    for (std::uint64_t seed = 1; seed <= 2; ++seed) {
+      testkit::RunOptions options;
+      options.seed = seed;
+      options.commands = 4'000;
+      options.full_check_every = 50;
+      options.fault_per_mille = 50;
+      options.injector = &injector;
+      const auto report = testkit::run_differential(profile, options);
+      ASSERT_TRUE(report.ok) << profile.name << " seed " << seed << '\n' << report.failure;
+      merged.merge(report.coverage);
+    }
+  }
+  std::printf("[alloc] long runs, all profiles x 2 seeds x 4000 commands, 5%% armed: "
+              "prepare=%ld residual=%ld armed_without_effect=%ld\n",
+              merged.faults_prepare, merged.faults_residual, merged.faults_armed_without_effect);
+  EXPECT_GT(merged.faults_prepare, 0);
+  EXPECT_GT(merged.faults_residual, 0);
 }
 
 }  // namespace

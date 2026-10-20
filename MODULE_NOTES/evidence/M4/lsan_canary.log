@@ -1,0 +1,13 @@
+
+=================================================================
+==2648==ERROR: LeakSanitizer: detected memory leaks
+
+Direct leak of 64 byte(s) in 1 object(s) allocated from:
+    #0 0x7307ca6fe6c8 in operator new[](unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:98
+    #1 0x648b5389619a in main (/tmp/lsan_canary+0x119a) (BuildId: aa92c5ca98a51baf164b584ccc69c4adc7ec2b33)
+    #2 0x7307c9e2a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #3 0x7307c9e2a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #4 0x648b538960c4 in _start (/tmp/lsan_canary+0x10c4) (BuildId: aa92c5ca98a51baf164b584ccc69c4adc7ec2b33)
+
+SUMMARY: AddressSanitizer: 64 byte(s) leaked in 1 allocation(s).
+canary exit=1

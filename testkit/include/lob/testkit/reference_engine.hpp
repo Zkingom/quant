@@ -9,7 +9,9 @@
 //   - the match is simulated on a COPY of the book; BOOK_FULL is decided by
 //     looking at the size of that copy, not by the engine's
 //     "count - makers filled" formula; commit = assign the copy back.
-// It has no exception handling: it never runs under fault injection.
+// It has no exception handling: it never runs under fault injection; after
+// an injected failure in the real engine, the driver realigns it with
+// drop_resting().
 
 #include <algorithm>
 #include <cstdint>
@@ -21,7 +23,7 @@
 #include "lob/core/validation.hpp"
 #include "lob/engine/events.hpp"
 
-namespace lob::test {
+namespace lob::testkit {
 
 class ReferenceEngine {
  public:
@@ -56,6 +58,33 @@ class ReferenceEngine {
       return a.seq < b.seq;
     });
     return out;
+  }
+
+  /// Best price on `side` (linear scan; O(n), no sort).
+  [[nodiscard]] std::optional<Price> best_price(Side side) const {
+    std::optional<Price> best;
+    for (const Resting& r : book_) {
+      if (r.side == side &&
+          (!best || (side == Side::Buy ? r.price > *best : r.price < *best))) {
+        best = r.price;
+      }
+    }
+    return best;
+  }
+
+  /// Removes a resting order WITHOUT producing an event or consuming a seq.
+  /// Only for realigning with the real engine after an injected
+  /// resting failure (the engine reports that remainder as one
+  /// CANCELLED(INSUFFICIENT_RESOURCES) in place of RESTED). Returns false if
+  /// the id is not resting.
+  bool drop_resting(OrderId id) {
+    for (auto it = book_.begin(); it != book_.end(); ++it) {
+      if (it->id == id) {
+        book_.erase(it);
+        return true;
+      }
+    }
+    return false;
   }
 
   [[nodiscard]] std::size_t order_count() const { return book_.size(); }
@@ -179,4 +208,4 @@ class ReferenceEngine {
   SeqNum seq_{0};
 };
 
-}  // namespace lob::test
+}  // namespace lob::testkit

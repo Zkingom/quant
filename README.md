@@ -11,7 +11,8 @@ C++20 实现的单线程、确定性、正确性优先的单标的限价订单�
 | M1 core：类型、命令、拒单码、配置约束、无状态校验 | ✅ 29 个测试，6 个预设通过 |
 | M2 book：价格层 + FIFO + ID 索引、不变量检查、强异常保证 | ✅ 48 个测试（含 10 万步差分测试与分配失败注入），6 个预设通过 |
 | M3 engine：价格-时间优先撮合、拒单语义、事件流、两阶段异常语义 | ✅ 53 个测试（含事件审计器、10 万条命令的参考引擎差分、逐分配点故障注入），6 个预设通过 |
-| M4 testkit / M5 io / M6 bench | 📝 未开始 |
+| M4 testkit：可复用测试基础设施、10 个工作负载画像、长跑与长序列故障注入、M5 契约测试 | ✅ 147 个 CTest 用例（含 10 个画像冒烟长跑）；长跑矩阵见 MODULE_NOTES/M4 |
+| M5 io / M6 bench | 📝 未开始 |
 
 撮合引擎已可用（无文本输入格式与回放工具，属于 M5；无性能数据，属于 M6）。 计划与验收门槛见 [ROADMAP.md](ROADMAP.md)。
 
@@ -65,6 +66,26 @@ python3 scripts/mutation/m3_engine.py "$PWD"
 scripts/evidence_m3.sh
 ```
 
+长跑（列出画像；运行一个画像；运行完整矩阵）：
+
+```bash
+./build/gcc-release/testkit/lob_soak --list
+```
+
+```bash
+./build/gcc-release/testkit/lob_soak --profile deep_book --seeds 1-10 --commands 200000 --check-every 1000 --require-targets
+```
+
+```bash
+scripts/soak.sh /tmp/soak
+```
+
+重新生成 M4 的全部验收证据（全新构建、回归锚点、LSan 探针、长跑矩阵、变异回归）：
+
+```bash
+scripts/evidence_m4.sh
+```
+
 ## 文档
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) — 模块划分、依赖与数据流
@@ -85,4 +106,5 @@ examples/               可运行示例
 cmake/                  警告与 Sanitizer 配置
 scripts/check.sh        全预设构建 + 测试
 scripts/mutation/       模块变异测试脚本
+testkit/                测试基础设施（仅测试构建）与长跑工具 lob_soak
 ```

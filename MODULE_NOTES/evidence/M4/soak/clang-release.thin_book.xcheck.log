@@ -1,0 +1,14 @@
+$ lob_soak --profile thin_book --seeds 21-23 --commands 50000 --check-every 1000
+[run] profile=thin_book seed=21 commands=50000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.028
+[run] profile=thin_book seed=22 commands=50000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.025
+[run] profile=thin_book seed=23 commands=50000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.028
+== profile thin_book: thin book: a side is traded empty in >= 5% of commands
+[coverage] commands=150000 accepted=126015 trades=108021 cancels=10439
+[coverage] multi_maker=23142 multi_level=8825 taker_full=43625 taker_partial_rested=37016 rested_no_trade=45374 maker_partial=36137
+[coverage] accepted_while_full=0 reused_dead_id=11675 max_orders=75
+[coverage] rejects: INVALID_ORDER_ID=1844 INVALID_SIDE=1726 PRICE_OUT_OF_RANGE=1801 INVALID_QUANTITY=1761 QUANTITY_TOO_LARGE=1832 DUPLICATE_ORDER_ID=25 UNKNOWN_ORDER_ID=4557 BOOK_FULL=0
+[state] max_levels_per_side=9 max_level_orders=53 max_level_quantity=427 max_trades_in_command=7 max_levels_swept=3 side_emptied=16373 band_edge_accepts=0 band_edge_trades=0 accepted_quantity=933431 full_checks=153
+[faults] prepare=0 residual=0 armed_without_effect=0
+[time] seconds=0.080 commands_per_second(harness incl. reference+audit)=1870578
+[targets] all met
+[resources] max_rss_kib=5600 user_s=0.09 sys_s=0.00

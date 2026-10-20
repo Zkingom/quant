@@ -1,0 +1,21 @@
+$ lob_soak --profile thin_book --seeds 1-10 --commands 200000 --check-every 1000 --require-targets
+[run] profile=thin_book seed=1 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.120
+[run] profile=thin_book seed=2 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.116
+[run] profile=thin_book seed=3 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.118
+[run] profile=thin_book seed=4 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.114
+[run] profile=thin_book seed=5 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.115
+[run] profile=thin_book seed=6 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.113
+[run] profile=thin_book seed=7 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.110
+[run] profile=thin_book seed=8 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.110
+[run] profile=thin_book seed=9 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.109
+[run] profile=thin_book seed=10 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.109
+== profile thin_book: thin book: a side is traded empty in >= 5% of commands
+[coverage] commands=2000000 accepted=1679826 trades=1437308 cancels=139687
+[coverage] multi_maker=310654 multi_level=116775 taker_full=584270 taker_partial_rested=485386 rested_no_trade=610170 maker_partial=481563
+[coverage] accepted_while_full=0 reused_dead_id=157791 max_orders=116
+[coverage] rejects: INVALID_ORDER_ID=23925 INVALID_SIDE=24178 PRICE_OUT_OF_RANGE=23884 INVALID_QUANTITY=23988 QUANTITY_TOO_LARGE=23885 DUPLICATE_ORDER_ID=106 UNKNOWN_ORDER_ID=60521 BOOK_FULL=0
+[state] max_levels_per_side=12 max_level_orders=83 max_level_quantity=637 max_trades_in_command=7 max_levels_swept=5 side_emptied=216229 band_edge_accepts=0 band_edge_trades=0 accepted_quantity=12449360 full_checks=2010
+[faults] prepare=0 residual=0 armed_without_effect=0
+[time] seconds=1.134 commands_per_second(harness incl. reference+audit)=1763149
+[targets] all met
+[resources] max_rss_kib=11040 user_s=1.20 sys_s=0.00

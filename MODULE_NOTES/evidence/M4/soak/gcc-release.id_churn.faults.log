@@ -1,0 +1,16 @@
+$ lob_soak --profile id_churn --seeds 11-15 --commands 50000 --check-every 500 --fault-per-mille 20 --require-targets
+[run] profile=id_churn seed=11 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.029
+[run] profile=id_churn seed=12 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.029
+[run] profile=id_churn seed=13 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.027
+[run] profile=id_churn seed=14 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.028
+[run] profile=id_churn seed=15 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.028
+== profile id_churn: ids wrap within [1, 64]: constant duplicate rejections and dead-id reuse
+[coverage] commands=248778 accepted=129863 trades=91068 cancels=37179
+[coverage] multi_maker=20216 multi_level=13261 taker_full=34489 taker_partial_rested=12533 rested_no_trade=82841 maker_partial=33088
+[coverage] accepted_while_full=9539 reused_dead_id=12903 max_orders=40
+[coverage] rejects: INVALID_ORDER_ID=3588 INVALID_SIDE=3077 PRICE_OUT_OF_RANGE=2931 INVALID_QUANTITY=2973 QUANTITY_TOO_LARGE=2886 DUPLICATE_ORDER_ID=51058 UNKNOWN_ORDER_ID=8719 BOOK_FULL=6504
+[state] max_levels_per_side=21 max_level_orders=28 max_level_quantity=676 max_trades_in_command=12 max_levels_swept=7 side_emptied=4638 band_edge_accepts=30862 band_edge_trades=25665 accepted_quantity=3718414 full_checks=1727
+[faults] prepare=448 residual=774 armed_without_effect=3826
+[time] seconds=0.142 commands_per_second(harness incl. reference+audit)=1760409
+[targets] all met
+[resources] max_rss_kib=4000 user_s=0.15 sys_s=0.00
