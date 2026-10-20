@@ -17,7 +17,6 @@
 #include <cstdint>
 #include <cstdio>
 #include <limits>
-#include <random>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -26,6 +25,7 @@
 #include "book_test_util.hpp"
 #include "lob/book/order_book.hpp"
 #include "reference_book.hpp"
+#include "support/rng.hpp"
 
 namespace lob {
 namespace {
@@ -40,23 +40,7 @@ constexpr EngineConfig kConfig{
 constexpr int kSeeds = 20;
 constexpr int kStepsPerSeed = 5'000;
 
-/// Deterministic on every platform: std::mt19937_64 is fully specified and
-/// the range reduction is ours (std::uniform_int_distribution is not
-/// specified across standard libraries). Modulo bias is irrelevant here.
-class Rng {
- public:
-  explicit Rng(std::uint64_t seed) : engine_(seed) {}
-
-  std::int64_t uniform(std::int64_t lo, std::int64_t hi) {  // inclusive
-    const auto span = static_cast<std::uint64_t>(hi - lo) + 1;
-    return lo + static_cast<std::int64_t>(engine_() % span);
-  }
-  bool percent(int p) { return uniform(0, 99) < p; }
-  Side side() { return percent(50) ? Side::Buy : Side::Sell; }
-
- private:
-  std::mt19937_64 engine_;
-};
+using test::Rng;
 
 struct Coverage {
   long adds = 0;

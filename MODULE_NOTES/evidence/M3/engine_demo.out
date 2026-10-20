@@ -1,0 +1,90 @@
+NEW    id=1 SELL 101x5
+    #1 ACCEPTED  id=1
+    #2 RESTED    id=1 5 @ 101
+        ask  101 x 5    (1)
+NEW    id=2 SELL 101x3
+    #3 ACCEPTED  id=2
+    #4 RESTED    id=2 3 @ 101
+        ask  101 x 8    (2)
+NEW    id=3 SELL 102x4
+    #5 ACCEPTED  id=3
+    #6 RESTED    id=3 4 @ 102
+        ask  102 x 4    (1)
+        ask  101 x 8    (2)
+NEW    id=4 BUY 99x10
+    #7 ACCEPTED  id=4
+    #8 RESTED    id=4 10 @ 99
+        ask  102 x 4    (1)
+        ask  101 x 8    (2)
+        bid   99 x 10   (1)
+NEW    id=5 BUY 102x10
+    #9 ACCEPTED  id=5
+    #10 TRADE     taker=5 maker=1 5 @ 101  (taker left 5, maker left 0)
+    #11 TRADE     taker=5 maker=2 3 @ 101  (taker left 2, maker left 0)
+    #12 TRADE     taker=5 maker=3 2 @ 102  (taker left 0, maker left 2)
+        ask  102 x 2    (1)
+        bid   99 x 10   (1)
+NEW    id=6 SELL 98x12
+    #13 ACCEPTED  id=6
+    #14 TRADE     taker=6 maker=4 10 @ 99  (taker left 2, maker left 0)
+    #15 RESTED    id=6 2 @ 98
+        ask  102 x 2    (1)
+        ask   98 x 2    (1)
+CANCEL id=3
+    #16 CANCELLED id=3 2 @ 102 REQUESTED
+        ask   98 x 2    (1)
+CANCEL id=3
+    #17 REJECTED  id=3 UNKNOWN_ORDER_ID
+        ask   98 x 2    (1)
+NEW    id=4 BUY 97x1
+    #18 ACCEPTED  id=4
+    #19 RESTED    id=4 1 @ 97
+        ask   98 x 2    (1)
+        bid   97 x 1    (1)
+NEW    id=6 BUY 50x1
+    #20 REJECTED  id=6 DUPLICATE_ORDER_ID
+        ask   98 x 2    (1)
+        bid   97 x 1    (1)
+NEW    id=7 BUY 2000x1
+    #21 REJECTED  id=7 PRICE_OUT_OF_RANGE
+        ask   98 x 2    (1)
+        bid   97 x 1    (1)
+NEW    id=8 BUY 10x1
+    #22 ACCEPTED  id=8
+    #23 RESTED    id=8 1 @ 10
+        ask   98 x 2    (1)
+        bid   97 x 1    (1)
+        bid   10 x 1    (1)
+NEW    id=9 BUY 11x1
+    #24 ACCEPTED  id=9
+    #25 RESTED    id=9 1 @ 11
+        ask   98 x 2    (1)
+        bid   97 x 1    (1)
+        bid   11 x 1    (1)
+        bid   10 x 1    (1)
+NEW    id=10 BUY 12x1
+    #26 ACCEPTED  id=10
+    #27 RESTED    id=10 1 @ 12
+        ask   98 x 2    (1)
+        bid   97 x 1    (1)
+        bid   12 x 1    (1)
+        bid   11 x 1    (1)
+        bid   10 x 1    (1)
+NEW    id=11 BUY 13x1
+    #28 ACCEPTED  id=11
+    #29 RESTED    id=11 1 @ 13
+        ask   98 x 2    (1)
+        bid   97 x 1    (1)
+        bid   13 x 1    (1)
+        bid   12 x 1    (1)
+        bid   11 x 1    (1)
+        bid   10 x 1    (1)
+NEW    id=12 BUY 14x1
+    #30 REJECTED  id=12 BOOK_FULL
+        ask   98 x 2    (1)
+        bid   97 x 1    (1)
+        bid   13 x 1    (1)
+        bid   12 x 1    (1)
+        bid   11 x 1    (1)
+        bid   10 x 1    (1)
+last_seq=30 invariants=OK

@@ -1,13 +1,11 @@
-# Mutation check for M2: apply one seeded bug at a time to an isolated copy
-# of the source tree, rebuild, run all tests, report which tests fail.
+# Mutation check for M2 (order book). See mutate.py for the procedure.
 # Usage: python3 scripts/mutation/m2_book.py "$PWD"   (run inside WSL/Linux)
 import pathlib
-import shutil
-import subprocess
 import sys
 
-REPO = pathlib.Path(sys.argv[1])
-WORK = pathlib.Path("/tmp/m2mut")
+sys.path.insert(0, str(pathlib.Path(__file__).parent))
+from mutate import run  # noqa: E402
+
 SRC = "src/book/order_book.cpp"
 
 MUTATIONS = [
@@ -46,55 +44,10 @@ MUTATIONS = [
     ("invariant checker skips the FIFO seq check", SRC, [
         ("if (previous_seq && order.seq <= *previous_seq)", "if (false && previous_seq)"),
     ]),
+    ("for_each_order_while ignores the stop signal", "include/lob/book/order_book.hpp", [
+        ("          if (!visit(price, order)) {\n            return;\n",
+         "          if (!visit(price, order)) {\n            continue;\n"),
+    ]),
 ]
 
-
-def run(cmd, cwd):
-    return subprocess.run(cmd, cwd=cwd, shell=True, capture_output=True, text=True)
-
-
-def main():
-    if WORK.exists():
-        shutil.rmtree(WORK)
-    WORK.mkdir()
-    for item in ["CMakeLists.txt", "cmake", "include", "src", "tests"]:
-        src = REPO / item
-        (shutil.copytree if src.is_dir() else shutil.copy)(src, WORK / item)
-    configure = run("cmake -S . -B b -G Ninja -DLOB_BUILD_EXAMPLES=OFF -DCMAKE_BUILD_TYPE=Debug", WORK)
-    assert configure.returncode == 0, configure.stdout + configure.stderr
-
-    survivors = 0
-    for name, rel, edits in MUTATIONS:
-        path = WORK / rel
-        original = path.read_text()
-        mutated = original
-        for old, new in edits:
-            count = mutated.count(old)
-            if count != 1:
-                print(f"[ERROR] '{name}': pattern found {count} times: {old!r}")
-                sys.exit(2)
-            mutated = mutated.replace(old, new)
-        path.write_text(mutated)
-        build = run("cmake --build b", WORK)
-        if build.returncode != 0:
-            print(f"[KILLED-BUILD] {name}")
-        else:
-            test = run("ctest --test-dir b", WORK)
-            failed = [l.split(" - ", 1)[1].split(" (")[0] for l in test.stdout.splitlines()
-                      if " - " in l and "(Failed" in l or "(Subprocess" in l]
-            if test.returncode == 0:
-                survivors += 1
-                print(f"[SURVIVED] {name}")
-            else:
-                print(f"[KILLED] {name}: {len(failed)} failing: {', '.join(failed[:6])}"
-                      + (" ..." if len(failed) > 6 else ""))
-        path.write_text(original)
-
-    # Sanity: the unmutated tree passes.
-    build = run("cmake --build b", WORK)
-    test = run("ctest --test-dir b", WORK)
-    print(f"[BASELINE] unmutated tree: build rc={build.returncode} ctest rc={test.returncode}")
-    print(f"survivors: {survivors}/{len(MUTATIONS)}")
-
-
-main()
+run(sys.argv[1], MUTATIONS, "m2mut")

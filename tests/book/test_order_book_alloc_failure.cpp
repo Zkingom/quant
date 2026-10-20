@@ -1,10 +1,11 @@
 // Allocation-failure injection for OrderBook's exception-safety guarantees.
 //
-// This file replaces the global operator new/delete for its own test
-// executable only (lob_book_alloc_tests). Injection is disarmed by default;
-// an RAII guard arms it around exactly one book operation, so GoogleTest
-// and the test's own bookkeeping never see an injected failure. Each armed
-// window fails at most one allocation and then disarms itself.
+// Uses the shared harness in support/alloc_fault.{hpp,cpp}, which replaces
+// the global operator new/delete for this executable only
+// (lob_book_alloc_tests). Injection is disarmed by default; a FaultWindow
+// arms it around exactly one book operation and fails at most one
+// allocation, so GoogleTest and the test's own bookkeeping never see an
+// injected failure.
 //
 // For an operation we sweep k = 0, 1, 2, ...: rebuild the same book, arm
 // "fail the k-th allocation", run the operation. While the operation throws
@@ -18,7 +19,6 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdio>
-#include <cstdlib>
 #include <functional>
 #include <new>
 #include <stdexcept>
@@ -26,76 +26,9 @@
 
 #include "book_test_util.hpp"
 #include "lob/book/order_book.hpp"
+#include "support/alloc_fault.hpp"
 
-namespace {
-
-// Single-threaded test binary: plain globals are sufficient.
-bool g_armed = false;
-long g_countdown = 0;     // allocations to let through before failing one
-long g_allocations = 0;   // allocations observed while armed
-long g_injected = 0;      // failures injected while armed
-
-void* allocate(std::size_t size) {
-  if (g_armed) {
-    ++g_allocations;
-    if (g_countdown == 0) {
-      g_armed = false;  // fail exactly once per armed window
-      ++g_injected;
-      throw std::bad_alloc();
-    }
-    --g_countdown;
-  }
-  if (void* p = std::malloc(size == 0 ? 1 : size)) {
-    return p;
-  }
-  throw std::bad_alloc();
-}
-
-class FaultWindow {
- public:
-  explicit FaultWindow(long fail_after) {
-    g_allocations = 0;
-    g_injected = 0;
-    g_countdown = fail_after;
-    g_armed = true;
-  }
-  ~FaultWindow() { g_armed = false; }
-  FaultWindow(const FaultWindow&) = delete;
-  FaultWindow& operator=(const FaultWindow&) = delete;
-
-  long allocations() const { return g_allocations; }
-  bool injected() const { return g_injected > 0; }
-};
-
-}  // namespace
-
-// Replaceable global allocation functions ([new.delete]). Every plain and
-// nothrow form is replaced so that each allocation/deallocation pair goes
-// through malloc/free: if only the plain forms were replaced, a nothrow new
-// served by a sanitizer's own operator new (GoogleTest uses
-// new(std::nothrow)) would be released by our free-based delete, which ASan
-// reports as alloc-dealloc-mismatch. The nothrow forms take part in
-// injection like the standard defaults do (they call the plain form).
-// Aligned forms are left to the implementation as a matched set; nothing in
-// this binary over-aligns.
-void* operator new(std::size_t size) { return allocate(size); }
-void* operator new[](std::size_t size) { return allocate(size); }
-void* operator new(std::size_t size, const std::nothrow_t&) noexcept {
-  try {
-    return allocate(size);
-  } catch (const std::bad_alloc&) {
-    return nullptr;
-  }
-}
-void* operator new[](std::size_t size, const std::nothrow_t& tag) noexcept {
-  return operator new(size, tag);
-}
-void operator delete(void* p) noexcept { std::free(p); }
-void operator delete[](void* p) noexcept { std::free(p); }
-void operator delete(void* p, std::size_t) noexcept { std::free(p); }
-void operator delete[](void* p, std::size_t) noexcept { std::free(p); }
-void operator delete(void* p, const std::nothrow_t&) noexcept { std::free(p); }
-void operator delete[](void* p, const std::nothrow_t&) noexcept { std::free(p); }
+using lob::test::alloc::FaultWindow;
 
 namespace lob {
 namespace {
