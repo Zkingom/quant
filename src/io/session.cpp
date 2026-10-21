@@ -44,24 +44,43 @@ Session::Session(const Recovered& recovered, ByteSink& sink, SessionOptions opti
   }
 }
 
-SubmitResult Session::poison(std::string reason) {
+SubmitResult Session::poison(const char* what, const char* cause) noexcept {
+  // The flag first: building the message may itself fail for lack of memory,
+  // and the session must be poisoned regardless.
   poisoned_ = true;
-  poison_reason_ = std::move(reason);
   events_.clear();
-  return SubmitResult{.status = SubmitStatus::Poisoned, .detail = poison_reason_};
+  try {
+    poison_reason_ = std::string(what) + cause;
+  } catch (...) {
+    poison_reason_.clear();  // best effort; poisoned() is what matters
+  }
+  return SubmitResult{.status = SubmitStatus::Poisoned, .first_seq = 0, .last_seq = 0, .detail = {}};
 }
 
 SubmitResult Session::submit(const SequencedCommand& command) {
   if (poisoned_) {
-    return SubmitResult{.status = SubmitStatus::Poisoned, .detail = poison_reason_};
+    return SubmitResult{.status = SubmitStatus::Poisoned, .first_seq = 0, .last_seq = 0, .detail = {}};
   }
   events_.clear();
+
+  // Everything that can fail for lack of memory and is needed after the
+  // commit point is done now, before any effect: the commit record must be
+  // stored without allocating once the batch is durable, otherwise a failure
+  // between "persisted" and "recorded" would let a retry execute the
+  // command a second time.
+  std::uint64_t digest = 0;
+  try {
+    digest = command_digest(command);
+    committed_.reserve(committed_.size() + 1);
+  } catch (const std::bad_alloc&) {
+    return SubmitResult{.status = SubmitStatus::NotApplied, .first_seq = 0, .last_seq = 0, .detail = {}};
+  }
 
   // Identity checks: never execute a committed command twice.
   if (command.cmd_seq >= 1 && command.cmd_seq <= last_cmd_) {
     if (command.cmd_seq <= committed_.size()) {
       const CommittedCommand& c = committed_[command.cmd_seq - 1];
-      if (c.digest != command_digest(command)) {
+      if (c.digest != digest) {
         return SubmitResult{.status = SubmitStatus::ContentMismatch,
                             .detail = "cmd_seq " + std::to_string(command.cmd_seq) +
                                       " was committed with different content"};
@@ -92,25 +111,24 @@ SubmitResult Session::submit(const SequencedCommand& command) {
       }
       if (attempt >= options_.prepare_retries) {
         events_.clear();
-        return SubmitResult{.status = SubmitStatus::NotApplied,
-                            .detail = "out of memory before the command took effect"};
+        return SubmitResult{.status = SubmitStatus::NotApplied, .first_seq = 0, .last_seq = 0, .detail = {}};
       }
     } catch (const std::length_error& e) {
       if (engine_.last_seq() != before) {
-        return poison(std::string("length_error after the command took effect: ") + e.what());
+        return poison("length_error after the command took effect: ", e.what());
       }
       events_.clear();
-      return SubmitResult{.status = SubmitStatus::Refused, .detail = e.what()};
+      return SubmitResult{.status = SubmitStatus::Refused, .first_seq = 0, .last_seq = 0, .detail = e.what()};
     } catch (const std::overflow_error& e) {
       if (engine_.last_seq() != before) {
-        return poison(std::string("overflow_error after the command took effect: ") + e.what());
+        return poison("overflow_error after the command took effect: ", e.what());
       }
       events_.clear();
-      return SubmitResult{.status = SubmitStatus::Refused, .detail = e.what()};
+      return SubmitResult{.status = SubmitStatus::Refused, .first_seq = 0, .last_seq = 0, .detail = e.what()};
     } catch (const std::exception& e) {
-      return poison(std::string("engine failure (state untrusted): ") + e.what());
+      return poison("engine failure (state untrusted): ", e.what());
     } catch (...) {
-      return poison("engine failure (state untrusted): unknown exception");
+      return poison("engine failure (state untrusted): ", "unknown exception");
     }
   }
 
@@ -122,17 +140,17 @@ SubmitResult Session::submit(const SequencedCommand& command) {
       sink_.sync();
     }
   } catch (const std::exception& e) {
-    return poison(std::string("journal write failed (command applied in memory, not committed): ") +
-                  e.what());
+    return poison("journal write failed (command applied in memory, not committed): ", e.what());
   } catch (...) {
-    return poison("journal write failed: unknown exception");
+    return poison("journal write failed: ", "unknown exception");
   }
 
-  // (3) Committed: record, then acknowledge.
+  // (3) Committed: record (no allocation: capacity reserved above), then
+  // acknowledge. Nothing below can throw.
   last_cmd_ = command.cmd_seq;
   const SeqNum first = seq_of(events_.front());
   const SeqNum last = seq_of(events_.back());
-  committed_.push_back(CommittedCommand{.digest = command_digest(command),
+  committed_.push_back(CommittedCommand{.digest = digest,
                                         .first_seq = first,
                                         .last_seq = last,
                                         .resource_failure = resource_failure});
@@ -150,7 +168,7 @@ void Session::sync() {
   try {
     sink_.sync();
   } catch (const std::exception& e) {
-    poison(std::string("journal sync failed: ") + e.what());
+    poison("journal sync failed: ", e.what());
   }
 }
 

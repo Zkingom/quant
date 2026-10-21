@@ -46,7 +46,7 @@ struct SubmitResult {
   SubmitStatus status = SubmitStatus::Poisoned;
   SeqNum first_seq = 0;  ///< Committed*/Duplicate: the batch's seq range
   SeqNum last_seq = 0;
-  std::string detail;    ///< human-readable reason for non-committed outcomes
+  std::string detail;    ///< reason for Refused / ContentMismatch / SequenceGap (Poisoned: see poison_reason())
 };
 
 struct SessionOptions {
@@ -61,6 +61,10 @@ class Session {
   /// Throws if that header cannot be written.
   Session(const Recovered& recovered, ByteSink& sink, SessionOptions options);
 
+  /// Never executes a committed command twice. Once a batch is persisted,
+  /// recording it cannot fail (no allocation after the commit point).
+  /// May throw std::bad_alloc only while composing the `detail` text of a
+  /// refusal, i.e. when nothing has changed.
   SubmitResult submit(const SequencedCommand& command);
 
   /// Events of the most recent Committed* result (the acknowledgement).
@@ -78,7 +82,7 @@ class Session {
   [[nodiscard]] SnapshotFile snapshot_file() const;
 
  private:
-  SubmitResult poison(std::string reason);
+  SubmitResult poison(const char* what, const char* cause) noexcept;
 
   MatchingEngine engine_;
   ByteSink& sink_;

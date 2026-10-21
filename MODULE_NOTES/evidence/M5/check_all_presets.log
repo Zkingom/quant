@@ -1,0 +1,55 @@
+================ gcc-debug ================
+[1/61] Building CXX object src/CMakeFiles/lob_core.dir/core/config.cpp.o
+[2/61] Building CXX object src/CMakeFiles/lob_io.dir/io/snapshot_file.cpp.o
+[3/61] Building CXX object src/CMakeFiles/lob_io.dir/io/file_sink.cpp.o
+[4/61] Building CXX object examples/CMakeFiles/core_validation_demo.dir/core_validation_demo.cpp.o
+[5/61] Building CXX object examples/CMakeFiles/book_demo.dir/book_demo.cpp.o
+[6/61] Building CXX object src/CMakeFiles/lob_engine.dir/engine/snapshot.cpp.o
+[7/61] Building CXX object src/CMakeFiles/lob_io.dir/io/text_format.cpp.o
+[8/61] Building CXX object src/CMakeFiles/lob_io.dir/io/journal.cpp.o
+[9/61] Building CXX object src/CMakeFiles/lob_io.dir/io/session.cpp.o
+[10/61] Building CXX object examples/CMakeFiles/engine_demo.dir/engine_demo.cpp.o
+[11/61] Linking CXX static library src/liblob_core.a
+[12/61] Building CXX object src/CMakeFiles/lob_engine.dir/engine/matching_engine.cpp.o
+[13/61] Building CXX object src/CMakeFiles/lob_io.dir/io/recovery.cpp.o
+[14/61] Building CXX object src/CMakeFiles/lob_io.dir/io/verify.cpp.o
+[15/61] Building CXX object testkit/CMakeFiles/lob_testkit_alloc_fault.dir/src/alloc_fault.cpp.o
+[16/61] Building CXX object src/CMakeFiles/lob_book.dir/book/order_book.cpp.o
+[17/61] Building CXX object testkit/CMakeFiles/lob_testkit.dir/src/describe.cpp.o
+[18/61] Building CXX object testkit/CMakeFiles/lob_testkit.dir/src/workload.cpp.o
+[19/61] Building CXX object apps/CMakeFiles/lob_replay.dir/lob_replay.cpp.o
+[20/61] Building CXX object testkit/CMakeFiles/lob_soak.dir/tools/soak.cpp.o
+[21/61] Building CXX object testkit/CMakeFiles/lob_testkit.dir/src/event_auditor.cpp.o
+[22/61] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_checked.cpp.o
+[23/61] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_config.cpp.o
+[24/61] Building CXX object testkit/CMakeFiles/lob_gen_commands.dir/tools/gen_commands.cpp.o
+[25/61] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_types.cpp.o
+[26/61] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_validation.cpp.o
+[27/61] Linking CXX executable examples/core_validation_demo
+[28/61] Building CXX object testkit/CMakeFiles/lob_testkit.dir/src/differential.cpp.o
+[29/61] Linking CXX static library src/liblob_book.a
+[30/61] Building CXX object tests/CMakeFiles/lob_io_tests.dir/io/test_file_sink.cpp.o
+[31/61] Building CXX object tests/CMakeFiles/lob_book_tests.dir/book/test_order_book_tamper.cpp.o
+[32/61] Building CXX object tests/CMakeFiles/lob_engine_tests.dir/engine/test_engine_differential.cpp.o
+[33/61] Building CXX object tests/CMakeFiles/lob_book_tests.dir/book/test_order_book.cpp.o
+[34/61] Building CXX object tests/CMakeFiles/lob_engine_tests.dir/engine/test_event_auditor.cpp.o
+[35/61] Building CXX object tests/CMakeFiles/lob_book_tests.dir/book/test_order_book_differential.cpp.o
+[36/61] Building CXX object tests/CMakeFiles/lob_io_tests.dir/io/test_text_format.cpp.o
+[37/61] Building CXX object tests/CMakeFiles/lob_book_alloc_tests.dir/book/test_order_book_alloc_failure.cpp.o
+[38/61] Building CXX object tests/CMakeFiles/lob_io_tests.dir/io/test_journal.cpp.o
+[39/61] Building CXX object tests/CMakeFiles/lob_engine_tests.dir/engine/test_matching_engine.cpp.o
+[40/61] Building CXX object tests/CMakeFiles/lob_io_tests.dir/io/test_session.cpp.o
+[41/61] Building CXX object tests/CMakeFiles/lob_io_tests.dir/io/test_recovery.cpp.o
+[42/61] Building CXX object tests/CMakeFiles/lob_io_tests.dir/io/test_snapshot.cpp.o
+[43/61] Building CXX object tests/CMakeFiles/lob_io_tests.dir/io/test_golden.cpp.o
+[44/61] Linking CXX static library src/liblob_engine.a
+[45/61] Building CXX object tests/CMakeFiles/lob_engine_alloc_tests.dir/engine/test_engine_alloc_failure.cpp.o
+[46/61] Building CXX object tests/CMakeFiles/lob_engine_alloc_tests.dir/engine/test_replay_contract.cpp.o
+[47/61] Building CXX object tests/CMakeFiles/lob_io_alloc_tests.dir/io/test_io_faults.cpp.o
+[48/61] Linking CXX executable examples/book_demo
+[49/61] Linking CXX executable tests/lob_core_tests
+[50/61] Linking CXX static library testkit/liblob_testkit.a
+[51/61] Linking CXX executable examples/engine_demo
+[52/61] Linking CXX static library src/liblob_io.a
+[53/61] Linking CXX executable testkit/lob_gen_commands
+[54/61] Linking CXX executable tests/lob_book_alloc_tests
