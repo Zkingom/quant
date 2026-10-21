@@ -1,5 +1,6 @@
 #include "lob/io/session.hpp"
 
+#include <algorithm>
 #include <new>
 #include <stdexcept>
 #include <variant>
@@ -67,11 +68,15 @@ SubmitResult Session::submit(const SequencedCommand& command) {
   // commit point is done now, before any effect: the commit record must be
   // stored without allocating once the batch is durable, otherwise a failure
   // between "persisted" and "recorded" would let a retry execute the
-  // command a second time.
+  // command a second time. Growth is geometric, as for the event buffer
+  // (D-022): an exact reserve(size + 1) reallocated and copied every commit
+  // record on every submit, O(n^2) over a session (M6 §5.1).
   std::uint64_t digest = 0;
   try {
     digest = command_digest(command);
-    committed_.reserve(committed_.size() + 1);
+    if (committed_.size() == committed_.capacity()) {
+      committed_.reserve(std::max(committed_.size() + 1, std::min(committed_.capacity() * 2, committed_.max_size())));
+    }
   } catch (const std::bad_alloc&) {
     return SubmitResult{.status = SubmitStatus::NotApplied, .first_seq = 0, .last_seq = 0, .detail = {}};
   }

@@ -10,11 +10,13 @@ namespace {
 bool g_armed = false;
 long g_countdown = 0;    // allocations to let through before failing one
 long g_allocations = 0;  // allocations observed while armed
+long long g_bytes = 0;   // bytes requested by those allocations
 long g_injected = 0;     // failures injected while armed
 
 void* allocate(std::size_t size) {
   if (g_armed) {
     ++g_allocations;
+    g_bytes += static_cast<long long>(size);
     if (g_countdown == 0) {
       g_armed = false;  // fail exactly once per armed window
       ++g_injected;
@@ -34,12 +36,14 @@ namespace lob::testkit::alloc {
 
 void arm(long fail_after) {
   g_allocations = 0;
+  g_bytes = 0;
   g_injected = 0;
   g_countdown = fail_after;
   g_armed = true;
 }
 void disarm() noexcept { g_armed = false; }
 long allocations() noexcept { return g_allocations; }
+long long allocated_bytes() noexcept { return g_bytes; }
 bool injected() noexcept { return g_injected > 0; }
 
 }  // namespace lob::testkit::alloc

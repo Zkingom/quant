@@ -15,6 +15,7 @@ namespace lob::testkit::alloc {
 void arm(long fail_after);       // let `fail_after` allocations through, fail the next
 void disarm() noexcept;
 long allocations() noexcept;     // allocations observed since the last arm()
+long long allocated_bytes() noexcept;  // bytes those allocations requested
 bool injected() noexcept;        // whether the armed window injected its failure
 
 class FaultWindow {
