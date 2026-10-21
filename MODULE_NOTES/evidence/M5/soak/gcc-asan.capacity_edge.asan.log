@@ -1,0 +1,13 @@
+$ lob_soak --profile capacity_edge --seeds 31-32 --commands 20000 --check-every 200 --fault-per-mille 20
+[run] profile=capacity_edge seed=31 commands=20000 check_every=200 fault_per_mille=20 ok=1 seconds=0.391
+[run] profile=capacity_edge seed=32 commands=20000 check_every=200 fault_per_mille=20 ok=1 seconds=0.383
+== profile capacity_edge: capacity 4: constant BOOK_FULL decisions, fills that free slots
+[coverage] commands=39785 accepted=19499 trades=13061 cancels=6186
+[coverage] multi_maker=2424 multi_level=2074 taker_full=5155 taker_partial_rested=4772 rested_no_trade=9572 maker_partial=4987
+[coverage] accepted_while_full=6974 reused_dead_id=927 max_orders=4
+[coverage] rejects: INVALID_ORDER_ID=479 INVALID_SIDE=448 PRICE_OUT_OF_RANGE=460 INVALID_QUANTITY=456 QUANTITY_TOO_LARGE=507 DUPLICATE_ORDER_ID=6 UNKNOWN_ORDER_ID=2698 BOOK_FULL=9046
+[state] max_levels_per_side=4 max_level_orders=4 max_level_quantity=269 max_trades_in_command=4 max_levels_swept=4 side_emptied=2592 band_edge_accepts=2525 band_edge_trades=2176 accepted_quantity=617848 full_checks=417
+[faults] prepare=79 residual=136 armed_without_effect=592
+[time] seconds=0.774 commands_per_second(harness incl. reference+audit)=51664
+[targets] all met
+[resources] max_rss_kib=57120 user_s=0.72 sys_s=0.06

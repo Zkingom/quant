@@ -30,6 +30,7 @@
 #include "lob/core/config.hpp"
 #include "lob/core/types.hpp"
 #include "lob/engine/events.hpp"
+#include "lob/engine/snapshot.hpp"
 
 namespace lob {
 
@@ -54,6 +55,16 @@ class MatchingEngine {
   void process(const Command& command, std::vector<Event>& events);
   void process(const NewOrder& order, std::vector<Event>& events);
   void process(const CancelOrder& cancel, std::vector<Event>& events);
+
+  /// Complete state for MatchingEngine::restore (DESIGN.md §6.5), in canonical
+  /// order. O(n).
+  [[nodiscard]] EngineSnapshot snapshot() const;
+
+  /// An engine whose observable behaviour from now on is identical to that of
+  /// the engine `snapshot` was taken from: same book (incl. priority seqs), same
+  /// last_seq, same config. Throws std::invalid_argument if
+  /// find_snapshot_violation(snapshot) reports a problem. O(n log n).
+  [[nodiscard]] static MatchingEngine restore(const EngineSnapshot& snapshot);
 
   [[nodiscard]] const OrderBook& book() const noexcept { return book_; }
   [[nodiscard]] const EngineConfig& config() const noexcept { return book_.config(); }

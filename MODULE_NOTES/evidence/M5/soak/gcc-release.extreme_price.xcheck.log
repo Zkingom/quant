@@ -1,0 +1,14 @@
+$ lob_soak --profile extreme_price --seeds 21-23 --commands 50000 --check-every 1000
+[run] profile=extreme_price seed=21 commands=50000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.036
+[run] profile=extreme_price seed=22 commands=50000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.035
+[run] profile=extreme_price seed=23 commands=50000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.036
+== profile extreme_price: band [INT64_MAX/1000 - 60, INT64_MAX/1000]: prices near the representable limit
+[coverage] commands=150000 accepted=103001 trades=81587 cancels=20122
+[coverage] multi_maker=18334 multi_level=12546 taker_full=29237 taker_partial_rested=9535 rested_no_trade=64229 maker_partial=27961
+[coverage] accepted_while_full=13023 reused_dead_id=5674 max_orders=40
+[coverage] rejects: INVALID_ORDER_ID=1795 INVALID_SIDE=1820 PRICE_OUT_OF_RANGE=1709 INVALID_QUANTITY=1809 QUANTITY_TOO_LARGE=1749 DUPLICATE_ORDER_ID=28 UNKNOWN_ORDER_ID=8779 BOOK_FULL=9188
+[state] max_levels_per_side=12 max_level_orders=27 max_level_quantity=636 max_trades_in_command=12 max_levels_swept=8 side_emptied=2910 band_edge_accepts=23809 band_edge_trades=21155 accepted_quantity=2878541 full_checks=153
+[faults] prepare=0 residual=0 armed_without_effect=0
+[time] seconds=0.107 commands_per_second(harness incl. reference+audit)=1396368
+[targets] all met
+[resources] max_rss_kib=5440 user_s=0.11 sys_s=0.00

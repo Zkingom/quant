@@ -1,0 +1,21 @@
+$ lob_soak --profile single_price --seeds 1-10 --commands 200000 --check-every 1000 --require-targets
+[run] profile=single_price seed=1 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.236
+[run] profile=single_price seed=2 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.235
+[run] profile=single_price seed=3 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.234
+[run] profile=single_price seed=4 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.235
+[run] profile=single_price seed=5 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.231
+[run] profile=single_price seed=6 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.236
+[run] profile=single_price seed=7 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.236
+[run] profile=single_price seed=8 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.236
+[run] profile=single_price seed=9 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.236
+[run] profile=single_price seed=10 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.233
+== profile single_price: band of one price (min == max): long FIFO queues, equal-price trades only
+[coverage] commands=2000000 accepted=1477244 trades=1171644 cancels=279902
+[coverage] multi_maker=121107 multi_level=0 taker_full=595944 taker_partial_rested=2662 rested_no_trade=878638 maker_partial=570795
+[coverage] accepted_while_full=742 reused_dead_id=136673 max_orders=400
+[coverage] rejects: INVALID_ORDER_ID=24035 INVALID_SIDE=24197 PRICE_OUT_OF_RANGE=24000 INVALID_QUANTITY=23988 QUANTITY_TOO_LARGE=23824 DUPLICATE_ORDER_ID=1211 UNKNOWN_ORDER_ID=119370 BOOK_FULL=2229
+[state] max_levels_per_side=1 max_level_orders=400 max_level_quantity=13648 max_trades_in_command=57 max_levels_swept=1 side_emptied=2916 band_edge_accepts=1477244 band_edge_trades=1171644 accepted_quantity=40082960 full_checks=2010
+[faults] prepare=0 residual=0 armed_without_effect=0
+[time] seconds=2.348 commands_per_second(harness incl. reference+audit)=851886
+[targets] all met
+[resources] max_rss_kib=10836 user_s=2.36 sys_s=0.01

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <variant>
 
 #include "lob/core/checked.hpp"
 
@@ -218,6 +219,13 @@ std::vector<WorkloadProfile> make_profiles() {
 }
 
 }  // namespace
+
+Command text_representable(const Command& command) {
+  if (const auto* o = std::get_if<NewOrder>(&command); o != nullptr && !is_valid(o->side)) {
+    return NewOrder{.id = o->id, .side = Side::Buy, .price = 0, .quantity = o->quantity};
+  }
+  return command;
+}
 
 const std::vector<WorkloadProfile>& standard_profiles() {
   static const std::vector<WorkloadProfile> profiles = make_profiles();

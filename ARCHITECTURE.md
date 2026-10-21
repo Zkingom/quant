@@ -56,7 +56,7 @@
 | M2 book | `lob::book` | 订单簿数据结构：价格层、同价 FIFO、ID 索引、不变量检查；**不含撮合逻辑** | core | ✅ |
 | M3 engine | `lob::engine` | 命令处理：有状态校验（重复 ID、未知 ID、容量）、价格-时间优先撮合、事件生成、序号 | core, book | ✅ |
 | M4 testkit | `lob::testkit`（仅测试） | 参考引擎、事件审计器、工作负载画像与生成器、差分执行器、分配故障注入、长跑工具 `lob_soak` | core, book, engine | ✅ |
-| M5 io | `lob::io` | 文本命令格式解析、事件序列化、规范快照与哈希、回放驱动；`lob_replay` CLI；Golden Tests | core, engine | 📝 |
+| M5 io | `lob::io` + `lob_replay` | 文本格式 v1、日志（批次 + 校验和）、快照文件、恢复（事件折叠）、提交会话、verify；`lob_replay` CLI；Golden 与崩溃测试 | core, engine | ✅ |
 | M6 bench | `lob_bench` | 吞吐与延迟分布（p50/p95/p99）测量 | engine, testkit | 📝 |
 | L3 gateway | `lob_gateway` | 单客户端 TCP 网关（有条件执行） | engine, io | 📝 |
 
@@ -119,6 +119,20 @@
 - 测试结构：`lob_engine_tests`（单元、审计器自检、与参考引擎的差分）+ `lob_engine_alloc_tests`（独立进程，分配失败注入）；
   测试支撑代码在 `tests/support/`（`rng.hpp`、`alloc_fault.{hpp,cpp}`，M2/M3 共用）。
 - 详见 [MODULE_NOTES/M3_engine.md](MODULE_NOTES/M3_engine.md)。
+
+### M5 io（生产）与 lob_replay
+
+```
+include/lob/engine/snapshot.hpp   EngineSnapshot、find_snapshot_violation（引擎新增：snapshot()/restore()）
+include/lob/io/  checksum · text_format · journal · sink · snapshot_file · recovery · session · verify
+src/io/          对应实现（file_sink.cpp 为 POSIX 文件 I/O）
+apps/lob_replay.cpp   run / recover / verify
+```
+
+- 依赖方向：`lob_replay → lob::io → lob::engine`；`lob::io` 不依赖 testkit。测试通过 `ByteSink` 接口注入写失败，通过 testkit 注入分配失败。
+- 数据流（run）：命令文件 → `parse_command_file` → `recover(日志字节, 快照?, 配置)`（扫描批次、折叠事件、校验边界）
+  → `FileSink(path, valid_bytes)`（截断残缺尾部）→ `Session::submit`（去重 → 执行 → 写批次 [+fsync] → 确认）→ 周期性原子快照。
+- 恢复状态机、提交协议与保证边界见 DESIGN §6；模块说明见 [MODULE_NOTES/M5_replay.md](MODULE_NOTES/M5_replay.md)。
 
 ### M4 testkit（仅测试，不进入生产目标）
 

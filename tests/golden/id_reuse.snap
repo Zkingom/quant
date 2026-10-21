@@ -1,0 +1,7 @@
+LOB-SNAPSHOT v1
+CONFIG min_price=1 max_price=1000 max_order_quantity=1000 max_live_orders=100
+LAST_CMD 5
+LAST_SEQ 9
+ORDERS 1
+ORDER SELL 60 7 1 8
+END 2be8a1819ae3b33d

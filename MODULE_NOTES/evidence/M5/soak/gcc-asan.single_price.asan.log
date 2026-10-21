@@ -1,0 +1,13 @@
+$ lob_soak --profile single_price --seeds 31-32 --commands 20000 --check-every 200 --fault-per-mille 20
+[run] profile=single_price seed=31 commands=20000 check_every=200 fault_per_mille=20 ok=1 seconds=1.457
+[run] profile=single_price seed=32 commands=20000 check_every=200 fault_per_mille=20 ok=1 seconds=1.187
+== profile single_price: band of one price (min == max): long FIFO queues, equal-price trades only
+[coverage] commands=39821 accepted=29110 trades=22764 cancels=5793
+[coverage] multi_maker=2305 multi_level=0 taker_full=11718 taker_partial_rested=53 rested_no_trade=17339 maker_partial=11298
+[coverage] accepted_while_full=35 reused_dead_id=2493 max_orders=400
+[coverage] rejects: INVALID_ORDER_ID=498 INVALID_SIDE=454 PRICE_OUT_OF_RANGE=462 INVALID_QUANTITY=460 QUANTITY_TOO_LARGE=515 DUPLICATE_ORDER_ID=165 UNKNOWN_ORDER_ID=2227 BOOK_FULL=137
+[state] max_levels_per_side=1 max_level_orders=400 max_level_quantity=11869 max_trades_in_command=40 max_levels_swept=1 side_emptied=59 band_edge_accepts=29110 band_edge_trades=22764 accepted_quantity=791578 full_checks=381
+[faults] prepare=80 residual=99 armed_without_effect=628
+[time] seconds=2.644 commands_per_second(harness incl. reference+audit)=15128
+[targets] all met
+[resources] max_rss_kib=337280 user_s=2.32 sys_s=0.33

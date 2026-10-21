@@ -27,6 +27,7 @@ include(CompilerWarnings)
 include(Sanitizers)
 
 add_subdirectory(src)
+add_subdirectory(apps)
 
 if(LOB_BUILD_EXAMPLES)
   add_subdirectory(examples)

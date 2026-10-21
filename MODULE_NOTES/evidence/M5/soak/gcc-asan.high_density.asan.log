@@ -1,0 +1,13 @@
+$ lob_soak --profile high_density --seeds 31-32 --commands 20000 --check-every 200 --fault-per-mille 20
+[run] profile=high_density seed=31 commands=20000 check_every=200 fault_per_mille=20 ok=1 seconds=0.498
+[run] profile=high_density seed=32 commands=20000 check_every=200 fault_per_mille=20 ok=1 seconds=0.553
+== profile high_density: most orders trade on arrival; large makers partially filled by many small takers
+[coverage] commands=39797 accepted=33386 trades=29167 cancels=2803
+[coverage] multi_maker=3252 multi_level=2175 taker_full=19383 taker_partial_rested=4055 rested_no_trade=9948 maker_partial=18039
+[coverage] accepted_while_full=0 reused_dead_id=3145 max_orders=51
+[coverage] rejects: INVALID_ORDER_ID=463 INVALID_SIDE=488 PRICE_OUT_OF_RANGE=471 INVALID_QUANTITY=482 QUANTITY_TOO_LARGE=469 DUPLICATE_ORDER_ID=14 UNKNOWN_ORDER_ID=1221 BOOK_FULL=0
+[state] max_levels_per_side=13 max_level_orders=17 max_level_quantity=216 max_trades_in_command=18 max_levels_swept=6 side_emptied=1318 band_edge_accepts=0 band_edge_trades=0 accepted_quantity=382904 full_checks=405
+[faults] prepare=79 residual=124 armed_without_effect=604
+[time] seconds=1.050 commands_per_second(harness incl. reference+audit)=38082
+[targets] all met
+[resources] max_rss_kib=89920 user_s=0.96 sys_s=0.09

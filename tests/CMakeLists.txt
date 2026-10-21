@@ -42,6 +42,18 @@ lob_add_test_suite(lob_engine_tests
     engine/test_engine_differential.cpp
   LIBS lob::engine lob::testkit)
 
+lob_add_test_suite(lob_io_tests
+  SOURCES
+    io/test_text_format.cpp
+    io/test_journal.cpp
+    io/test_snapshot.cpp
+    io/test_recovery.cpp
+    io/test_session.cpp
+    io/test_golden.cpp
+    io/test_file_sink.cpp
+  LIBS lob::io lob::testkit)
+target_compile_definitions(lob_io_tests PRIVATE LOB_GOLDEN_DIR="${CMAKE_CURRENT_SOURCE_DIR}/golden")
+
 # Separate executables: lob_testkit_alloc_fault replaces the global
 # operator new/delete of the binary it is linked into.
 lob_add_test_suite(lob_book_alloc_tests
@@ -54,3 +66,18 @@ lob_add_test_suite(lob_engine_alloc_tests
     engine/test_engine_alloc_failure.cpp
     engine/test_replay_contract.cpp
   LIBS lob::engine lob::testkit lob_testkit_alloc_fault)
+
+lob_add_test_suite(lob_io_alloc_tests
+  SOURCES
+    io/test_io_faults.cpp
+  LIBS lob::io lob::testkit lob_testkit_alloc_fault)
+
+# CLI-level tests (Linux shell; they run the real binaries).
+add_test(NAME cli.golden
+         COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/cli/golden_cli.sh $<TARGET_FILE:lob_replay>
+                 ${CMAKE_CURRENT_SOURCE_DIR}/golden ${CMAKE_CURRENT_BINARY_DIR}/cli_golden)
+# Process crashes: SIGKILL at random moments, restart, compare. Runs in /tmp
+# (a local Linux file system), not under the source tree.
+add_test(NAME cli.crash_restart
+         COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/cli/crash_restart.sh $<TARGET_FILE:lob_replay>
+                 $<TARGET_FILE:lob_gen_commands> /tmp/lob_crash_${CMAKE_BUILD_TYPE}_${CMAKE_CXX_COMPILER_ID})

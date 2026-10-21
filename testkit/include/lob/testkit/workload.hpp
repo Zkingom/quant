@@ -79,6 +79,14 @@ struct WorkloadProfile {
   long target_commands = 0;
 };
 
+/// The v1 text format cannot express an invalid Side (DESIGN §6.3): such a
+/// NewOrder is rewritten with side Buy and price 0. Both versions are
+/// rejected and leave the state unchanged, so a model steered by the
+/// original command stays aligned with an engine fed the rewritten one;
+/// only the reject reason differs (PRICE_OUT_OF_RANGE instead of
+/// INVALID_SIDE). Every other command is returned unchanged.
+Command text_representable(const Command& command);
+
 /// All standard profiles, "mixed" first.
 const std::vector<WorkloadProfile>& standard_profiles();
 /// nullptr if unknown.
