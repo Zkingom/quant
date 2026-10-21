@@ -1,0 +1,13 @@
+# perf record -e cpu-clock -F 4999 --call-graph dwarf,16384 -- taskset -c 2 lob_bench --filter engine.deep_book --reps 3
+# (WSL2, no PMU: cpu-clock software sampling only)
+#
+# Result: NOT USABLE as an engine profile, recorded so that the attempt is not lost.
+# - Whole-process samples are dominated by workload generation (testkit
+#   ReferenceEngine::handle 49.7% self, WorkloadGenerator::passive_price 14.4%,
+#   ::mid 9.5%, memmove 17.7%); the timed engine region is a small fraction of
+#   the process lifetime, so its samples are few.
+# - DWARF unwinding produced inconsistent inline frames (std::nth_element
+#   reported as the inclusive parent of ReferenceEngine::handle), and the
+#   --parent filter on MatchingEngine::process returned no samples.
+# The engine breakdown therefore relies on callgrind (instruction counts,
+# collection toggled on MatchingEngine::process(std::variant...)).

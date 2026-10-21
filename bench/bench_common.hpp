@@ -14,6 +14,7 @@
 #include <cmath>
 #include <cstdint>
 #include <cstdio>
+#include <initializer_list>
 #include <string>
 #include <vector>
 
@@ -81,6 +82,16 @@ inline double clock_pair_ns() {
 
 inline bool selected(const Options& o, const std::string& scenario) {
   return o.filter.empty() || scenario.find(o.filter) != std::string::npos;
+}
+
+/// True when at least one of `scenarios` (full names) is selected.
+inline bool any_selected(const Options& o, std::initializer_list<const char*> scenarios) {
+  for (const char* s : scenarios) {
+    if (selected(o, s)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 /// Throughput: `reps` untimed-inside repetitions of `body()` (which performs

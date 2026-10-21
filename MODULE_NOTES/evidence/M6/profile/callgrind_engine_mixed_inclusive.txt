@@ -1,0 +1,91 @@
+--------------------------------------------------------------------------------
+Profile data file '/root/cg.engine.mixed' (creator: callgrind-3.22.0)
+--------------------------------------------------------------------------------
+I1 cache: 
+D1 cache: 
+LL cache: 
+Timerange: Basic block 0 - 28145972
+Trigger: Program termination
+Profiled target:  /root/lob_prof/bench/lob_bench --filter engine.mixed --reps 1 --engine-commands 20000 (PID 397, part 1)
+Events recorded:  Ir
+Events shown:     Ir
+Event sort order: Ir
+Thresholds:       99
+Include dirs:     
+User annotated:   
+Auto-annotation:  on
+
+--------------------------------------------------------------------------------
+Ir                  
+--------------------------------------------------------------------------------
+43,644,765 (100.0%)  PROGRAM TOTALS
+
+--------------------------------------------------------------------------------
+Ir                   file:function
+--------------------------------------------------------------------------------
+43,644,765 (100.0%)  ./csu/../csu/libc-start.c:__libc_start_main@@GLIBC_2.34 [/usr/lib/x86_64-linux-gnu/libc.so.6]
+43,644,765 (100.0%)  ./csu/../sysdeps/nptl/libc_start_call_main.h:(below main) [/usr/lib/x86_64-linux-gnu/libc.so.6]
+43,644,765 (100.0%)  bench/bench_engine.cpp:lob::bench::(anonymous namespace)::engine_profile(lob::bench::Options const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [/root/lob_prof/bench/lob_bench]
+43,644,765 (100.0%)  bench/bench_engine.cpp:lob::bench::run_engine(lob::bench::Options const&) [/root/lob_prof/bench/lob_bench]
+43,644,765 (100.0%)  bench/main.cpp:main [/root/lob_prof/bench/lob_bench]
+43,644,765 (100.0%)  src/engine/matching_engine.cpp:lob::MatchingEngine::process(std::variant<lob::NewOrder, lob::CancelOrder> const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) [/root/lob_prof/bench/lob_bench]
+43,644,765 (100.0%)  ???:(below main) [/root/lob_prof/bench/lob_bench]
+43,644,765 (100.0%)  ???:0x000000000001f540 [/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2]
+37,764,151 (86.53%)  src/engine/matching_engine.cpp:lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) [/root/lob_prof/bench/lob_bench]
+14,697,576 (33.68%)  src/book/order_book.cpp:lob::OrderBook::add(lob::NewOrder const&, unsigned long) [/root/lob_prof/bench/lob_bench]
+ 9,339,481 (21.40%)  src/book/order_book.cpp:lob::OrderBook::fill_front(lob::Side, long) [/root/lob_prof/bench/lob_bench]
+ 7,131,492 (16.34%)  ???:0x000000000010c800 [???]
+ 6,985,566 (16.01%)  ???:operator delete(void*, unsigned long) [/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33]
+ 6,839,640 (15.67%)  ???:0x00000000048ea430 [???]
+ 6,693,714 (15.34%)  ???:operator delete(void*) [/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33]
+ 6,547,788 (15.00%)  ???:0x00000000048eac60 [???]
+ 6,401,862 (14.67%)  ./malloc/./malloc/malloc.c:free [/usr/lib/x86_64-linux-gnu/libc.so.6]
+ 6,313,222 (14.47%)  src/book/order_book.cpp:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) [/root/lob_prof/bench/lob_bench]
+ 6,128,999 (14.04%)  src/book/order_book.cpp:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) [/root/lob_prof/bench/lob_bench]
+ 5,094,057 (11.67%)  ???:0x000000000010c7f0 [???]
+ 4,948,021 (11.34%)  ???:operator new(unsigned long) [/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33]
+ 4,671,756 (10.70%)  bits/hashtable.h:std::pair<std::__detail::_Node_iterator<std::pair<unsigned long const, lob::OrderBook::Locator>, false, false>, bool> std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lob::OrderBook::Locator> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_emplace<unsigned long const&, lob::OrderBook::Locator>(std::integral_constant<bool, true>, unsigned long const&, lob::OrderBook::Locator&&) [clone .isra.0] [/root/lob_prof/bench/lob_bench]
+ 4,140,009 ( 9.49%)  ./malloc/./malloc/malloc.c:_int_free [/usr/lib/x86_64-linux-gnu/libc.so.6]
+ 3,883,784 ( 8.90%)  bits/hashtable.h:std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lob::OrderBook::Locator> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_erase(unsigned long, std::__detail::_Hash_node_base*, std::__detail::_Hash_node<std::pair<unsigned long const, lob::OrderBook::Locator>, false>*) [/root/lob_prof/bench/lob_bench]
+ 3,779,733 ( 8.66%)  ???:0x00000000048ea210 [???]
+ 3,633,697 ( 8.33%)  ./malloc/./malloc/malloc.c:malloc [/usr/lib/x86_64-linux-gnu/libc.so.6]
+ 3,388,044 ( 7.76%)  bits/hashtable.h:lob::OrderBook::fill_front(lob::Side, long)
+ 3,345,894 ( 7.67%)  bits/hashtable.h:std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lob::OrderBook::Locator> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_erase(std::integral_constant<bool, true>, unsigned long const&) [clone .isra.0] [/root/lob_prof/bench/lob_bench]
+ 3,345,299 ( 7.66%)  src/book/order_book.cpp:lob::OrderBook::cancel(unsigned long) [/root/lob_prof/bench/lob_bench]
+ 3,268,315 ( 7.49%)  bits/new_allocator.h:lob::OrderBook::fill_front(lob::Side, long)
+ 2,897,609 ( 6.64%)  bits/new_allocator.h:std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lob::OrderBook::Locator> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_erase(unsigned long, std::__detail::_Hash_node_base*, std::__detail::_Hash_node<std::pair<unsigned long const, lob::OrderBook::Locator>, false>*)
+ 2,405,381 ( 5.51%)  bits/hashtable.h:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long)
+ 2,353,513 ( 5.39%)  bits/hashtable.h:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long)
+ 2,268,567 ( 5.20%)  src/engine/matching_engine.cpp:lob::MatchingEngine::plan_match(lob::NewOrder const&) const [/root/lob_prof/bench/lob_bench]
+ 2,147,418 ( 4.92%)  bits/new_allocator.h:std::pair<std::__detail::_Node_iterator<std::pair<unsigned long const, lob::OrderBook::Locator>, false, false>, bool> std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lob::OrderBook::Locator> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_emplace<unsigned long const&, lob::OrderBook::Locator>(std::integral_constant<bool, true>, unsigned long const&, lob::OrderBook::Locator&&) [clone .isra.0]
+ 1,560,786 ( 3.58%)  bits/stl_vector.h:lob::(anonymous namespace)::ensure_capacity(std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&, unsigned long) [/root/lob_prof/bench/lob_bench]
+ 1,430,436 ( 3.28%)  bits/stl_map.h:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long)
+ 1,382,312 ( 3.17%)  bits/stl_map.h:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long)
+ 1,306,293 ( 2.99%)  bits/stl_tree.h:std::_Rb_tree_iterator<std::pair<long const, lob::OrderBook::PriceLevel> > std::_Rb_tree<long, std::pair<long const, lob::OrderBook::PriceLevel>, std::_Select1st<std::pair<long const, lob::OrderBook::PriceLevel> >, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<long const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<long const, lob::OrderBook::PriceLevel> >, std::piecewise_construct_t const&, std::tuple<long const&>&&, std::tuple<>&&) [/root/lob_prof/bench/lob_bench]
+ 1,262,336 ( 2.89%)  bits/stl_tree.h:std::_Rb_tree_iterator<std::pair<long const, lob::OrderBook::PriceLevel> > std::_Rb_tree<long, std::pair<long const, lob::OrderBook::PriceLevel>, std::_Select1st<std::pair<long const, lob::OrderBook::PriceLevel> >, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<long const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<long const, lob::OrderBook::PriceLevel> >, std::piecewise_construct_t const&, std::tuple<long const&>&&, std::tuple<>&&) [/root/lob_prof/bench/lob_bench]
+ 1,197,524 ( 2.74%)  bits/hashtable.h:lob::OrderBook::cancel(unsigned long)
+ 1,129,074 ( 2.59%)  bits/new_allocator.h:lob::OrderBook::cancel(unsigned long)
+ 1,066,136 ( 2.44%)  bits/new_allocator.h:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long)
+ 1,051,248 ( 2.41%)  src/book/order_book.cpp:lob::OrderBook::front(lob::Side) const [/root/lob_prof/bench/lob_bench]
+ 1,047,620 ( 2.40%)  bits/new_allocator.h:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long)
+ 1,044,168 ( 2.39%)  bits/vector.tcc:lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&)
+   995,409 ( 2.28%)  bits/hashtable.h:std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lob::OrderBook::Locator> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::find(unsigned long const&) const [clone .isra.0] [/root/lob_prof/bench/lob_bench]
+   958,323 ( 2.20%)  bits/unordered_map.h:lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&)
+   900,014 ( 2.06%)  src/engine/matching_engine.cpp:lob::(anonymous namespace)::ensure_capacity(std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&, unsigned long)
+   851,904 ( 1.95%)  include/lob/core/validation.hpp:lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&)
+   758,310 ( 1.74%)  ???:0x000000000010c6e0 [???]
+   752,322 ( 1.72%)  bits/stl_tree.h:lob::OrderBook::fill_front(lob::Side, long)
+   729,012 ( 1.67%)  ???:std::_Rb_tree_rebalance_for_erase(std::_Rb_tree_node_base*, std::_Rb_tree_node_base&) [/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33]
+   622,842 ( 1.43%)  ???:0x000000000010c590 [???]
+   618,777 ( 1.42%)  include/lob/book/order_book.hpp:lob::MatchingEngine::plan_match(lob::NewOrder const&) const
+   609,966 ( 1.40%)  include/lob/core/validation.hpp:lob::OrderBook::add(lob::NewOrder const&, unsigned long)
+   593,016 ( 1.36%)  ???:std::_Rb_tree_insert_and_rebalance(bool, std::_Rb_tree_node_base*, std::_Rb_tree_node_base*, std::_Rb_tree_node_base&) [/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33]
+   547,950 ( 1.26%)  bits/new_allocator.h:std::_Rb_tree_iterator<std::pair<long const, lob::OrderBook::PriceLevel> > std::_Rb_tree<long, std::pair<long const, lob::OrderBook::PriceLevel>, std::_Select1st<std::pair<long const, lob::OrderBook::PriceLevel> >, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<long const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<long const, lob::OrderBook::PriceLevel> >, std::piecewise_construct_t const&, std::tuple<long const&>&&, std::tuple<>&&)
+   531,524 ( 1.22%)  bits/new_allocator.h:std::_Rb_tree_iterator<std::pair<long const, lob::OrderBook::PriceLevel> > std::_Rb_tree<long, std::pair<long const, lob::OrderBook::PriceLevel>, std::_Select1st<std::pair<long const, lob::OrderBook::PriceLevel> >, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<long const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<long const, lob::OrderBook::PriceLevel> >, std::piecewise_construct_t const&, std::tuple<long const&>&&, std::tuple<>&&)
+   524,954 ( 1.20%)  ???:0x000000000010c8a0 [???]
+   479,940 ( 1.10%)  bits/stl_construct.h:lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&)
+   470,052 ( 1.08%)  src/engine/matching_engine.cpp:lob::MatchingEngine::reject(lob::CommandType, unsigned long, lob::RejectReason, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) [/root/lob_prof/bench/lob_bench]
+   466,862 ( 1.07%)  ???:std::__detail::_Prime_rehash_policy::_M_need_rehash(unsigned long, unsigned long, unsigned long) const [/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33]
+   444,264 ( 1.02%)  bits/stl_tree.h:lob::OrderBook::cancel(unsigned long)
+   397,191 ( 0.91%)  bits/stl_tree.h:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long)
+

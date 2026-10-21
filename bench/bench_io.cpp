@@ -69,7 +69,12 @@ void replay(const Options& o, const testkit::WorkloadProfile& profile,
     emit("replay.parse", "bytes_per_command", 0, static_cast<double>(text.size()) / static_cast<double>(n));
   }
 
-  // One reference journal for the format / recover / verify measurements.
+  // One reference journal for the format / recover / verify measurements
+  // (skipped entirely when none of them is selected, so that a filtered run
+  // — e.g. under a profiler — does not execute an extra session).
+  if (!any_selected(o, {"replay.format_events", "replay.session_memory", "replay.recover", "replay.verify"})) {
+    return;
+  }
   io::MemorySink journal;
   consume(run_session(profile.config, commands, journal, false, nullptr));
   const io::JournalScan scan = io::scan_journal(journal.data());
@@ -136,6 +141,11 @@ void session_file(const Options& o, const std::string& name, const std::string& 
 }  // namespace
 
 void run_io(const Options& o) {
+  if (!any_selected(o, {"replay.parse", "replay.format_events", "replay.session_memory", "replay.recover",
+                        "replay.verify", "session.memory", "session.ext4_buffered", "session.ext4_fsync",
+                        "session.9p_fsync"})) {
+    return;  // nothing selected: do not even generate the workload
+  }
   const testkit::WorkloadProfile& profile = *testkit::find_profile("mixed");
   const std::size_t n = o.quick ? 2'000 : o.engine_commands;
   const auto commands = sequenced(generate_commands(profile, n));
