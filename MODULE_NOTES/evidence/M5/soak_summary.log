@@ -1,153 +1,153 @@
-gcc-release mixed long: [time] seconds=1.595 commands_per_second(harness incl. reference+audit)=1254094
+gcc-release mixed long: [time] seconds=1.476 commands_per_second(harness incl. reference+audit)=1354806
 gcc-release mixed long: [targets] all met
-gcc-release mixed long: [resources] max_rss_kib=10080 user_s=1.61 sys_s=0.00
-gcc-release mixed faults: [time] seconds=0.210 commands_per_second(harness incl. reference+audit)=1188960
+gcc-release mixed long: [resources] max_rss_kib=10080 user_s=1.49 sys_s=0.00
+gcc-release mixed faults: [time] seconds=0.200 commands_per_second(harness incl. reference+audit)=1251485
 gcc-release mixed faults: [targets] all met
-gcc-release mixed faults: [resources] max_rss_kib=5600 user_s=0.21 sys_s=0.00
-gcc-release mixed xcheck: [time] seconds=0.119 commands_per_second(harness incl. reference+audit)=1258716
+gcc-release mixed faults: [resources] max_rss_kib=5600 user_s=0.20 sys_s=0.00
+gcc-release mixed xcheck: [time] seconds=0.109 commands_per_second(harness incl. reference+audit)=1382065
 gcc-release mixed xcheck: [targets] all met
-gcc-release mixed xcheck: [resources] max_rss_kib=5280 user_s=0.12 sys_s=0.00
-clang-release mixed xcheck: [time] seconds=0.118 commands_per_second(harness incl. reference+audit)=1268924
+gcc-release mixed xcheck: [resources] max_rss_kib=5440 user_s=0.11 sys_s=0.00
+clang-release mixed xcheck: [time] seconds=0.108 commands_per_second(harness incl. reference+audit)=1390964
 clang-release mixed xcheck: [targets] all met
-clang-release mixed xcheck: [resources] max_rss_kib=5280 user_s=0.12 sys_s=0.00
-gcc-asan mixed asan: [time] seconds=1.549 commands_per_second(harness incl. reference+audit)=25818
+clang-release mixed xcheck: [resources] max_rss_kib=5280 user_s=0.11 sys_s=0.00
+gcc-asan mixed asan: [time] seconds=1.295 commands_per_second(harness incl. reference+audit)=30879
 gcc-asan mixed asan: [targets] all met
-gcc-asan mixed asan: [resources] max_rss_kib=146880 user_s=1.29 sys_s=0.15
-gcc-release deep_book long: [time] seconds=39.232 commands_per_second(harness incl. reference+audit)=50979
+gcc-asan mixed asan: [resources] max_rss_kib=146720 user_s=1.17 sys_s=0.14
+gcc-release deep_book long: [time] seconds=37.709 commands_per_second(harness incl. reference+audit)=53038
 gcc-release deep_book long: [targets] all met
-gcc-release deep_book long: [resources] max_rss_kib=13836 user_s=38.49 sys_s=0.83
-gcc-release deep_book faults: [time] seconds=5.792 commands_per_second(harness incl. reference+audit)=43161
+gcc-release deep_book long: [resources] max_rss_kib=13852 user_s=37.17 sys_s=0.73
+gcc-release deep_book faults: [time] seconds=5.539 commands_per_second(harness incl. reference+audit)=45135
 gcc-release deep_book faults: [targets] all met
-gcc-release deep_book faults: [resources] max_rss_kib=8596 user_s=5.71 sys_s=0.24
-gcc-release deep_book xcheck: [time] seconds=3.039 commands_per_second(harness incl. reference+audit)=49359
+gcc-release deep_book faults: [resources] max_rss_kib=8664 user_s=5.32 sys_s=0.27
+gcc-release deep_book xcheck: [time] seconds=2.892 commands_per_second(harness incl. reference+audit)=51859
 gcc-release deep_book xcheck: [targets] all met
-gcc-release deep_book xcheck: [resources] max_rss_kib=7800 user_s=2.85 sys_s=0.16
-clang-release deep_book xcheck: [time] seconds=3.063 commands_per_second(harness incl. reference+audit)=48978
+gcc-release deep_book xcheck: [resources] max_rss_kib=7784 user_s=2.74 sys_s=0.15
+clang-release deep_book xcheck: [time] seconds=3.003 commands_per_second(harness incl. reference+audit)=49948
 clang-release deep_book xcheck: [targets] all met
-clang-release deep_book xcheck: [resources] max_rss_kib=7624 user_s=2.82 sys_s=0.18
-gcc-asan deep_book asan: [time] seconds=23.898 commands_per_second(harness incl. reference+audit)=1674
+clang-release deep_book xcheck: [resources] max_rss_kib=7624 user_s=2.82 sys_s=0.12
+gcc-asan deep_book asan: [time] seconds=20.768 commands_per_second(harness incl. reference+audit)=1926
 gcc-asan deep_book asan: [targets] not checked (20000 < 30000 commands/seed)
-gcc-asan deep_book asan: [resources] max_rss_kib=626364 user_s=21.18 sys_s=2.49
-gcc-release single_price long: [time] seconds=2.639 commands_per_second(harness incl. reference+audit)=757802
+gcc-asan deep_book asan: [resources] max_rss_kib=628968 user_s=18.46 sys_s=2.24
+gcc-release single_price long: [time] seconds=2.348 commands_per_second(harness incl. reference+audit)=851886
 gcc-release single_price long: [targets] all met
-gcc-release single_price long: [resources] max_rss_kib=10836 user_s=2.64 sys_s=0.00
-gcc-release single_price faults: [time] seconds=0.362 commands_per_second(harness incl. reference+audit)=690037
+gcc-release single_price long: [resources] max_rss_kib=10836 user_s=2.36 sys_s=0.01
+gcc-release single_price faults: [time] seconds=0.311 commands_per_second(harness incl. reference+audit)=802924
 gcc-release single_price faults: [targets] all met
-gcc-release single_price faults: [resources] max_rss_kib=5920 user_s=0.36 sys_s=0.01
-gcc-release single_price xcheck: [time] seconds=0.192 commands_per_second(harness incl. reference+audit)=783143
+gcc-release single_price faults: [resources] max_rss_kib=5760 user_s=0.31 sys_s=0.00
+gcc-release single_price xcheck: [time] seconds=0.170 commands_per_second(harness incl. reference+audit)=883085
 gcc-release single_price xcheck: [targets] all met
-gcc-release single_price xcheck: [resources] max_rss_kib=5600 user_s=0.19 sys_s=0.00
-clang-release single_price xcheck: [time] seconds=0.170 commands_per_second(harness incl. reference+audit)=883675
+gcc-release single_price xcheck: [resources] max_rss_kib=5600 user_s=0.17 sys_s=0.00
+clang-release single_price xcheck: [time] seconds=0.147 commands_per_second(harness incl. reference+audit)=1021635
 clang-release single_price xcheck: [targets] all met
-clang-release single_price xcheck: [resources] max_rss_kib=5440 user_s=0.17 sys_s=0.00
-gcc-asan single_price asan: [time] seconds=2.738 commands_per_second(harness incl. reference+audit)=14609
+clang-release single_price xcheck: [resources] max_rss_kib=5440 user_s=0.15 sys_s=0.00
+gcc-asan single_price asan: [time] seconds=2.644 commands_per_second(harness incl. reference+audit)=15128
 gcc-asan single_price asan: [targets] all met
-gcc-asan single_price asan: [resources] max_rss_kib=337120 user_s=2.38 sys_s=0.38
-gcc-release high_density long: [time] seconds=1.131 commands_per_second(harness incl. reference+audit)=1768980
+gcc-asan single_price asan: [resources] max_rss_kib=337280 user_s=2.32 sys_s=0.33
+gcc-release high_density long: [time] seconds=1.046 commands_per_second(harness incl. reference+audit)=1911176
 gcc-release high_density long: [targets] all met
-gcc-release high_density long: [resources] max_rss_kib=11076 user_s=1.16 sys_s=0.01
-gcc-release high_density faults: [time] seconds=0.147 commands_per_second(harness incl. reference+audit)=1703347
+gcc-release high_density long: [resources] max_rss_kib=11076 user_s=1.07 sys_s=0.00
+gcc-release high_density faults: [time] seconds=0.138 commands_per_second(harness incl. reference+audit)=1807496
 gcc-release high_density faults: [targets] all met
-gcc-release high_density faults: [resources] max_rss_kib=5920 user_s=0.14 sys_s=0.01
-gcc-release high_density xcheck: [time] seconds=0.076 commands_per_second(harness incl. reference+audit)=1966357
+gcc-release high_density faults: [resources] max_rss_kib=5920 user_s=0.14 sys_s=0.00
+gcc-release high_density xcheck: [time] seconds=0.075 commands_per_second(harness incl. reference+audit)=1992804
 gcc-release high_density xcheck: [targets] all met
 gcc-release high_density xcheck: [resources] max_rss_kib=5600 user_s=0.08 sys_s=0.00
-clang-release high_density xcheck: [time] seconds=0.079 commands_per_second(harness incl. reference+audit)=1893323
+clang-release high_density xcheck: [time] seconds=0.076 commands_per_second(harness incl. reference+audit)=1984137
 clang-release high_density xcheck: [targets] all met
 clang-release high_density xcheck: [resources] max_rss_kib=5440 user_s=0.08 sys_s=0.00
-gcc-asan high_density asan: [time] seconds=1.085 commands_per_second(harness incl. reference+audit)=36880
+gcc-asan high_density asan: [time] seconds=1.050 commands_per_second(harness incl. reference+audit)=38082
 gcc-asan high_density asan: [targets] all met
-gcc-asan high_density asan: [resources] max_rss_kib=89920 user_s=1.06 sys_s=0.04
-gcc-release thin_book long: [time] seconds=1.174 commands_per_second(harness incl. reference+audit)=1703319
+gcc-asan high_density asan: [resources] max_rss_kib=89920 user_s=0.96 sys_s=0.09
+gcc-release thin_book long: [time] seconds=1.114 commands_per_second(harness incl. reference+audit)=1794784
 gcc-release thin_book long: [targets] all met
-gcc-release thin_book long: [resources] max_rss_kib=11040 user_s=1.21 sys_s=0.00
-gcc-release thin_book faults: [time] seconds=0.168 commands_per_second(harness incl. reference+audit)=1491340
+gcc-release thin_book long: [resources] max_rss_kib=11040 user_s=1.13 sys_s=0.01
+gcc-release thin_book faults: [time] seconds=0.143 commands_per_second(harness incl. reference+audit)=1743089
 gcc-release thin_book faults: [targets] all met
-gcc-release thin_book faults: [resources] max_rss_kib=5760 user_s=0.17 sys_s=0.00
-gcc-release thin_book xcheck: [time] seconds=0.088 commands_per_second(harness incl. reference+audit)=1696447
+gcc-release thin_book faults: [resources] max_rss_kib=5760 user_s=0.15 sys_s=0.00
+gcc-release thin_book xcheck: [time] seconds=0.080 commands_per_second(harness incl. reference+audit)=1876171
 gcc-release thin_book xcheck: [targets] all met
-gcc-release thin_book xcheck: [resources] max_rss_kib=5760 user_s=0.09 sys_s=0.00
-clang-release thin_book xcheck: [time] seconds=0.087 commands_per_second(harness incl. reference+audit)=1725905
+gcc-release thin_book xcheck: [resources] max_rss_kib=5760 user_s=0.07 sys_s=0.01
+clang-release thin_book xcheck: [time] seconds=0.081 commands_per_second(harness incl. reference+audit)=1862347
 clang-release thin_book xcheck: [targets] all met
-clang-release thin_book xcheck: [resources] max_rss_kib=5600 user_s=0.09 sys_s=0.00
-gcc-asan thin_book asan: [time] seconds=1.333 commands_per_second(harness incl. reference+audit)=30005
+clang-release thin_book xcheck: [resources] max_rss_kib=5600 user_s=0.08 sys_s=0.01
+gcc-asan thin_book asan: [time] seconds=1.176 commands_per_second(harness incl. reference+audit)=34012
 gcc-asan thin_book asan: [targets] all met
-gcc-asan thin_book asan: [resources] max_rss_kib=95840 user_s=1.21 sys_s=0.14
-gcc-release cancel_heavy long: [time] seconds=1.473 commands_per_second(harness incl. reference+audit)=1357521
+gcc-asan thin_book asan: [resources] max_rss_kib=96000 user_s=1.08 sys_s=0.10
+gcc-release cancel_heavy long: [time] seconds=1.332 commands_per_second(harness incl. reference+audit)=1501463
 gcc-release cancel_heavy long: [targets] all met
-gcc-release cancel_heavy long: [resources] max_rss_kib=8000 user_s=1.49 sys_s=0.00
-gcc-release cancel_heavy faults: [time] seconds=0.203 commands_per_second(harness incl. reference+audit)=1233392
+gcc-release cancel_heavy long: [resources] max_rss_kib=8000 user_s=1.34 sys_s=0.00
+gcc-release cancel_heavy faults: [time] seconds=0.190 commands_per_second(harness incl. reference+audit)=1315151
 gcc-release cancel_heavy faults: [targets] all met
-gcc-release cancel_heavy faults: [resources] max_rss_kib=5120 user_s=0.21 sys_s=0.00
-gcc-release cancel_heavy xcheck: [time] seconds=0.103 commands_per_second(harness incl. reference+audit)=1458317
+gcc-release cancel_heavy faults: [resources] max_rss_kib=4960 user_s=0.19 sys_s=0.00
+gcc-release cancel_heavy xcheck: [time] seconds=0.097 commands_per_second(harness incl. reference+audit)=1549570
 gcc-release cancel_heavy xcheck: [targets] all met
 gcc-release cancel_heavy xcheck: [resources] max_rss_kib=4960 user_s=0.10 sys_s=0.00
-clang-release cancel_heavy xcheck: [time] seconds=0.102 commands_per_second(harness incl. reference+audit)=1477555
+clang-release cancel_heavy xcheck: [time] seconds=0.097 commands_per_second(harness incl. reference+audit)=1546509
 clang-release cancel_heavy xcheck: [targets] all met
-clang-release cancel_heavy xcheck: [resources] max_rss_kib=4800 user_s=0.10 sys_s=0.00
-gcc-asan cancel_heavy asan: [time] seconds=1.512 commands_per_second(harness incl. reference+audit)=26456
+clang-release cancel_heavy xcheck: [resources] max_rss_kib=4640 user_s=0.10 sys_s=0.00
+gcc-asan cancel_heavy asan: [time] seconds=1.322 commands_per_second(harness incl. reference+audit)=30266
 gcc-asan cancel_heavy asan: [targets] all met
-gcc-asan cancel_heavy asan: [resources] max_rss_kib=200480 user_s=1.29 sys_s=0.24
-gcc-release id_churn long: [time] seconds=1.137 commands_per_second(harness incl. reference+audit)=1758310
+gcc-asan cancel_heavy asan: [resources] max_rss_kib=200320 user_s=1.10 sys_s=0.23
+gcc-release id_churn long: [time] seconds=1.006 commands_per_second(harness incl. reference+audit)=1987216
 gcc-release id_churn long: [targets] all met
-gcc-release id_churn long: [resources] max_rss_kib=3840 user_s=1.14 sys_s=0.00
-gcc-release id_churn faults: [time] seconds=0.152 commands_per_second(harness incl. reference+audit)=1639480
+gcc-release id_churn long: [resources] max_rss_kib=3840 user_s=1.01 sys_s=0.00
+gcc-release id_churn faults: [time] seconds=0.145 commands_per_second(harness incl. reference+audit)=1721766
 gcc-release id_churn faults: [targets] all met
 gcc-release id_churn faults: [resources] max_rss_kib=4000 user_s=0.15 sys_s=0.00
-gcc-release id_churn xcheck: [time] seconds=0.080 commands_per_second(harness incl. reference+audit)=1864185
+gcc-release id_churn xcheck: [time] seconds=0.077 commands_per_second(harness incl. reference+audit)=1944969
 gcc-release id_churn xcheck: [targets] all met
 gcc-release id_churn xcheck: [resources] max_rss_kib=3840 user_s=0.08 sys_s=0.00
-clang-release id_churn xcheck: [time] seconds=0.075 commands_per_second(harness incl. reference+audit)=2007269
+clang-release id_churn xcheck: [time] seconds=0.075 commands_per_second(harness incl. reference+audit)=1996670
 clang-release id_churn xcheck: [targets] all met
 clang-release id_churn xcheck: [resources] max_rss_kib=3680 user_s=0.08 sys_s=0.00
-gcc-asan id_churn asan: [time] seconds=1.087 commands_per_second(harness incl. reference+audit)=36804
+gcc-asan id_churn asan: [time] seconds=0.959 commands_per_second(harness incl. reference+audit)=41697
 gcc-asan id_churn asan: [targets] all met
-gcc-asan id_churn asan: [resources] max_rss_kib=108160 user_s=1.00 sys_s=0.10
-gcc-release capacity_edge long: [time] seconds=0.712 commands_per_second(harness incl. reference+audit)=2810475
+gcc-asan id_churn asan: [resources] max_rss_kib=108160 user_s=0.91 sys_s=0.05
+gcc-release capacity_edge long: [time] seconds=0.640 commands_per_second(harness incl. reference+audit)=3123064
 gcc-release capacity_edge long: [targets] all met
-gcc-release capacity_edge long: [resources] max_rss_kib=8160 user_s=0.73 sys_s=0.00
-gcc-release capacity_edge faults: [time] seconds=0.096 commands_per_second(harness incl. reference+audit)=2608019
+gcc-release capacity_edge long: [resources] max_rss_kib=8160 user_s=0.65 sys_s=0.00
+gcc-release capacity_edge faults: [time] seconds=0.085 commands_per_second(harness incl. reference+audit)=2928656
 gcc-release capacity_edge faults: [targets] all met
-gcc-release capacity_edge faults: [resources] max_rss_kib=5120 user_s=0.10 sys_s=0.00
-gcc-release capacity_edge xcheck: [time] seconds=0.050 commands_per_second(harness incl. reference+audit)=2970794
+gcc-release capacity_edge faults: [resources] max_rss_kib=5120 user_s=0.09 sys_s=0.00
+gcc-release capacity_edge xcheck: [time] seconds=0.047 commands_per_second(harness incl. reference+audit)=3206723
 gcc-release capacity_edge xcheck: [targets] all met
 gcc-release capacity_edge xcheck: [resources] max_rss_kib=4960 user_s=0.05 sys_s=0.00
-clang-release capacity_edge xcheck: [time] seconds=0.047 commands_per_second(harness incl. reference+audit)=3224855
+clang-release capacity_edge xcheck: [time] seconds=0.045 commands_per_second(harness incl. reference+audit)=3301161
 clang-release capacity_edge xcheck: [targets] all met
-clang-release capacity_edge xcheck: [resources] max_rss_kib=4800 user_s=0.05 sys_s=0.00
-gcc-asan capacity_edge asan: [time] seconds=0.851 commands_per_second(harness incl. reference+audit)=46980
+clang-release capacity_edge xcheck: [resources] max_rss_kib=4800 user_s=0.04 sys_s=0.01
+gcc-asan capacity_edge asan: [time] seconds=0.774 commands_per_second(harness incl. reference+audit)=51664
 gcc-asan capacity_edge asan: [targets] all met
-gcc-asan capacity_edge asan: [resources] max_rss_kib=56960 user_s=0.80 sys_s=0.06
-gcc-release extreme_quantity long: [time] seconds=1.418 commands_per_second(harness incl. reference+audit)=1410659
+gcc-asan capacity_edge asan: [resources] max_rss_kib=57120 user_s=0.72 sys_s=0.06
+gcc-release extreme_quantity long: [time] seconds=1.348 commands_per_second(harness incl. reference+audit)=1483155
 gcc-release extreme_quantity long: [targets] all met
-gcc-release extreme_quantity long: [resources] max_rss_kib=10080 user_s=1.46 sys_s=0.00
-gcc-release extreme_quantity faults: [time] seconds=0.200 commands_per_second(harness incl. reference+audit)=1249370
+gcc-release extreme_quantity long: [resources] max_rss_kib=10080 user_s=1.36 sys_s=0.00
+gcc-release extreme_quantity faults: [time] seconds=0.178 commands_per_second(harness incl. reference+audit)=1402212
 gcc-release extreme_quantity faults: [targets] all met
-gcc-release extreme_quantity faults: [resources] max_rss_kib=5280 user_s=0.20 sys_s=0.00
-gcc-release extreme_quantity xcheck: [time] seconds=0.107 commands_per_second(harness incl. reference+audit)=1396779
+gcc-release extreme_quantity faults: [resources] max_rss_kib=5440 user_s=0.18 sys_s=0.00
+gcc-release extreme_quantity xcheck: [time] seconds=0.098 commands_per_second(harness incl. reference+audit)=1524112
 gcc-release extreme_quantity xcheck: [targets] all met
-gcc-release extreme_quantity xcheck: [resources] max_rss_kib=5440 user_s=0.11 sys_s=0.00
-clang-release extreme_quantity xcheck: [time] seconds=0.107 commands_per_second(harness incl. reference+audit)=1407318
+gcc-release extreme_quantity xcheck: [resources] max_rss_kib=5440 user_s=0.10 sys_s=0.00
+clang-release extreme_quantity xcheck: [time] seconds=0.097 commands_per_second(harness incl. reference+audit)=1543455
 clang-release extreme_quantity xcheck: [targets] all met
-clang-release extreme_quantity xcheck: [resources] max_rss_kib=5280 user_s=0.11 sys_s=0.00
-gcc-asan extreme_quantity asan: [time] seconds=1.443 commands_per_second(harness incl. reference+audit)=27729
+clang-release extreme_quantity xcheck: [resources] max_rss_kib=5280 user_s=0.10 sys_s=0.00
+gcc-asan extreme_quantity asan: [time] seconds=1.334 commands_per_second(harness incl. reference+audit)=29979
 gcc-asan extreme_quantity asan: [targets] all met
-gcc-asan extreme_quantity asan: [resources] max_rss_kib=175680 user_s=1.26 sys_s=0.19
-gcc-release extreme_price long: [time] seconds=1.579 commands_per_second(harness incl. reference+audit)=1266394
+gcc-asan extreme_quantity asan: [resources] max_rss_kib=175680 user_s=1.16 sys_s=0.18
+gcc-release extreme_price long: [time] seconds=1.475 commands_per_second(harness incl. reference+audit)=1356332
 gcc-release extreme_price long: [targets] all met
-gcc-release extreme_price long: [resources] max_rss_kib=10080 user_s=1.60 sys_s=0.00
-gcc-release extreme_price faults: [time] seconds=0.215 commands_per_second(harness incl. reference+audit)=1162719
+gcc-release extreme_price long: [resources] max_rss_kib=10080 user_s=1.49 sys_s=0.00
+gcc-release extreme_price faults: [time] seconds=0.199 commands_per_second(harness incl. reference+audit)=1255728
 gcc-release extreme_price faults: [targets] all met
-gcc-release extreme_price faults: [resources] max_rss_kib=5600 user_s=0.22 sys_s=0.00
-gcc-release extreme_price xcheck: [time] seconds=0.116 commands_per_second(harness incl. reference+audit)=1294026
+gcc-release extreme_price faults: [resources] max_rss_kib=5600 user_s=0.20 sys_s=0.00
+gcc-release extreme_price xcheck: [time] seconds=0.107 commands_per_second(harness incl. reference+audit)=1396368
 gcc-release extreme_price xcheck: [targets] all met
-gcc-release extreme_price xcheck: [resources] max_rss_kib=5440 user_s=0.11 sys_s=0.01
-clang-release extreme_price xcheck: [time] seconds=0.119 commands_per_second(harness incl. reference+audit)=1259848
+gcc-release extreme_price xcheck: [resources] max_rss_kib=5440 user_s=0.11 sys_s=0.00
+clang-release extreme_price xcheck: [time] seconds=0.107 commands_per_second(harness incl. reference+audit)=1397224
 clang-release extreme_price xcheck: [targets] all met
-clang-release extreme_price xcheck: [resources] max_rss_kib=5280 user_s=0.12 sys_s=0.00
-gcc-asan extreme_price asan: [time] seconds=1.403 commands_per_second(harness incl. reference+audit)=28515
+clang-release extreme_price xcheck: [resources] max_rss_kib=5280 user_s=0.11 sys_s=0.00
+gcc-asan extreme_price asan: [time] seconds=1.341 commands_per_second(harness incl. reference+audit)=29820
 gcc-asan extreme_price asan: [targets] all met
-gcc-asan extreme_price asan: [resources] max_rss_kib=151040 user_s=1.26 sys_s=0.16
+gcc-asan extreme_price asan: [resources] max_rss_kib=151040 user_s=1.14 sys_s=0.22
 gcc/clang identical: mixed
 gcc/clang identical: deep_book
 gcc/clang identical: single_price
@@ -158,4 +158,4 @@ gcc/clang identical: id_churn
 gcc/clang identical: capacity_edge
 gcc/clang identical: extreme_quantity
 gcc/clang identical: extreme_price
-soak.sh rc=0 wall_seconds=106
+soak.sh rc=0 wall_seconds=99

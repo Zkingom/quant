@@ -1,4 +1,4 @@
-[SURVIVED] session: commit record allocates after the commit point (pre-fix code)
+[KILLED] session: commit record allocates after the commit point (pre-fix code): 1 failing: IoAllocFailure.EveryCommandAndAllocationPointHasAContractOutcome
 [KILLED] session: duplicate detection disabled: 6 failing: Session.IdentityChecksNeverExecuteACommittedCommandTwice, Session.RestartAfterAnyPrefixContinuesToTheIdenticalJournal, Session.SyncFailureIsNotAcknowledgedButMayBeCommitted, IoAllocFailure.EveryCommandAndAllocationPointHasAContractOutcome, cli.golden, cli.crash_restart
 [KILLED] session: content check of duplicates disabled: 1 failing: Session.IdentityChecksNeverExecuteACommittedCommandTwice
 [KILLED] session: journal write failure ignored (acknowledges uncommitted results): 4 failing: Session.WriteFailureAtAnyOffsetPoisonsAndRecoversToTheLastCommit, Session.SyncFailureIsNotAcknowledgedButMayBeCommitted, IoAllocFailure.EveryCommandAndAllocationPointHasAContractOutcome, IoAllocFailure.LongFaultedRunsWithRestartsRecoverExactly
@@ -14,4 +14,4 @@
 [KILLED] text format: leading zeros accepted: 1 failing: TextFormat.NumbersAreStrictAndCanonical
 [KILLED] file sink: torn tail not truncated before appending: 1 failing: FileSink.TruncatesToTheKeptLengthBeforeAppending
 [BASELINE] unmutated tree: build rc=0 ctest rc=0
-survivors: 1/15
+survivors: 0/15

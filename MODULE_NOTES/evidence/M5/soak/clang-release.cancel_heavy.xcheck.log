@@ -1,7 +1,7 @@
 $ lob_soak --profile cancel_heavy --seeds 21-23 --commands 50000 --check-every 1000
-[run] profile=cancel_heavy seed=21 commands=50000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.034
-[run] profile=cancel_heavy seed=22 commands=50000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.034
-[run] profile=cancel_heavy seed=23 commands=50000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.034
+[run] profile=cancel_heavy seed=21 commands=50000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.033
+[run] profile=cancel_heavy seed=22 commands=50000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.032
+[run] profile=cancel_heavy seed=23 commands=50000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.032
 == profile cancel_heavy: 70% cancels, half for ids that are not resting; heavy index churn
 [coverage] commands=150000 accepted=64996 trades=31441 cancels=32979
 [coverage] multi_maker=6498 multi_level=4166 taker_full=10338 taker_partial_rested=2165 rested_no_trade=52493 maker_partial=9767
@@ -9,6 +9,6 @@ $ lob_soak --profile cancel_heavy --seeds 21-23 --commands 50000 --check-every 1
 [coverage] rejects: INVALID_ORDER_ID=916 INVALID_SIDE=868 PRICE_OUT_OF_RANGE=914 INVALID_QUANTITY=934 QUANTITY_TOO_LARGE=909 DUPLICATE_ORDER_ID=30 UNKNOWN_ORDER_ID=43753 BOOK_FULL=3701
 [state] max_levels_per_side=6 max_level_orders=59 max_level_quantity=986 max_trades_in_command=14 max_levels_swept=6 side_emptied=1106 band_edge_accepts=2652 band_edge_trades=1012 accepted_quantity=1480981 full_checks=153
 [faults] prepare=0 residual=0 armed_without_effect=0
-[time] seconds=0.102 commands_per_second(harness incl. reference+audit)=1477555
+[time] seconds=0.097 commands_per_second(harness incl. reference+audit)=1546509
 [targets] all met
-[resources] max_rss_kib=4800 user_s=0.10 sys_s=0.00
+[resources] max_rss_kib=4640 user_s=0.10 sys_s=0.00

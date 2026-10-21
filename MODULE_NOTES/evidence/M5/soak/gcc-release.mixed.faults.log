@@ -1,9 +1,9 @@
 $ lob_soak --profile mixed --seeds 11-15 --commands 50000 --check-every 500 --fault-per-mille 20 --require-targets
 [run] profile=mixed seed=11 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.040
 [run] profile=mixed seed=12 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.040
-[run] profile=mixed seed=13 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.042
-[run] profile=mixed seed=14 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.043
-[run] profile=mixed seed=15 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.045
+[run] profile=mixed seed=13 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.040
+[run] profile=mixed seed=14 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.039
+[run] profile=mixed seed=15 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.040
 == profile mixed: M3 baseline mix: build/churn phases, sweeps, invalid input, capacity 40
 [coverage] commands=248521 accepted=170105 trades=134164 cancels=33485
 [coverage] multi_maker=30091 multi_level=20331 taker_full=48579 taker_partial_rested=15515 rested_no_trade=106011 maker_partial=46430
@@ -11,6 +11,6 @@ $ lob_soak --profile mixed --seeds 11-15 --commands 50000 --check-every 500 --fa
 [coverage] rejects: INVALID_ORDER_ID=3026 INVALID_SIDE=3101 PRICE_OUT_OF_RANGE=2969 INVALID_QUANTITY=2989 QUANTITY_TOO_LARGE=2929 DUPLICATE_ORDER_ID=49 UNKNOWN_ORDER_ID=14431 BOOK_FULL=15437
 [state] max_levels_per_side=26 max_level_orders=30 max_level_quantity=913 max_trades_in_command=14 max_levels_swept=9 side_emptied=4886 band_edge_accepts=38372 band_edge_trades=34533 accepted_quantity=4806938 full_checks=1984
 [faults] prepare=453 residual=1026 armed_without_effect=3569
-[time] seconds=0.210 commands_per_second(harness incl. reference+audit)=1188960
+[time] seconds=0.200 commands_per_second(harness incl. reference+audit)=1251485
 [targets] all met
-[resources] max_rss_kib=5600 user_s=0.21 sys_s=0.00
+[resources] max_rss_kib=5600 user_s=0.20 sys_s=0.00

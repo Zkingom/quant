@@ -1,9 +1,9 @@
 $ lob_soak --profile extreme_quantity --seeds 11-15 --commands 50000 --check-every 500 --fault-per-mille 20 --require-targets
-[run] profile=extreme_quantity seed=11 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.039
-[run] profile=extreme_quantity seed=12 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.042
-[run] profile=extreme_quantity seed=13 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.039
-[run] profile=extreme_quantity seed=14 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.040
-[run] profile=extreme_quantity seed=15 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.041
+[run] profile=extreme_quantity seed=11 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.037
+[run] profile=extreme_quantity seed=12 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.035
+[run] profile=extreme_quantity seed=13 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.036
+[run] profile=extreme_quantity seed=14 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.035
+[run] profile=extreme_quantity seed=15 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.035
 == profile extreme_quantity: quantities near INT64_MAX/64: level totals near INT64_MAX (D-006 bound)
 [coverage] commands=248829 accepted=169533 trades=135551 cancels=33892
 [coverage] multi_maker=51844 multi_level=0 taker_full=67283 taker_partial_rested=8043 rested_no_trade=94207 maker_partial=67283
@@ -11,6 +11,6 @@ $ lob_soak --profile extreme_quantity --seeds 11-15 --commands 50000 --check-eve
 [coverage] rejects: INVALID_ORDER_ID=2973 INVALID_SIDE=3032 PRICE_OUT_OF_RANGE=2998 INVALID_QUANTITY=3002 QUANTITY_TOO_LARGE=2949 DUPLICATE_ORDER_ID=77 UNKNOWN_ORDER_ID=15081 BOOK_FULL=15292
 [state] max_levels_per_side=2 max_level_orders=63 max_level_quantity=7208878951216147439 max_trades_in_command=7 max_levels_swept=1 side_emptied=5172 band_edge_accepts=169533 band_edge_trades=135551 accepted_quantity=16904570820297699850730 full_checks=1676
 [faults] prepare=447 residual=724 armed_without_effect=3877
-[time] seconds=0.200 commands_per_second(harness incl. reference+audit)=1249370
+[time] seconds=0.178 commands_per_second(harness incl. reference+audit)=1402212
 [targets] all met
-[resources] max_rss_kib=5280 user_s=0.20 sys_s=0.00
+[resources] max_rss_kib=5440 user_s=0.18 sys_s=0.00

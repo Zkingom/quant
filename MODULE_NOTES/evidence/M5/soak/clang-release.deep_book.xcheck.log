@@ -1,7 +1,7 @@
 $ lob_soak --profile deep_book --seeds 21-23 --commands 50000 --check-every 1000
-[run] profile=deep_book seed=21 commands=50000 check_every=1000 fault_per_mille=0 ok=1 seconds=1.113
-[run] profile=deep_book seed=22 commands=50000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.982
-[run] profile=deep_book seed=23 commands=50000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.968
+[run] profile=deep_book seed=21 commands=50000 check_every=1000 fault_per_mille=0 ok=1 seconds=1.068
+[run] profile=deep_book seed=22 commands=50000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.955
+[run] profile=deep_book seed=23 commands=50000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.981
 == profile deep_book: deep book: up to 5000 resting orders over >1000 levels; multi-level sweeps
 [coverage] commands=150000 accepted=118500 trades=97329 cancels=16091
 [coverage] multi_maker=7571 multi_level=5816 taker_full=19810 taker_partial_rested=4134 rested_no_trade=94556 maker_partial=19681
@@ -9,6 +9,6 @@ $ lob_soak --profile deep_book --seeds 21-23 --commands 50000 --check-every 1000
 [coverage] rejects: INVALID_ORDER_ID=1857 INVALID_SIDE=1774 PRICE_OUT_OF_RANGE=1795 INVALID_QUANTITY=1810 QUANTITY_TOO_LARGE=1860 DUPLICATE_ORDER_ID=464 UNKNOWN_ORDER_ID=5833 BOOK_FULL=16
 [state] max_levels_per_side=1370 max_level_orders=2528 max_level_quantity=260272 max_trades_in_command=65 max_levels_swept=49 side_emptied=973 band_edge_accepts=31995 band_edge_trades=29766 accepted_quantity=39457563 full_checks=153
 [faults] prepare=0 residual=0 armed_without_effect=0
-[time] seconds=3.063 commands_per_second(harness incl. reference+audit)=48978
+[time] seconds=3.003 commands_per_second(harness incl. reference+audit)=49948
 [targets] all met
-[resources] max_rss_kib=7624 user_s=2.82 sys_s=0.18
+[resources] max_rss_kib=7624 user_s=2.82 sys_s=0.12
