@@ -35,6 +35,41 @@ void ensure_capacity(std::vector<Event>& events, std::size_t additional) {
 
 MatchingEngine::MatchingEngine(const EngineConfig& config) : book_(config) {}
 
+// ----------------------------------------------------------- snapshot / restore
+
+EngineSnapshot MatchingEngine::snapshot() const {
+  EngineSnapshot s{.config = config(), .last_seq = last_seq_, .orders = {}};
+  s.orders.reserve(book_.order_count());
+  for (const Side side : {Side::Buy, Side::Sell}) {  // canonical: bids, then asks
+    book_.for_each_order(side, [&](Price price, const RestingOrder& o) {
+      s.orders.push_back(
+          SnapshotOrder{.id = o.id, .side = side, .price = price, .remaining = o.remaining, .seq = o.seq});
+    });
+  }
+  return s;
+}
+
+MatchingEngine MatchingEngine::restore(const EngineSnapshot& snapshot) {
+  if (const auto violation = find_snapshot_violation(snapshot)) {
+    throw std::invalid_argument("MatchingEngine::restore: invalid snapshot: " + *violation);
+  }
+  MatchingEngine engine{snapshot.config};
+  // Re-adding the orders in ascending seq order satisfies every
+  // OrderBook::add precondition (validated fields, unique ids, capacity,
+  // strictly increasing seq, and no crossing: any subset of a non-crossed
+  // book is non-crossed) and rebuilds each FIFO queue in its original order,
+  // because FIFO order within a level is seq order.
+  std::vector<SnapshotOrder> by_seq = snapshot.orders;
+  std::sort(by_seq.begin(), by_seq.end(),
+            [](const SnapshotOrder& a, const SnapshotOrder& b) { return a.seq < b.seq; });
+  for (const SnapshotOrder& o : by_seq) {
+    engine.book_.add(NewOrder{.id = o.id, .side = o.side, .price = o.price, .quantity = o.remaining},
+                     o.seq);
+  }
+  engine.last_seq_ = snapshot.last_seq;
+  return engine;
+}
+
 void MatchingEngine::process(const Command& command, std::vector<Event>& events) {
   std::visit([&](const auto& c) { process(c, events); }, command);
 }

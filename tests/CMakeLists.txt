@@ -42,6 +42,17 @@ lob_add_test_suite(lob_engine_tests
     engine/test_engine_differential.cpp
   LIBS lob::engine lob::testkit)
 
+lob_add_test_suite(lob_io_tests
+  SOURCES
+    io/test_text_format.cpp
+    io/test_journal.cpp
+    io/test_snapshot.cpp
+    io/test_recovery.cpp
+    io/test_session.cpp
+    io/test_golden.cpp
+  LIBS lob::io lob::testkit)
+target_compile_definitions(lob_io_tests PRIVATE LOB_GOLDEN_DIR="${CMAKE_CURRENT_SOURCE_DIR}/golden")
+
 # Separate executables: lob_testkit_alloc_fault replaces the global
 # operator new/delete of the binary it is linked into.
 lob_add_test_suite(lob_book_alloc_tests

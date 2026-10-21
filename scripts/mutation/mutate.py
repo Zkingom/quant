@@ -31,7 +31,7 @@ def run(repo_root, mutations, work_name):
     work.mkdir()
     # Everything the build needs. Keep in sync with the root CMakeLists.txt:
     # a missing directory makes configuration fail (seen after M4 added testkit/).
-    for item in ["CMakeLists.txt", "cmake", "include", "src", "testkit", "tests"]:
+    for item in ["CMakeLists.txt", "cmake", "include", "src", "apps", "testkit", "tests"]:
         src = repo / item
         (shutil.copytree if src.is_dir() else shutil.copy)(src, work / item)
     configure = _run("cmake -S . -B b -G Ninja -DLOB_BUILD_EXAMPLES=OFF -DCMAKE_BUILD_TYPE=Debug", work)
