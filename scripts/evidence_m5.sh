@@ -66,7 +66,7 @@ fi
 
 # 3. Process crashes (more kills, Release build) and the CLI golden test.
 if stage cli; then
-  bash tests/cli/crash_restart.sh "$B/apps/lob_replay" "$B/testkit/lob_gen_commands" /tmp/lob_crash_evidence 40 \
+  bash tests/cli/crash_restart.sh "$B/apps/lob_replay" "$B/testkit/lob_gen_commands" /tmp/lob_crash_evidence 40 30000 \
     > "$E/crash_restart.log" 2>&1 || die "crash_restart"
   bash tests/cli/golden_cli.sh "$B/apps/lob_replay" tests/golden /tmp/lob_golden_evidence \
     > "$E/golden_cli.log" 2>&1 || die "golden_cli"

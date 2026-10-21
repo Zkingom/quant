@@ -11,11 +11,14 @@
 #     snapshot is identical too (no command executed twice, none lost).
 # This tests process crashes on the file system holding WORK_DIR; it does
 # not simulate power loss.
-# Usage: crash_restart.sh LOB_REPLAY LOB_GEN_COMMANDS WORK_DIR [KILLS]
+# Usage: crash_restart.sh LOB_REPLAY LOB_GEN_COMMANDS WORK_DIR [KILLS] [COMMANDS]
+# A kill only counts if the run was still in progress; once the journal is
+# complete, later attempts finish before the kill. Size COMMANDS so that KILLS
+# attempts fit into one run (the summary reports the kills that landed).
 set -u
-REPLAY=$1; GEN=$2; WORK=$3; KILLS=${4:-12}
+REPLAY=$1; GEN=$2; WORK=$3; KILLS=${4:-12}; COMMANDS=${5:-4000}
 rm -rf "$WORK"; mkdir -p "$WORK"; cd "$WORK"
-"$GEN" --profile mixed --seed 7 --commands 4000 > cmds.txt
+"$GEN" --profile mixed --seed 7 --commands "$COMMANDS" > cmds.txt
 
 "$REPLAY" run --commands cmds.txt --journal ref.journal --snapshot ref.snap --durable 2> ref.err \
   || { echo "reference run failed"; cat ref.err; exit 1; }

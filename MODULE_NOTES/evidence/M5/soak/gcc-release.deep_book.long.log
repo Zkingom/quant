@@ -1,0 +1,21 @@
+$ lob_soak --profile deep_book --seeds 1-10 --commands 200000 --check-every 1000 --require-targets
+[run] profile=deep_book seed=1 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=4.350
+[run] profile=deep_book seed=2 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=3.904
+[run] profile=deep_book seed=3 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=3.842
+[run] profile=deep_book seed=4 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=3.783
+[run] profile=deep_book seed=5 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=3.754
+[run] profile=deep_book seed=6 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=4.053
+[run] profile=deep_book seed=7 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=4.038
+[run] profile=deep_book seed=8 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=3.932
+[run] profile=deep_book seed=9 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=3.989
+[run] profile=deep_book seed=10 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=3.586
+== profile deep_book: deep book: up to 5000 resting orders over >1000 levels; multi-level sweeps
+[coverage] commands=2000000 accepted=1581685 trades=1366809 cancels=209392
+[coverage] multi_maker=101611 multi_level=71417 taker_full=289954 taker_partial_rested=49881 rested_no_trade=1241850 maker_partial=288489
+[coverage] accepted_while_full=748 reused_dead_id=63015 max_orders=5000
+[coverage] rejects: INVALID_ORDER_ID=24076 INVALID_SIDE=24082 PRICE_OUT_OF_RANGE=23863 INVALID_QUANTITY=24205 QUANTITY_TOO_LARGE=23778 DUPLICATE_ORDER_ID=1916 UNKNOWN_ORDER_ID=86350 BOOK_FULL=653
+[state] max_levels_per_side=1542 max_level_orders=2545 max_level_quantity=256514 max_trades_in_command=74 max_levels_swept=56 side_emptied=13343 band_edge_accepts=530092 band_edge_trades=535716 accepted_quantity=543111261 full_checks=2010
+[faults] prepare=0 residual=0 armed_without_effect=0
+[time] seconds=39.232 commands_per_second(harness incl. reference+audit)=50979
+[targets] all met
+[resources] max_rss_kib=13836 user_s=38.49 sys_s=0.83

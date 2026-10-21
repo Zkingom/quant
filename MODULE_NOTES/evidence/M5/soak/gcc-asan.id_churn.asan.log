@@ -1,0 +1,13 @@
+$ lob_soak --profile id_churn --seeds 31-32 --commands 20000 --check-every 200 --fault-per-mille 20
+[run] profile=id_churn seed=31 commands=20000 check_every=200 fault_per_mille=20 ok=1 seconds=0.525
+[run] profile=id_churn seed=32 commands=20000 check_every=200 fault_per_mille=20 ok=1 seconds=0.561
+== profile id_churn: ids wrap within [1, 64]: constant duplicate rejections and dead-id reuse
+[coverage] commands=39800 accepted=20750 trades=14570 cancels=5923
+[coverage] multi_maker=3221 multi_level=2197 taker_full=5498 taker_partial_rested=1945 rested_no_trade=13307 maker_partial=5284
+[coverage] accepted_while_full=1464 reused_dead_id=1988 max_orders=40
+[coverage] rejects: INVALID_ORDER_ID=575 INVALID_SIDE=445 PRICE_OUT_OF_RANGE=467 INVALID_QUANTITY=438 QUANTITY_TOO_LARGE=498 DUPLICATE_ORDER_ID=8295 UNKNOWN_ORDER_ID=1363 BOOK_FULL=1046
+[state] max_levels_per_side=20 max_level_orders=27 max_level_quantity=779 max_trades_in_command=12 max_levels_swept=7 side_emptied=678 band_edge_accepts=4445 band_edge_trades=3734 accepted_quantity=589980 full_checks=402
+[faults] prepare=80 residual=120 armed_without_effect=607
+[time] seconds=1.087 commands_per_second(harness incl. reference+audit)=36804
+[targets] all met
+[resources] max_rss_kib=108160 user_s=1.00 sys_s=0.10

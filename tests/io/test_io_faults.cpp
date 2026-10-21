@@ -4,6 +4,7 @@
 
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <cstdio>
 #include <limits>
 #include <new>
@@ -40,9 +41,16 @@ bool ends_with_resource_cancel(const JournalBatch& b) {
 //   Poisoned        -> journal unchanged; recovery == state before the command;
 //   NotApplied      -> journal unchanged; a plain retry commits the
 //                      failure-free batch (C1 at the caller).
+//
+// k runs from 0 until the window no longer injects, i.e. past the LAST
+// allocation submit() makes for that command — including any allocation
+// after the commit point (an exception escaping submit() fails the test).
+// An earlier version swept only k < 8, never reached the post-commit code
+// (submit allocates dozens of times, mostly in encode_batch), and so did not
+// detect the "commit record allocates after the commit point" mutation.
 TEST(IoAllocFailure, EveryCommandAndAllocationPointHasAContractOutcome) {
   const auto& profile = *testkit::find_profile("mixed");
-  const auto commands = test::generate(profile, 21, 120);
+  const auto commands = test::generate(profile, 21, 80);
   MemorySink reference;
   test::run_all(profile.config, commands, reference);
   const JournalScan ref_scan = scan_journal(reference.data());
@@ -51,9 +59,11 @@ TEST(IoAllocFailure, EveryCommandAndAllocationPointHasAContractOutcome) {
                                                    : ref_scan.batches[batches - 1].end_offset);
   };
 
-  long committed_after_injection = 0, resource = 0, poisoned = 0, not_applied = 0;
+  long committed_after_injection = 0, resource = 0, poisoned = 0, not_applied = 0, points = 0;
+  long max_points_per_command = 0;
   for (std::size_t i = 0; i < commands.size(); ++i) {
-    for (long k = 0; k < 8; ++k) {
+    bool reached_the_end = false;
+    for (long k = 0; k < 1'000 && !reached_the_end; ++k) {
       SCOPED_TRACE("command " + std::to_string(i + 1) + " k=" + std::to_string(k));
       MemorySink sink;
       Session s{test::fresh(profile.config), sink, SessionOptions{.durable = false, .prepare_retries = 2}};
@@ -67,6 +77,12 @@ TEST(IoAllocFailure, EveryCommandAndAllocationPointHasAContractOutcome) {
         FaultWindow window{k};
         r = s.submit(commands[i]);
         injected = window.injected();
+      }
+      if (!injected) {
+        reached_the_end = true;  // k is past the last allocation of this command
+        max_points_per_command = std::max(max_points_per_command, k);
+      } else {
+        ++points;
       }
       switch (r.status) {
         case SubmitStatus::Committed:
@@ -103,9 +119,10 @@ TEST(IoAllocFailure, EveryCommandAndAllocationPointHasAContractOutcome) {
       }
     }
   }
-  std::printf("[io-alloc] committed after an injected failure=%ld resource_failure=%ld poisoned=%ld "
-              "not_applied=%ld\n",
-              committed_after_injection, resource, poisoned, not_applied);
+  std::printf("[io-alloc] %zu commands, %ld injection points (max %ld per command): committed after an "
+              "injected failure=%ld resource_failure=%ld poisoned=%ld not_applied=%ld\n",
+              commands.size(), points, max_points_per_command, committed_after_injection, resource, poisoned,
+              not_applied);
   EXPECT_GT(committed_after_injection, 0);
   EXPECT_GT(resource, 0);
   EXPECT_GT(poisoned, 0);

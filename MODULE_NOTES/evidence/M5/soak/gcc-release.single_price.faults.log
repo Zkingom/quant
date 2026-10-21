@@ -1,0 +1,16 @@
+$ lob_soak --profile single_price --seeds 11-15 --commands 50000 --check-every 500 --fault-per-mille 20 --require-targets
+[run] profile=single_price seed=11 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.076
+[run] profile=single_price seed=12 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.071
+[run] profile=single_price seed=13 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.071
+[run] profile=single_price seed=14 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.073
+[run] profile=single_price seed=15 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.072
+== profile single_price: band of one price (min == max): long FIFO queues, equal-price trades only
+[coverage] commands=248814 accepted=183168 trades=144210 cancels=35284
+[coverage] multi_maker=15072 multi_level=0 taker_full=72876 taker_partial_rested=352 rested_no_trade=109940 maker_partial=69613
+[coverage] accepted_while_full=64 reused_dead_id=16546 max_orders=400
+[coverage] rejects: INVALID_ORDER_ID=3067 INVALID_SIDE=3074 PRICE_OUT_OF_RANGE=2847 INVALID_QUANTITY=2981 QUANTITY_TOO_LARGE=3008 DUPLICATE_ORDER_ID=468 UNKNOWN_ORDER_ID=14644 BOOK_FULL=273
+[state] max_levels_per_side=1 max_level_orders=400 max_level_quantity=12456 max_trades_in_command=51 max_levels_swept=1 side_emptied=380 band_edge_accepts=183168 band_edge_trades=144210 accepted_quantity=4981801 full_checks=1691
+[faults] prepare=448 residual=738 armed_without_effect=3862
+[time] seconds=0.362 commands_per_second(harness incl. reference+audit)=690037
+[targets] all met
+[resources] max_rss_kib=5920 user_s=0.36 sys_s=0.01

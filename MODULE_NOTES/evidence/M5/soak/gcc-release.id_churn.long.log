@@ -1,0 +1,21 @@
+$ lob_soak --profile id_churn --seeds 1-10 --commands 200000 --check-every 1000 --require-targets
+[run] profile=id_churn seed=1 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.116
+[run] profile=id_churn seed=2 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.116
+[run] profile=id_churn seed=3 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.114
+[run] profile=id_churn seed=4 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.112
+[run] profile=id_churn seed=5 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.117
+[run] profile=id_churn seed=6 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.114
+[run] profile=id_churn seed=7 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.112
+[run] profile=id_churn seed=8 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.112
+[run] profile=id_churn seed=9 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.114
+[run] profile=id_churn seed=10 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.111
+== profile id_churn: ids wrap within [1, 64]: constant duplicate rejections and dead-id reuse
+[coverage] commands=2000000 accepted=1044002 trades=733767 cancels=298673
+[coverage] multi_maker=163392 multi_level=108723 taker_full=276079 taker_partial_rested=100795 rested_no_trade=667128 maker_partial=264571
+[coverage] accepted_while_full=77014 reused_dead_id=102957 max_orders=40
+[coverage] rejects: INVALID_ORDER_ID=28715 INVALID_SIDE=24101 PRICE_OUT_OF_RANGE=23991 INVALID_QUANTITY=24101 QUANTITY_TOO_LARGE=23849 DUPLICATE_ORDER_ID=409318 UNKNOWN_ORDER_ID=69802 BOOK_FULL=53448
+[state] max_levels_per_side=16 max_level_orders=32 max_level_quantity=836 max_trades_in_command=15 max_levels_swept=9 side_emptied=37178 band_edge_accepts=239644 band_edge_trades=202112 accepted_quantity=29564979 full_checks=2010
+[faults] prepare=0 residual=0 armed_without_effect=0
+[time] seconds=1.137 commands_per_second(harness incl. reference+audit)=1758310
+[targets] all met
+[resources] max_rss_kib=3840 user_s=1.14 sys_s=0.00
