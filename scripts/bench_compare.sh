@@ -6,6 +6,9 @@
 set -u
 REV_A=$1; REV_B=$2; RUNS=$3; OUT=$4; shift 4
 CPU=${BENCH_CPU:-2}
+# Worktrees live under $HOME on ext4, not /tmp: WSL may restart an idle
+# distro, which empties /tmp in the middle of a long comparison.
+WORK=${BENCH_WORK:-$HOME/lob_bench_ab}
 ROOT=$(git rev-parse --show-toplevel)
 build() {  # build REV DIR
   rm -rf "$2"
@@ -13,8 +16,8 @@ build() {  # build REV DIR
   cmake -S "$2" -B "$2/b" -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++ > /dev/null \
     && cmake --build "$2/b" --target lob_bench > /dev/null || { echo "build $1 failed"; exit 1; }
 }
-build "$REV_A" /tmp/lob_bench_A
-build "$REV_B" /tmp/lob_bench_B
+build "$REV_A" $WORK/A
+build "$REV_B" $WORK/B
 mkdir -p "$OUT/A" "$OUT/B"
 {
   echo "A=$REV_A $(git -C "$ROOT" rev-parse --short "$REV_A")"
@@ -23,9 +26,9 @@ mkdir -p "$OUT/A" "$OUT/B"
   uname -srm; grep -m1 "model name" /proc/cpuinfo
 } > "$OUT/compare_info.txt"
 for i in $(seq 1 "$RUNS"); do
-  taskset -c "$CPU" /tmp/lob_bench_A/b/bench/lob_bench "$@" > "$OUT/A/run_$i.csv" 2> "$OUT/A/run_$i.err" || exit 1
-  taskset -c "$CPU" /tmp/lob_bench_B/b/bench/lob_bench "$@" > "$OUT/B/run_$i.csv" 2> "$OUT/B/run_$i.err" || exit 1
+  taskset -c "$CPU" $WORK/A/b/bench/lob_bench "$@" > "$OUT/A/run_$i.csv" 2> "$OUT/A/run_$i.err" || exit 1
+  taskset -c "$CPU" $WORK/B/b/bench/lob_bench "$@" > "$OUT/B/run_$i.csv" 2> "$OUT/B/run_$i.err" || exit 1
   echo "pair $i done"
 done
-git -C "$ROOT" worktree remove --force /tmp/lob_bench_A
-git -C "$ROOT" worktree remove --force /tmp/lob_bench_B
+git -C "$ROOT" worktree remove --force $WORK/A
+git -C "$ROOT" worktree remove --force $WORK/B
