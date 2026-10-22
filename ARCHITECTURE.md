@@ -57,7 +57,7 @@
 | M3 engine | `lob::engine` | 命令处理：有状态校验（重复 ID、未知 ID、容量）、价格-时间优先撮合、事件生成、序号 | core, book | ✅ |
 | M4 testkit | `lob::testkit`（仅测试） | 参考引擎、事件审计器、工作负载画像与生成器、差分执行器、分配故障注入、长跑工具 `lob_soak` | core, book, engine | ✅ |
 | M5 io | `lob::io` + `lob_replay` | 文本格式 v1、日志（批次 + 校验和）、快照文件、恢复（事件折叠）、提交会话、verify；`lob_replay` CLI；Golden 与崩溃测试 | core, engine | ✅ |
-| M6 bench | `bench/`（`lob_bench`，位于 `bench/` 而不是 `apps/`，只在启用测试时构建） | Book / Engine / Replay / Session 四层的吞吐与延迟分布（p50/p95/p99/p99.9） | book, engine, io, testkit（只用于计时区外的生成） | ✅（待验收） |
+| M6 bench | `bench/`（`lob_bench`，位于 `bench/` 而不是 `apps/`，只在启用测试时构建） | Book / Engine / Replay / Session 四层的吞吐与延迟分布（p50/p95/p99/p99.9） | book, engine, io, testkit（只用于计时区外的生成） | ✅（2026-10-22 验收） |
 | L3 gateway | `lob_gateway` | 单客户端 TCP 网关（有条件执行） | engine, io | 📝 |
 
 模块划分理由：

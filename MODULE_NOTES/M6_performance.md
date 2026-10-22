@@ -1,6 +1,6 @@
 # M6 Benchmark, Profiling & Performance Engineering —— 技术说明
 
-状态：🔍 待验收（2026-10-22）。测量方法见 [BENCHMARK.md](../BENCHMARK.md) §1–§6（测量前写定）。
+状态：✅ 已验收（2026-10-22）。测量方法见 [BENCHMARK.md](../BENCHMARK.md) §1–§6（测量前写定）。
 
 ## 1. 职责与边界
 
