@@ -1,6 +1,6 @@
 # M6 Benchmark, Profiling & Performance Engineering —— 技术说明
 
-状态：🚧 进行中。测量方法见 [BENCHMARK.md](../BENCHMARK.md) §1–§6（测量前写定）。
+状态：🔍 待验收（2026-10-22）。测量方法见 [BENCHMARK.md](../BENCHMARK.md) §1–§6（测量前写定）。
 
 ## 1. 职责与边界
 
@@ -10,7 +10,8 @@
 **不负责**：达到任何预设吞吐或延迟数字；网络层（L3）；多线程。
 
 **约束**：基线冻结为标签 `m6-baseline`（= `main` `7e9396b`，M5 验收状态）；测量工具提交 `dbf9acf` 只新增 `bench/` 与脚本，
-`include/ src/ apps/` 与基线逐字节相同（`git diff m6-baseline -- include src apps` 为空）。基线测量完成前不修改撮合核心。
+`include/ src/ apps/` 与基线逐字节相同（基线测量时 `git diff m6-baseline -- include src apps` 为空）。基线测量完成前不修改撮合核心；
+此后整个 M6 中 `src/` 与 `include/` 唯一的改动是 E1 的 `src/io/session.cpp`。
 
 ## 2. 文件组织
 
@@ -23,6 +24,9 @@ bench/main.cpp           参数、环境行、时钟开销
 scripts/bench.sh         独立进程、固定 vCPU、保存原始 CSV
 scripts/bench_compare.sh 两个修订在独立 worktree 中构建、交替运行
 scripts/bench_report.py  汇总：运行中位数、范围、噪声判定
+scripts/bench_env_compare.sh 同一二进制在两种环境变量下交替运行（P1）
+scripts/profile.sh       §5 的全部 profiling 步骤
+scripts/evidence_m6.sh   优化后的完整正确性与恢复回归（复用 evidence_m5.sh）
 ```
 
 ## 3. 测量设计的关键选择
@@ -59,7 +63,7 @@ cache-misses / branch-misses。因此：墙钟热点用 `perf record -e cpu-cloc
 | 80 000 | 15 997 /s |
 | 160 000 | 4 669 /s |
 
-n 翻倍、吞吐降为约 1/2～1/3：总成本 O(n²)。`perf record`（cpu-clock，n = 80 000）：95.2% 的样本在
+n 翻倍、吞吐降为约 1/2～1/3.4：总成本 O(n²)。`perf record`（cpu-clock，n = 80 000）：95.2% 的样本在
 `Session::submit` 自身；`perf annotate` 显示这些样本集中在 `operator new` 之后一个步长 0x20（32 字节）的
 `movdqu/movups` 复制循环。来源是 `session.cpp` 中的 `committed_.reserve(committed_.size() + 1)`：
 **精确** reserve 使每次 submit 都重新分配 `committed_` 并复制全部已有提交记录（每条 32 字节）。
@@ -79,7 +83,7 @@ n 翻倍、吞吐降为约 1/2～1/3：总成本 O(n²)。`perf record`（cpu-cl
 ### 5.3 Engine：`MatchingEngine::process` 的指令构成（callgrind，20 000 条 × 3 遍）
 
 收集只在 `process(std::variant…)` 内开启（`--toggle-collect` 对**每个**匹配函数的进入/退出都切换，
-第一次用 `process*` 匹配到了嵌套的重载，导致收集被关掉、结果无效；已删除重做，见 §10）。
+第一次用 `process*` 匹配到了嵌套的重载，导致收集被关掉、结果无效；已删除重做，见 AI_USAGE M6 第 2 条）。
 
 | 份额（self Ir） | mixed（≈ 727 Ir / 条） | deep_book（≈ 1 130 Ir / 条） |
 |---|---|---|
@@ -153,7 +157,8 @@ testkit 分配钩子增加字节计数，M5 变异表增加两个变异（精确
 | session.ext4_fsync（5 000 条） | 772 /s（590–782） | 786 /s（727–805） | 噪声范围内（+1.8%） | 1 303 630 / 2 083 020 / — | 1 217 790 / 1 956 200 / — |
 | engine.mixed（对照） | 11.25 M/s（11.08–11.60 M） | 11.23 M/s（10.41–11.58 M） | 噪声范围内（−0.2%） | 90 / 425 / 676 | 88 / 414 / 635 |
 
-session_scaling（E1，`evidence/M6/profile/session_scaling_e1.txt`）：见该文件；每条命令成本不再随 n 增长（§5.1 对照）。
+session_scaling（E1，`evidence/M6/profile/session_scaling_e1.txt`，同一构建、单次运行）：n = 20 000 / 40 000 / 80 000 / 160 000 时
+1.07 / 1.10 / 1.11 / 1.10 M/s——每条命令成本不再随 n 增长（§5.1 中同样的 n 为 105 k → 4.7 k/s）。
 
 **评估**：
 
@@ -161,14 +166,14 @@ session_scaling（E1，`evidence/M6/profile/session_scaling_e1.txt`）：见该�
   吞吐倍数取决于流长度（O(n²) → O(n)），**不是**一个可外推的"加速比"；在 20 000 条的流上基线本来就有约 105 k/s。
 - 假设 2：E1 后 session.memory ≈ 1.09 M/s，而 engine.mixed ≈ 11.2 M/s——剩余约 90% 的每条成本在引擎之外
   （批次编码、摘要、MemorySink 追加）；ext4_buffered 比 memory 每条多约 0.5 µs（每批一次 `write`）。这部分未再细分。
-- **最大延迟没有改善**：replay.session_memory 的 max 在 A、B 都约 14–17 ms（B：14.3–16.3 ms）。
+- **最大延迟没有改善**：replay.session_memory 的 max 在 A 为 14.3–20.9 ms、B 为 14.3–16.3 ms。
   有限诊断（`bench_io.cpp` 的 `max_latency_attribution`，只改测试工具；`evidence/M6/profile/max_latency_attribution.txt`，3 个进程）：
   - 3 次的最大值都落在第 171 305 条命令，且该次 `submit` 中 **MemorySink 的 `std::string` 重新分配**（约 24 MB 的日志缓冲区扩容）——
-    这是**测试工具的内存日志存储**，不是 Session 或引擎的成本；ext4 文件模式没有这个缓冲区，其 max 约 0.46 ms；
+    这是**测试工具的内存日志存储**，不是 Session 或引擎的成本；ext4 文件模式没有这个缓冲区，其 max 为 0.44–0.48 ms（5 个进程之一为 4.8 ms，未归因）；
   - 排除 MemorySink 扩容后 max 为 0.52–0.59 ms，与 `committed_` 翻倍（E1 预期的代价）一致；
   - 两者都排除后 max 为 52–101 µs，**未归因**（可能是虚拟机中断或抢占，未验证）。
   - 尚未确认的是：扩容尖峰中复制与缺页各占多少（T6-8 的剩余部分）。
-- 内存：`committed_` 容量 ≤ 2 × 已提交数 × 32 字节（200 000 条时 ≤ 12.8 MB 量级）；分配字节总量见上面的回归测试。
+- 内存：`committed_` 容量 ≤ 2 × 已提交数（每条 32 字节）；200 000 条时容量为 262 144 条、约 8.4 MB（精确 reserve 时为 6.4 MB）。分配字节总量见上面的回归测试。
 - 方差：B 的进程间范围与 A 的范围同量级（相对值）；A 的 session.memory / buffered 各有一个进程降到 1.9 k/s，原因未查。
 
 **结论**：采纳（D-042）。归因：E1 修复的是 M5 Session 实现中的复杂度缺陷，不是撮合算法、订单簿或引擎的加速；
@@ -185,7 +190,7 @@ reserve 之后仍然每次调用；真正的 rehash（`_M_rehash`）在两份 pr
 
 §5.3/§5.4 的分配器份额（25–41% Ir）是否意味着"减少分配"有同等收益，取决于成本落在 malloc/free 的快路径
 （tcache 命中，几十条指令）还是慢路径（bin 管理、`malloc_consolidate`、`unlink_chunk`）。在改动 M2 的容器或分配器
-（风险见 §6.4）之前，先用 glibc 可调参数测这个敏感度，**不改任何代码**：
+（风险见 D-044、T6-2）之前，先用 glibc 可调参数测这个敏感度，**不改任何代码**：
 
 - A：同一二进制，默认环境；B：`GLIBC_TUNABLES=glibc.malloc.tcache_count=65535`（每个大小类的线程缓存容量
   从默认 7 增大，释放的节点几乎都留在 tcache，下一次同尺寸分配直接命中）。
@@ -212,7 +217,37 @@ reserve 之后仍然每次调用；真正的 rehash（`_M_rehash`）在两份 pr
 
 ## 7. 正确性与恢复回归
 
+`scripts/evidence_m6.sh`（= M5 的完整证据脚本，输出到 `evidence/M6/regression/`），树 `7e2b7c9`（含 E1），2026-10-22 04:51 UTC 起：
+
+| 阶段 | 结果 |
+|---|---|
+| 六个预设（gcc/clang × debug/release/asan，含 UBSan） | 每个预设 197/197 通过（M5 验收时 195 个 + E1 的分配字节数测试 + `bench.smoke`） |
+| io / 分配注入 / 引擎差分 | `lob_io_tests` 43、`lob_io_alloc_tests` 4、`EngineDifferential` 2，全部通过；其中逐分配点扫描覆盖每条命令直到不再命中 |
+| 进程崩溃（Release，40 次 `kill -9`，30 000 条） | 40/40 次落在运行中，最终日志与快照和不中断的运行逐字节相同 |
+| CLI Golden | 通过 |
+| M4 长跑矩阵 | 通过，gcc/clang 结果一致 |
+| 变异 m5 / m3 / m2 | 0/17、0/14、1/11 存活；存活者为 D-013 记录的等价变异（与 M4、M5 相同） |
+
+**E1 改变分配点后的语义核对**（逐项对应 D-038）：
+
+- 提交前准备：reserve 仍在执行之前；扩容失败返回 `NOT_APPLIED`、日志不变、重试提交与无故障时相同的批次——由逐分配点扫描对每条命令验证
+  （E1 后多数命令在准备阶段少一次分配，扫描点随之变化，扫描本身"注入到不再命中"，不依赖固定点数）。
+- 提交点之后不分配：变异"完全不 reserve"被扫描杀死（`push_back` 在容量满的命令上分配，注入后异常逃逸 → 测试失败）。
+- 去重 / 内容核对 / 写失败中毒 / fsync：对应变异全部被杀死，杀死它们的测试与 M5 相同。
+- 复杂度：变异"精确 reserve"只被新的分配字节数测试杀死——M5 的全部正确性测试都不能发现 O(n²)，这是 E1 新增该测试的原因。
+
+性能证据与正确性证据分开存放：本节只引用 `regression/`；性能数字只来自 `baseline_*`、`final_*`、`compare_*`、`probe_*`、`profile/`。
+
 ## 8. 结论与适用范围
+
+- **可复现的基线**：BENCHMARK §7（`dbf9acf`）与 §10（最终代码，gcc 5 + clang 3 个进程），原始 CSV、环境与命令全部在 `evidence/M6/`。
+- **有证据的瓶颈**：Session 的 O(n²) 提交记录复制（§5.1，perf + 规模实验 + 回归测试三方面证据）；引擎内最大单项是节点分配（§5.3/§5.4，指令数与模拟值）。
+- **完整的假设驱动实验**：E1（§6.1），假设先于实现写定；同会话交替 A/B；完整回归（§7）。采纳。
+  归因：Session 实现缺陷的修复，**不是**撮合引擎的加速；引擎性能未被 M6 改变。
+- **如实的负/空结果**：P1（§6.3）——分配器慢路径指令 −8.9%，墙钟未检出可分辨的变化；预留索引桶在实现前即被证据否定（§6.2）。
+- **未解释 / 部分解释**：replay 最大延迟约 15 ms 已定位到测试工具 MemorySink 的缓冲区扩容，剩余 52–101 µs 未归因（T6-8）；
+  fsync 场景中每次会话约有一个进程低至约 195 /s（T6-5）；`perf trace` 的计数差异（T6-7）；跨会话 2–23% 的漂移原因（BENCHMARK §10）。
+- **适用范围**：只适用于 WSL2 虚拟机、无 PMU、Release、单线程、预生成负载；不推广到裸机或生产环境。
 
 ## 9. 修改任务
 
@@ -228,7 +263,7 @@ reserve 之后仍然每次调用；真正的 rehash（`_M_rehash`）在两份 pr
   与 D-038 / D-040 的关系，再测量。不得让任何已确认命令在进程崩溃后丢失。
 - **T6-4 非持久模式的用户态缓冲**：`FileSink` 每批一次 `write`（§5.2）。评估在用户态缓冲的语义代价
   （进程崩溃时丢失的范围、`sync()` 的含义），只有在语义写清后才测量。
-- **T6-5 解释 fsync 离群运行**：基线中 session.ext4_fsync 有一个进程 194 /s（其余约 800 /s）。设计能区分
+- **T6-5 解释 fsync 离群运行**：session.ext4_fsync 在基线（194 /s）与最终测量（196 /s）中各有一个进程远低于其余（约 800 /s）。设计能区分
   "宿主 I/O 干扰"与"虚拟磁盘行为"的测量，而不是剔除该运行。
 - **T6-6 硬件计数器对照**：在有 PMU 的裸机 Linux 上重跑 §5.4，比较 callgrind 模拟的 D1 缺失 / 误预测份额与
   真实计数器，写出模拟结论中哪些成立、哪些不成立。
