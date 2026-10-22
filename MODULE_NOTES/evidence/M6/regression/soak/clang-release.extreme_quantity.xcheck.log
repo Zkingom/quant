@@ -1,0 +1,14 @@
+$ lob_soak --profile extreme_quantity --seeds 21-23 --commands 50000 --check-every 1000
+[run] profile=extreme_quantity seed=21 commands=50000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.037
+[run] profile=extreme_quantity seed=22 commands=50000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.034
+[run] profile=extreme_quantity seed=23 commands=50000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.037
+== profile extreme_quantity: quantities near INT64_MAX/64: level totals near INT64_MAX (D-006 bound)
+[coverage] commands=150000 accepted=102211 trades=81808 cancels=20399
+[coverage] multi_maker=31470 multi_level=0 taker_full=40524 taker_partial_rested=4900 rested_no_trade=56787 maker_partial=40524
+[coverage] accepted_while_full=14457 reused_dead_id=5836 max_orders=64
+[coverage] rejects: INVALID_ORDER_ID=1872 INVALID_SIDE=1794 PRICE_OUT_OF_RANGE=1724 INVALID_QUANTITY=1845 QUANTITY_TOO_LARGE=1753 DUPLICATE_ORDER_ID=55 UNKNOWN_ORDER_ID=8988 BOOK_FULL=9359
+[state] max_levels_per_side=2 max_level_orders=59 max_level_quantity=6272480639956422860 max_trades_in_command=6 max_levels_swept=1 side_emptied=3129 band_edge_accepts=102211 band_edge_trades=81808 accepted_quantity=10160368332596866304024 full_checks=153
+[faults] prepare=0 residual=0 armed_without_effect=0
+[time] seconds=0.108 commands_per_second(harness incl. reference+audit)=1390410
+[targets] all met
+[resources] max_rss_kib=5280 user_s=0.10 sys_s=0.00

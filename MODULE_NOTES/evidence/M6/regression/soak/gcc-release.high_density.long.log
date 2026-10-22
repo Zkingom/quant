@@ -1,0 +1,21 @@
+$ lob_soak --profile high_density --seeds 1-10 --commands 200000 --check-every 1000 --require-targets
+[run] profile=high_density seed=1 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.119
+[run] profile=high_density seed=2 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.114
+[run] profile=high_density seed=3 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.115
+[run] profile=high_density seed=4 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.119
+[run] profile=high_density seed=5 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.116
+[run] profile=high_density seed=6 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.116
+[run] profile=high_density seed=7 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.117
+[run] profile=high_density seed=8 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.118
+[run] profile=high_density seed=9 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.118
+[run] profile=high_density seed=10 commands=200000 check_every=1000 fault_per_mille=0 ok=1 seconds=0.113
+== profile high_density: most orders trade on arrival; large makers partially filled by many small takers
+[coverage] commands=2000000 accepted=1679712 trades=1473476 cancels=139893
+[coverage] multi_maker=159615 multi_level=108636 taker_full=987142 taker_partial_rested=210789 rested_no_trade=481781 maker_partial=920938
+[coverage] accepted_while_full=0 reused_dead_id=157423 max_orders=98
+[coverage] rejects: INVALID_ORDER_ID=23823 INVALID_SIDE=24145 PRICE_OUT_OF_RANGE=23935 INVALID_QUANTITY=24174 QUANTITY_TOO_LARGE=24080 DUPLICATE_ORDER_ID=86 UNKNOWN_ORDER_ID=60152 BOOK_FULL=0
+[state] max_levels_per_side=13 max_level_orders=31 max_level_quantity=339 max_trades_in_command=18 max_levels_swept=9 side_emptied=62874 band_edge_accepts=0 band_edge_trades=0 accepted_quantity=19267436 full_checks=2010
+[faults] prepare=0 residual=0 armed_without_effect=0
+[time] seconds=1.164 commands_per_second(harness incl. reference+audit)=1718890
+[targets] all met
+[resources] max_rss_kib=11076 user_s=1.14 sys_s=0.01
