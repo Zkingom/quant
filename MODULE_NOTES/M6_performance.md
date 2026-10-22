@@ -131,8 +131,96 @@ n 翻倍、吞吐降为约 1/2～1/3：总成本 O(n²)。`perf record`（cpu-cl
 **测量计划**：`scripts/bench_compare.sh` 交替 5 对，过滤为 `replay.session_memory`、`session.memory`、
 `session.ext4_buffered`、`session.ext4_fsync`，并附 `engine.mixed` 作对照；另测 session_scaling。
 
+**改动**（`m6-exp1-session-growth`，`1456fed`）：`session.cpp` 中一处——只在 `size == capacity` 时
+`reserve(max(size + 1, min(2 × capacity, max_size)))`；另加回归测试 `IoAllocFailure.CommitRecordStorageDoesNotGrowQuadratically`
+（4 000 条命令的分配字节数 < 64 MB；实测基线 260.9 MB、E1 5.1 MB，测试在基线代码上失败），
+testkit 分配钩子增加字节计数，M5 变异表增加两个变异（精确 reserve；完全不 reserve）。
+
+**结果**（`scripts/bench_compare.sh`，A = `m6-perf` `9dab8ca`，B = E1 `1456fed`，同一机器交替 5 对，vCPU 2，
+2026-10-21 12:46–14:02 UTC，每进程 3 次吞吐重复；原始数据 `evidence/M6/compare_e1_session/`、`compare_e1_engine_control/`）：
+
+| 场景 | A 吞吐（范围） | B 吞吐（范围） | 判定 | A p50 / p99 / p99.9 ns | B p50 / p99 / p99.9 ns |
+|---|---|---|---|---|---|
+| replay.session_memory | 4.5 k/s（3.8–4.9 k） | 1.07 M/s（0.93–1.11 M） | 更快，约 236× | 152 493 / 1 111 690 / 1 517 430 | 776 / 2 560 / 10 217 |
+| session.memory | 4.3 k/s（1.9–4.8 k） | 1.09 M/s（0.94–1.11 M） | 更快，约 250× | — | — |
+| session.ext4_buffered | 4.6 k/s（1.9–4.7 k） | 713 k/s（612–734 k） | 更快，约 155× | 151 472 / 1 131 140 / 1 626 530 | 1 169 / 3 326 / 10 301 |
+| session.ext4_fsync（5 000 条） | 772 /s（590–782） | 786 /s（727–805） | 噪声范围内（+1.8%） | 1 303 630 / 2 083 020 / — | 1 217 790 / 1 956 200 / — |
+| engine.mixed（对照） | 11.25 M/s（11.08–11.60 M） | 11.23 M/s（10.41–11.58 M） | 噪声范围内（−0.2%） | 90 / 425 / 676 | 88 / 414 / 635 |
+
+session_scaling（E1，`evidence/M6/profile/session_scaling_e1.txt`）：见该文件；每条命令成本不再随 n 增长（§5.1 对照）。
+
+**评估**：
+
+- 假设 1、3、4 成立：三个非持久 Session 场景提高两个多数量级，fsync 场景与引擎对照在噪声内。
+  吞吐倍数取决于流长度（O(n²) → O(n)），**不是**一个可外推的"加速比"；在 20 000 条的流上基线本来就有约 105 k/s。
+- 假设 2：E1 后 session.memory ≈ 1.09 M/s，而 engine.mixed ≈ 11.2 M/s——剩余约 90% 的每条成本在引擎之外
+  （批次编码、摘要、MemorySink 追加）；ext4_buffered 比 memory 每条多约 0.5 µs（每批一次 `write`）。这部分未再细分。
+- **最大延迟没有改善**：replay.session_memory 的 max 在 A、B 都约 14–17 ms（B：14.3–16.3 ms）。推测与单次大缓冲区重新分配
+  （MemorySink 的字符串或 `committed_` 翻倍）有关，**未验证**（T6-8）。几何扩容把许多次复制变成少数几次大的复制，单次尖峰本来就预期存在。
+- 内存：`committed_` 容量 ≤ 2 × 已提交数 × 32 字节（200 000 条时 ≤ 12.8 MB 量级）；分配字节总量见上面的回归测试。
+- 方差：B 的进程间范围与 A 的范围同量级（相对值）；A 的 session.memory / buffered 各有一个进程降到 1.9 k/s，原因未查。
+
+**结论**：采纳（D-042）。合并到 `m6-perf` 前完成 §7 的完整回归。
+
+### 6.2 实现前即放弃的候选：预留订单索引桶（`index_.reserve(max_live_orders)`）
+
+§5.4 中 `_M_need_rehash` 占 1.5%，看上去指向哈希表扩容。但该函数是**每次插入都调用**的检查，
+reserve 之后仍然每次调用；真正的 rehash（`_M_rehash`）在两份 profile 中都没有进入列表。证据不支持
+"预留能省下可测的成本"，而预留会让构造函数按 `max_live_orders` 一次性分配（大配置下可能在构造时 `bad_alloc`）。
+因此不实现、不测量，只记录。
+
+### 6.3 探针 P1：分配器慢路径的敏感度（不改代码，假设先于测量写定）
+
+§5.3/§5.4 的分配器份额（25–41% Ir）是否意味着"减少分配"有同等收益，取决于成本落在 malloc/free 的快路径
+（tcache 命中，几十条指令）还是慢路径（bin 管理、`malloc_consolidate`、`unlink_chunk`）。在改动 M2 的容器或分配器
+（风险见 §6.4）之前，先用 glibc 可调参数测这个敏感度，**不改任何代码**：
+
+- A：同一二进制，默认环境；B：`GLIBC_TUNABLES=glibc.malloc.tcache_count=65535`（每个大小类的线程缓存容量
+  从默认 7 增大，释放的节点几乎都留在 tcache，下一次同尺寸分配直接命中）。
+- **假设**：若慢路径是分配器成本的主要部分，B 在 book.add_cancel@100000、engine.deep_book、engine.mixed 上吞吐明显更高
+  （超出 A/B 进程间范围）；若在噪声内，则分配器成本主要是快路径本身，减少分配次数（池化）才是唯一途径，
+  且其收益上限只能由真正的代码实验确定。
+- 这只是对环境的探针：结论不作为产品改动，不改变默认配置。
+- 测量：`scripts/bench_env_compare.sh`，E1 构建，交替 5 对，`--filter book.add_cancel@100000`、`engine.deep_book`、`engine.mixed` 各一组。
+
+**结果**（2026-10-22 UTC，原始数据 `evidence/M6/probe_p1_tcache/`）：
+
+| 场景 | A（默认） | B（tcache_count = 65535） | 判定 |
+|---|---|---|---|
+| book.add_cancel@100000 | 2.03 M/s（0.84–2.49 M） | 1.97 M/s（0.78–2.26 M） | 噪声范围内（−2.7%） |
+| engine.deep_book | 8.42 M/s（7.35–8.82 M） | 8.26 M/s（8.16–8.92 M） | 噪声范围内（−2.0%） |
+| engine.mixed | 11.06 M/s（9.96–11.58 M） | 11.38 M/s（11.08–12.05 M） | 噪声范围内（+2.9%） |
+
+可调参数确实生效（`callgrind_allocator_ir.txt`，book.add_cancel@100000 的 add/cancel 内）：总 Ir 947 M → 862 M（−8.9%），
+`_int_malloc` −50%，`malloc_consolidate` −84%，`unlink_chunk` 消失；`malloc` / `free` / `operator new` 的快路径指令数不变。
+
+**解读**：慢路径约占这些场景指令的 9%，去掉它在墙钟上不可分辨（该环境下进程间范围约 ±10%，book@100k 的 A、B 各有一个进程
+跌到约 0.8 M/s）。因此**不能**说"分配器慢路径无影响"，只能说"其影响小于本环境的分辨力"。分配器的其余份额是快路径本身
+（每次分配/释放的固定指令），只有减少分配次数才能去掉——这是 T6-2 的问题，M6 内不做（D-044）。
+
 ## 7. 正确性与恢复回归
 
 ## 8. 结论与适用范围
 
 ## 9. 修改任务
+
+只给出任务与验收要求，不给答案。
+
+- **T6-1 不依赖时间的性能回归守卫**：E1 的回归测试用"分配字节数"而不是耗时。为引擎设计一个同类守卫
+  （例如每条命令的分配次数或 callgrind 指令数上限），要求在 Debug / ASan 预设下也稳定、不随机器变化，
+  并用一个变异证明它能捕获 O(n²) 或"每条命令多一次分配"的回退。
+- **T6-2 订单节点池化实验**：按 §6 的格式（假设、证据、备选、生命周期与移动语义影响、最小改动、同环境 A/B、完整回归）
+  做一次分配减少实验。必须先回答：`OrderBook` 的移动赋值（D-013）在池属于各自订单簿时如何保持 Locator 有效；
+  M2 的分配失败测试如何在不减弱的前提下仍覆盖每个分配点。
+- **T6-3 持久模式的组提交**：设计"多个命令共享一次 `fsync`"的协议，写清确认时机、崩溃后哪些命令可能丢失、
+  与 D-038 / D-040 的关系，再测量。不得让任何已确认命令在进程崩溃后丢失。
+- **T6-4 非持久模式的用户态缓冲**：`FileSink` 每批一次 `write`（§5.2）。评估在用户态缓冲的语义代价
+  （进程崩溃时丢失的范围、`sync()` 的含义），只有在语义写清后才测量。
+- **T6-5 解释 fsync 离群运行**：基线中 session.ext4_fsync 有一个进程 194 /s（其余约 800 /s）。设计能区分
+  "宿主 I/O 干扰"与"虚拟磁盘行为"的测量，而不是剔除该运行。
+- **T6-6 硬件计数器对照**：在有 PMU 的裸机 Linux 上重跑 §5.4，比较 callgrind 模拟的 D1 缺失 / 误预测份额与
+  真实计数器，写出模拟结论中哪些成立、哪些不成立。
+- **T6-7 `perf trace` 计数差异**：§5.2 中 `write` 比命令数少 21 次、`fsync` 多 6 次。查明原因（工具丢事件还是代码路径），
+  不允许在未查明前修改代码。
+- **T6-8 回放最大延迟归因**：E1 后 replay.session_memory 的 p99.9 约 10 µs，但 max 仍约 15 ms（§6.1）。
+  找出这次尖峰来自哪里（哪个缓冲区、缺页还是复制、还是虚拟机抢占），给出证据，再决定是否值得处理。

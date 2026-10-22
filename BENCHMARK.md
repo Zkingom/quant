@@ -74,6 +74,59 @@ testkit（参考引擎、审计器）**不出现在任何计时区内**。文件
 
 优化假设只在 §7 基线与上述 profiling 结果之后提出。
 
-## 7. 基线结果
+## 7. 基线结果（m6-baseline 核心 + 测量工具 `dbf9acf`，gcc-release）
 
-（待测量）
+条件：2026-10-21 11:03–12:23 UTC；5 个独立进程，均固定 vCPU 2；系统负载 0.51 → 1.26（宿主有桌面应用，未关闭）；
+9P 目录为 `/mnt/g/…/quant/build`。全部 5 个进程的校验值相同。原始数据：`MODULE_NOTES/evidence/M6/baseline_gcc/`
+（`run_*.csv`、`run_info.txt`；`report.md` 由 `scripts/bench_report.py` 生成）。吞吐 = 进程中位数（进程间范围）；
+延迟为单次延迟重复的分位数、取 5 个进程的中位数（单位 ns，含约 17 ns 时钟开销）。
+
+| 场景 | 吞吐 | 范围 | p50 | p95 | p99 | p99.9 |
+|---|---|---|---|---|---|---|
+| book.add_cancel@1000（add / cancel 各算一次操作） | 7.21 M/s | 6.61–7.99 M | 144 / 146 | 194 / 193 | 228 / 226 | 396 / 343 |
+| book.add_cancel@100000（≈ 63 000 个价格层） | 1.90 M/s | 1.66–2.16 M | 613 / 550 | 1097 / 1376 | 1777 / 2133 | 4675 / 6580 |
+| book.fill_front（10 万单队列） | 44.8 M/s | 42.4–48.6 M | 48 | 54 | 69 | 171 |
+| book.query@1000 | 48.4 M/s | 46.7–54.5 M | 38 | 89 | 109 | 235 |
+| book.query@100000 | 11.3 M/s | 8.9–12.3 M | 37 | 610 | 870 | 1902 |
+| engine.mixed | 11.3 M/s | 9.9–11.8 M | 89 | 247 | 411 | 640 |
+| engine.deep_book | 7.59 M/s | 6.94–8.46 M | 114 | 262 | 1308 | 3442 |
+| engine.single_price | 19.9 M/s | 18.2–20.8 M | 61 | 134 | 364 | 760 |
+| engine.cancel_heavy | 16.0 M/s | 14.9–16.5 M | 75 | 166 | 339 | 566 |
+| engine.high_density | 14.8 M/s | 13.9–16.1 M | 70 | 191 | 322 | 585 |
+| engine.thin_book | 12.2 M/s | 11.7–12.9 M | 95 | 182 | 252 | 394 |
+| engine.extreme_quantity | 18.4 M/s | 17.4–19.7 M | 70 | 131 | 183 | 351 |
+| replay.parse（命令/s） | 7.10 M/s | 6.97–8.01 M | | | | |
+| replay.format_events（事件/s） | 6.78 M/s | 6.04–7.82 M | | | | |
+| replay.session_memory | **4.6 k/s** | 4.2–4.7 k | 150 867 | 620 888 | 1 061 870 | 1 437 460 |
+| replay.recover | 1.02 M/s | 0.99–1.03 M | | | | |
+| replay.verify | 5.83 M/s | 5.35–6.05 M | | | | |
+| session.memory | **5.7 k/s** | 4.8–5.9 k | | | | |
+| session.ext4_buffered | **5.6 k/s** | 5.3–5.9 k | 158 574 | 403 834 | 960 928 | 1 441 800 |
+| session.ext4_fsync（5 000 条） | 798 /s | **194**–806 | 1 199 830 | 1 763 530 | 2 099 220 | — |
+| session.9p_fsync（5 000 条） | 1.0 k/s | 0.97–1.0 k | 890 828 | 1 366 950 | 1 657 300 | — |
+
+按成交笔数分组的延迟（完整表见 `report.md`）：成交 ≥ 5 笔的命令 p50 在 251–1 237 ns，deep_book 最高（p99 4 154 ns）；
+无成交的命令 p50 在 65–122 ns。尾延迟随单条命令的成交笔数明显上升；这是分组统计的相关性，未做逐样本归因。
+
+读数时需注意：
+
+- **三个 Session 非持久场景的 4.6–5.7 k/s 主要是一个缺陷的成本，不是引擎或 I/O 的成本**（§8、M6 笔记 §5.1）：
+  每条命令复制全部已提交记录，200 000 条的流上每条平均要复制约 10 万条记录。
+- session.ext4_fsync 有一个进程只有 194 /s（其余 4 个为 780–806 /s），原因未知（WSL 虚拟磁盘 / 宿主 I/O），未剔除；
+  9P 上的 `fsync` 反而比 ext4 快，与 §1 的探测一致，9P 的 `fsync` 实际做了什么无法从虚拟机内确认。
+- 进程间范围普遍为中位数的 ±10% 左右：在该环境下小于约 10% 的差异不能视为可分辨。
+
+## 8. Profiling 摘要
+
+详见 [M6 技术笔记 §5](MODULE_NOTES/M6_performance.md)，原始输出在 `MODULE_NOTES/evidence/M6/profile/`，命令在 `scripts/profile.sh`。
+
+| 层 | 证据 | 结论 |
+|---|---|---|
+| Session | 吞吐随流长度 ≈ 1/n 下降；`perf` 95% 样本在 `submit` 的 32 字节步长复制循环 | `committed_.reserve(size + 1)` 导致 O(n²) |
+| Engine | callgrind：分配器 ≈ 25%（mixed）/ 35%（deep_book）的 Ir；`plan_match` ≈ 2% | 节点分配是最大单项；预演不是瓶颈 |
+| Book@100k | callgrind 模拟：分配器 ≈ 41% Ir；`std::map` 查找占模拟 D1 读缺失约 63%、误预测约 71%（add + cancel） | 深簿下红黑树查找是缓存与分支行为的主要来源（模拟值） |
+| Session 文件 | `perf trace`：每批一次 `write`；持久模式每批一次 `fsync` | fsync 场景受 `fsync` 支配 |
+
+与 §6 方案的偏差：（1）整进程 `perf` 采样对引擎场景不可用（样本被测试工具的生成阶段占据，DWARF 帧不一致），引擎分解只用 callgrind；
+（2）缓存/分支模拟用 callgrind 的 `--cache-sim --branch-sim` 代替 cachegrind（同一模拟模型，callgrind 可限定收集范围）；
+（3）`perf trace` 可用，未用 `strace`（未安装）。

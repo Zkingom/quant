@@ -1,0 +1,5 @@
+A=m6-perf 9dab8ca
+B=m6-exp1-session-growth 1456fed
+date_utc=2026-10-21T12:46:15Z pinned_vcpu=2 args=--filter session --reps 3
+Linux 6.6.87.2-microsoft-standard-WSL2 x86_64
+model name	: 12th Gen Intel(R) Core(TM) i7-12700H

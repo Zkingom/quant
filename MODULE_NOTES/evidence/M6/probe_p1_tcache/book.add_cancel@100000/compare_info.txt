@@ -1,0 +1,8 @@
+binary=/root/lob_e1/bench/lob_bench
+A=(environment unchanged) B=GLIBC_TUNABLES=glibc.malloc.tcache_count=65535
+date_utc=2026-10-22T04:30:00Z pinned_vcpu=2 args=--filter book.add_cancel@100000
+Linux 6.6.87.2-microsoft-standard-WSL2 x86_64
+model name	: 12th Gen Intel(R) Core(TM) i7-12700H
+ldd (Ubuntu GLIBC 2.39-0ubuntu8.9) 2.39
+load_before=0.11 0.03 0.01
+load_after=0.67 0.17 0.06
