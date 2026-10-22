@@ -34,7 +34,13 @@ scripts/bench_report.py  汇总：运行中位数、范围、噪声判定
 
 ## 4. 基线结果
 
-（待测量完成后从原始数据生成）
+完整表格见 [BENCHMARK §7](../BENCHMARK.md)（原始数据 `evidence/M6/baseline_gcc/`）。要点（gcc-release，WSL2，5 个进程中位数）：
+
+- Book：深度 1 000 时 add/cancel 7.2 M/s；深度 100 000（约 63 000 个价格层）1.9 M/s，p99 约 1.8–2.1 µs。
+- Engine：7 个画像 7.6–19.9 M/s；deep_book 最慢，其成交 ≥ 5 笔的命令 p50 约 1.2 µs。
+- Replay：解析 7.1 M 命令/s，恢复 1.0 M 命令/s。
+- Session：非持久 4.6–5.7 k/s——由 §5.1 的缺陷主导；持久（每批 `fsync`）约 0.8–1.0 k/s。
+- 进程间范围约 ±10%：本环境下更小的差异不可分辨。
 
 ## 5. Profiling
 
@@ -155,12 +161,18 @@ session_scaling（E1，`evidence/M6/profile/session_scaling_e1.txt`）：见该�
   吞吐倍数取决于流长度（O(n²) → O(n)），**不是**一个可外推的"加速比"；在 20 000 条的流上基线本来就有约 105 k/s。
 - 假设 2：E1 后 session.memory ≈ 1.09 M/s，而 engine.mixed ≈ 11.2 M/s——剩余约 90% 的每条成本在引擎之外
   （批次编码、摘要、MemorySink 追加）；ext4_buffered 比 memory 每条多约 0.5 µs（每批一次 `write`）。这部分未再细分。
-- **最大延迟没有改善**：replay.session_memory 的 max 在 A、B 都约 14–17 ms（B：14.3–16.3 ms）。推测与单次大缓冲区重新分配
-  （MemorySink 的字符串或 `committed_` 翻倍）有关，**未验证**（T6-8）。几何扩容把许多次复制变成少数几次大的复制，单次尖峰本来就预期存在。
+- **最大延迟没有改善**：replay.session_memory 的 max 在 A、B 都约 14–17 ms（B：14.3–16.3 ms）。
+  有限诊断（`bench_io.cpp` 的 `max_latency_attribution`，只改测试工具；`evidence/M6/profile/max_latency_attribution.txt`，3 个进程）：
+  - 3 次的最大值都落在第 171 305 条命令，且该次 `submit` 中 **MemorySink 的 `std::string` 重新分配**（约 24 MB 的日志缓冲区扩容）——
+    这是**测试工具的内存日志存储**，不是 Session 或引擎的成本；ext4 文件模式没有这个缓冲区，其 max 约 0.46 ms；
+  - 排除 MemorySink 扩容后 max 为 0.52–0.59 ms，与 `committed_` 翻倍（E1 预期的代价）一致；
+  - 两者都排除后 max 为 52–101 µs，**未归因**（可能是虚拟机中断或抢占，未验证）。
+  - 尚未确认的是：扩容尖峰中复制与缺页各占多少（T6-8 的剩余部分）。
 - 内存：`committed_` 容量 ≤ 2 × 已提交数 × 32 字节（200 000 条时 ≤ 12.8 MB 量级）；分配字节总量见上面的回归测试。
 - 方差：B 的进程间范围与 A 的范围同量级（相对值）；A 的 session.memory / buffered 各有一个进程降到 1.9 k/s，原因未查。
 
-**结论**：采纳（D-042）。合并到 `m6-perf` 前完成 §7 的完整回归。
+**结论**：采纳（D-042）。归因：E1 修复的是 M5 Session 实现中的复杂度缺陷，不是撮合算法、订单簿或引擎的加速；
+`src/book/`、`src/engine/` 未改动，engine.mixed 对照在噪声内。引擎性能仍是 §4 / BENCHMARK §7 的数字。
 
 ### 6.2 实现前即放弃的候选：预留订单索引桶（`index_.reserve(max_live_orders)`）
 
@@ -222,5 +234,5 @@ reserve 之后仍然每次调用；真正的 rehash（`_M_rehash`）在两份 pr
   真实计数器，写出模拟结论中哪些成立、哪些不成立。
 - **T6-7 `perf trace` 计数差异**：§5.2 中 `write` 比命令数少 21 次、`fsync` 多 6 次。查明原因（工具丢事件还是代码路径），
   不允许在未查明前修改代码。
-- **T6-8 回放最大延迟归因**：E1 后 replay.session_memory 的 p99.9 约 10 µs，但 max 仍约 15 ms（§6.1）。
-  找出这次尖峰来自哪里（哪个缓冲区、缺页还是复制、还是虚拟机抢占），给出证据，再决定是否值得处理。
+- **T6-8 回放最大延迟的剩余归因**：§6.1 已把约 15 ms 的 max 定位到 MemorySink 缓冲区扩容、约 0.5 ms 定位到 `committed_` 翻倍。
+  剩余问题：扩容尖峰中复制与缺页各占多少；排除两类扩容后仍有的 52–101 µs 来自哪里。给出证据，再决定是否值得处理。

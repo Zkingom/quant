@@ -122,3 +122,35 @@
 - [ ] 已独立复现 `scripts/evidence_m5.sh`
 - [ ] 已完成至少一项 M5 修改任务（T5-x）：
 - 修改/否决的设计决策：
+
+## M6 benchmark / profiling / performance（2026-10-21 → 2026-10-22）
+
+**AI 贡献**
+- 测量前写定 BENCHMARK §1–§6（环境审计、四层场景、协议、开销归属、固定参数、profiling 方案）；冻结基线标签 `m6-baseline`。
+- 测量工具：`bench/`（Book / Engine / Replay / Session 四层，吞吐与逐操作延迟分开测、精确分位数、状态哈希校验）；
+  `scripts/bench.sh`、`bench_compare.sh`（两个修订、独立 worktree、交替运行）、`bench_env_compare.sh`、`bench_report.py`、`profile.sh`、`evidence_m6.sh`。
+- 基线（gcc-release，5 个进程）、profiling（perf cpu-clock、callgrind、callgrind 缓存/分支模拟、perf trace）、
+  实验 E1（Session 提交记录几何扩容）、探针 P1（glibc tcache）、放弃候选的记录；D-042 至 D-044；M6 模块说明与修改任务 T6-1 至 T6-8。
+- AI 自查发现并修复的问题：
+  1. **M5 中 AI 自己写入的 O(n²)**：`committed_.reserve(size + 1)`。M3 已在 D-022 记录过同一错误，M5 没有沿用；
+     正确性测试的流太短，只有基准能发现。修正为 E1，并补上不依赖时间的分配字节数测试与变异；
+  2. callgrind 的 `--toggle-collect=…process*` 同时匹配了嵌套重载，进入内层时把收集关掉，第一份引擎 profile 无效
+     （每条命令只有 98 Ir、有 free 无 malloc）——发现后删除、改为只匹配 variant 重载并重做；
+  3. 为了让 profiler 下的过滤运行不执行多余会话，给 `run_io` 加了按前缀的提前返回，但 `selected()` 是"过滤串是场景名的子串"，
+     结果 `--filter session.ext4_fsync` 什么都不跑——`perf trace` 只看到 1 次 `write` 时发现，改为按完整场景名判断；
+  4. WSL 会重启空闲的发行版并清空 `/tmp`，profiling 构建与对照 worktree 中途丢失——改放 `$HOME`；
+  5. 整进程 `perf` 采样对引擎场景无效（样本被测试工具的生成阶段占据，DWARF 帧不一致）——如实记录为不可用，改用 callgrind；
+  6. shell heredoc 再次把 `\n` 写成真实换行（新测试的 `printf`）——用编辑器修正；
+  7. 文档 D-037 写的提交记录大小（24 字节）与实际（32 字节，含对齐）不符——在 perf 的复制步长中发现并更正。
+  8. 第一次完整回归的变异阶段配置失败：变异执行器的复制列表没有新增的 `bench/`（M4 `testkit/`、M5 `apps/` 之后第三次同类问题）——补上后整套回归重新运行。
+- 没有做到的：硬件计数器（环境不提供）；最大延迟尖峰的归因（T6-8）；裸机对照。
+
+**作者决策**
+- 2026-10-21：批准 M6；要求先测量后优化、不弱化任何语义与测试、不使用"超低延迟""生产级 HFT"等表述、M6 验收后停止，不进入 TCP/epoll。
+- 2026-10-21："可否加速"——过滤对照场景、在基线后立即 profiling、把慢的 fsync 场景只放在与 E1 相关的对照中。
+
+**人工审查**（作者填写）
+- [ ] 已通读 BENCHMARK.md 与 MODULE_NOTES/M6_performance.md
+- [ ] 已独立复现一次 `scripts/bench_compare.sh m6-perf~3 m6-perf 3 …`（或等价的 E1 前后对照）
+- [ ] 已完成至少一项 M6 修改任务（T6-x）：
+- 修改/否决的设计决策：

@@ -3,7 +3,7 @@
 C++20 实现的单线程、确定性、正确性优先的单标的限价订单簿与撮合引擎。
 目标：价格-时间优先撮合、可复现回放与快照、严格测试（差分 / Golden / Sanitizer）、可审计的基准。
 
-## 当前状态（2026-10-21）
+## 当前状态（2026-10-22）
 
 | 模块 | 状态 |
 |---|---|
@@ -13,9 +13,9 @@ C++20 实现的单线程、确定性、正确性优先的单标的限价订单�
 | M3 engine：价格-时间优先撮合、拒单语义、事件流、两阶段异常语义 | ✅ 53 个测试（含事件审计器、10 万条命令的参考引擎差分、逐分配点故障注入），6 个预设通过 |
 | M4 testkit：可复用测试基础设施、10 个工作负载画像、长跑与长序列故障注入、M5 契约测试 | ✅ 147 个 CTest 用例（含 10 个画像冒烟长跑）；长跑矩阵见 MODULE_NOTES/M4 |
 | M5 replay：文本格式 v1、带校验日志、快照与恢复、提交会话、`lob_replay` | ✅ 见 MODULE_NOTES/M5（含 Golden、逐字节截断、写失败与分配注入、`kill -9` 崩溃测试） |
-| M6 bench | 📝 未开始 |
+| M6 bench：四层基准、profiling、优化实验 | 🔍 待验收：基线与对照数据见 [BENCHMARK.md](BENCHMARK.md)，实验见 MODULE_NOTES/M6 |
 
-撮合引擎、回放与恢复已可用；尚无性能数据（M6）。掉电持久性未验证，见 DESIGN §6.6。 计划与验收门槛见 [ROADMAP.md](ROADMAP.md)。
+撮合引擎、回放与恢复已可用；性能数据只适用于 WSL2 上的测量环境（BENCHMARK §1），不代表裸机。掉电持久性未验证，见 DESIGN §6.6。 计划与验收门槛见 [ROADMAP.md](ROADMAP.md)。
 
 ## 构建与测试
 
@@ -108,6 +108,25 @@ scripts/evidence_m4.sh
 ```bash
 scripts/evidence_m5.sh
 ```
+
+## 基准与 profiling（M6）
+
+测量方法、环境限制与全部结果见 [BENCHMARK.md](BENCHMARK.md)。只在 Release 构建上测量；数字只适用于测量所用的 WSL2 环境。
+
+```bash
+cmake --preset gcc-release && cmake --build --preset gcc-release
+```
+
+```bash
+scripts/bench.sh build/gcc-release/bench/lob_bench /tmp/lob_bench_runs 5
+```
+
+```bash
+python3 scripts/bench_report.py /tmp/lob_bench_runs
+```
+
+两个修订的交替对照（`scripts/bench_compare.sh REV_A REV_B RUNS OUT [--filter …]`）、profiling（`scripts/profile.sh`）、
+优化后的完整回归（`scripts/evidence_m6.sh`）的用法见各脚本开头。
 
 ## 文档
 

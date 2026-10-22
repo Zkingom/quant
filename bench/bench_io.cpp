@@ -57,6 +57,52 @@ std::uint64_t run_session(const EngineConfig& config, const std::vector<io::Sequ
   return events;
 }
 
+/// Diagnostic for the maximum submit() latency (M6 notes §6.1, T6-8): one
+/// more in-memory session, recording for every submit whether the
+/// MemorySink buffer (test-harness storage) reallocated and whether the
+/// session's commit-record vector grew (it grows when the number of earlier
+/// commands is a power of two). Reports the maximum with and without those
+/// submits, so a spike can be attributed to a reallocation or not.
+void max_latency_attribution(const EngineConfig& config, const std::vector<io::SequencedCommand>& commands) {
+  const std::string name = "replay.session_memory.max_diag";
+  io::MemorySink sink;
+  io::Session session{io::recover("", std::nullopt, config), sink,
+                      io::SessionOptions{.durable = false, .prepare_retries = 2}};
+  std::int64_t max_all = 0, max_no_sink = 0, max_neither = 0, max_at_sink = 0;
+  std::size_t at = 0, sink_growths = 0;
+  for (std::size_t i = 0; i < commands.size(); ++i) {
+    const std::size_t capacity = sink.data().capacity();
+    const auto t0 = now_ns();
+    const io::SubmitResult r = session.submit(commands[i]);
+    const std::int64_t dt = now_ns() - t0;
+    if (r.status != io::SubmitStatus::Committed) {
+      std::abort();
+    }
+    const bool sink_grew = sink.data().capacity() != capacity;
+    const bool records_grew = (i & (i - 1)) == 0;  // i earlier records: 0, 1, 2, 4, ...
+    sink_growths += sink_grew ? 1U : 0U;
+    if (dt > max_all) {
+      max_all = dt;
+      at = i;
+    }
+    if (sink_grew) {
+      max_at_sink = std::max(max_at_sink, dt);
+    } else {
+      max_no_sink = std::max(max_no_sink, dt);
+      if (!records_grew) {
+        max_neither = std::max(max_neither, dt);
+      }
+    }
+  }
+  consume(sink.data().size());
+  emit(name, "max_ns", 0, static_cast<double>(max_all));
+  emit(name, "max_index", 0, static_cast<double>(at));
+  emit(name, "max_at_sink_growth", 0, static_cast<double>(max_at_sink));
+  emit(name, "max_without_sink_growth", 0, static_cast<double>(max_no_sink));
+  emit(name, "max_without_any_growth", 0, static_cast<double>(max_neither));
+  emit(name, "sink_growths", 0, static_cast<double>(sink_growths));
+}
+
 void replay(const Options& o, const testkit::WorkloadProfile& profile,
             const std::vector<io::SequencedCommand>& commands) {
   const std::size_t n = commands.size();
@@ -103,6 +149,7 @@ void replay(const Options& o, const testkit::WorkloadProfile& profile,
     emit_latency("replay.session_memory", std::move(ns));
     emit("replay.session_memory", "journal_bytes_per_command", 0,
          static_cast<double>(journal.data().size()) / static_cast<double>(n));
+    max_latency_attribution(profile.config, commands);
   }
   if (selected(o, "replay.recover")) {
     measure_throughput("replay.recover", o, n, [] {}, [&] {

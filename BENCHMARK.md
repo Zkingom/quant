@@ -130,3 +130,31 @@ testkit（参考引擎、审计器）**不出现在任何计时区内**。文件
 与 §6 方案的偏差：（1）整进程 `perf` 采样对引擎场景不可用（样本被测试工具的生成阶段占据，DWARF 帧不一致），引擎分解只用 callgrind；
 （2）缓存/分支模拟用 callgrind 的 `--cache-sim --branch-sim` 代替 cachegrind（同一模拟模型，callgrind 可限定收集范围）；
 （3）`perf trace` 可用，未用 `strace`（未安装）。
+
+## 9. 优化实验与探针
+
+| 编号 | 对象 | 改动 | 结论 |
+|---|---|---|---|
+| E1 | `lob::io::Session`（M5 代码） | 提交记录 `committed_` 由精确 `reserve(size + 1)` 改为几何扩容（D-042） | **采纳**；非持久 Session 场景显著更快，fsync 场景与引擎对照在噪声内 |
+| P1 | glibc 分配器（环境，不改代码） | `GLIBC_TUNABLES=glibc.malloc.tcache_count=65535` | 分配器慢路径 Ir −8.9%，墙钟在噪声内；**未检出可分辨的收益**，不作为产品改动 |
+| — | 订单索引 `index_.reserve` | 未实现 | 证据不支持（M6 笔记 §6.2） |
+
+E1 对照（`scripts/bench_compare.sh`，A = `9dab8ca`，B = `1456fed`，交替 5 对，vCPU 2，2026-10-21 12:46–14:02 UTC，
+每进程 3 次吞吐重复；`MODULE_NOTES/evidence/M6/compare_e1_session/`、`compare_e1_engine_control/`）：
+
+| 场景 | A | B | 判定 |
+|---|---|---|---|
+| replay.session_memory | 4.5 k/s（3.8–4.9 k） | 1.07 M/s（0.93–1.11 M） | 更快 |
+| session.memory | 4.3 k/s（1.9–4.8 k） | 1.09 M/s（0.94–1.11 M） | 更快 |
+| session.ext4_buffered | 4.6 k/s（1.9–4.7 k） | 713 k/s（612–734 k） | 更快 |
+| session.ext4_fsync（5 000 条） | 772 /s（590–782） | 786 /s（727–805） | 噪声范围内 |
+| engine.mixed（对照） | 11.25 M/s（11.08–11.60 M） | 11.23 M/s（10.41–11.58 M） | 噪声范围内 |
+
+**归因（必须这样读）**：
+
+- E1 修复的是 M5 `Session` 实现中的一个**复杂度缺陷**（每条命令 O(n) 的复制，整个会话 O(n²)），不是撮合算法、订单簿或引擎的优化。
+  E1 没有改动 `src/book/`、`src/engine/`；引擎对照场景在噪声内；撮合引擎本身的性能就是 §7 的 engine.* 数字，M6 没有改变它。
+- 倍数（约 150–250 倍）是 200 000 条命令这一流长度的产物：缺陷的成本随流长度平方增长，在 20 000 条的流上基线已有约 105 k/s。
+  因此倍数不能外推到其他长度，也不能称为"系统加速了 N 倍"。正确的表述是：Session 每条命令的成本由随已提交命令数线性增长变为常数，
+  在本环境中约 0.9 µs（内存）/ 1.4 µs（ext4 非持久）。
+- 持久模式（每批 `fsync`，约 1.2–1.3 ms）不受影响：其成本由 `fsync` 支配。
