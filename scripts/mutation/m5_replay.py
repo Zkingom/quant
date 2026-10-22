@@ -15,6 +15,14 @@ MUTATIONS = [
         ("  committed_.push_back(CommittedCommand{.digest = digest,",
          "  committed_.push_back(CommittedCommand{.digest = command_digest(command),"),
     ]),
+    ("session: commit record not reserved before the commit point", SESSION, [
+        ("    if (committed_.size() == committed_.capacity()) {", "    if (false) {"),
+    ]),
+    ("session: exact reserve of the commit record (M5 code, O(n^2) copying; M6 E1)", SESSION, [
+        ("      committed_.reserve(std::max(committed_.size() + 1, std::min(committed_.capacity() * 2, committed_.max_size())));",
+         "      committed_.reserve(committed_.size() + 1);"),
+        ("    if (committed_.size() == committed_.capacity()) {", "    {"),
+    ]),
     ("session: duplicate detection disabled", SESSION, [
         ("  if (command.cmd_seq >= 1 && command.cmd_seq <= last_cmd_) {",
          "  if (false && command.cmd_seq >= 1 && command.cmd_seq <= last_cmd_) {"),

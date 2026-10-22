@@ -11,7 +11,7 @@
 #                                     the start); otherwise it refuses.
 set -u
 cd "$(dirname "$0")/.."
-E=MODULE_NOTES/evidence/M5
+E=${EVIDENCE_DIR:-MODULE_NOTES/evidence/M5}   # M6 reuses this script for its regression run
 B=$PWD/build/gcc-release   # absolute: the CLI scripts change directory
 die() { echo "EVIDENCE FAILED: $*"; exit 1; }
 

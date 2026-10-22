@@ -1,0 +1,9 @@
+date_utc=2026-10-21T11:03:54Z
+binary=/mnt/g/学习资料/quant/build/gcc-release/bench/lob_bench
+args=--ninep-dir /mnt/g/学习资料/quant/build
+pinned_vcpu=2
+Linux 6.6.87.2-microsoft-standard-WSL2 x86_64
+model name	: 12th Gen Intel(R) Core(TM) i7-12700H
+load_before=0.51 0.34 0.14
+load_after=1.26 1.19 1.12
+rev=dbf9acf build=gcc-release

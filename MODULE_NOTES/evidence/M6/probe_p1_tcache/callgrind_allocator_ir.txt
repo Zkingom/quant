@@ -1,0 +1,22 @@
+# callgrind (Ir), collection toggled on OrderBook::add / OrderBook::cancel; lob_bench --filter book.add_cancel@100000 --reps 1
+# binary ~/lob_e1 (E1 1456fed, Release); 'tcache' = GLIBC_TUNABLES=glibc.malloc.tcache_count=65535
+== default
+947,144,148 (100.0%)  PROGRAM TOTALS
+106,767,289 (11.27%)  ./malloc/./malloc/malloc.c:_int_malloc [/usr/lib/x86_64-linux-gnu/libc.so.6]
+ 99,502,605 (10.51%)  ./malloc/./malloc/malloc.c:malloc [/usr/lib/x86_64-linux-gnu/libc.so.6]
+ 77,452,586 ( 8.18%)  ./malloc/./malloc/malloc.c:_int_free [/usr/lib/x86_64-linux-gnu/libc.so.6]
+ 39,794,664 ( 4.20%)  ./malloc/./malloc/malloc.c:free [/usr/lib/x86_64-linux-gnu/libc.so.6]
+ 35,378,736 ( 3.74%)  ???:operator new(unsigned long) [/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33]
+ 20,851,643 ( 2.20%)  ./malloc/./malloc/malloc.c:malloc_consolidate [/usr/lib/x86_64-linux-gnu/libc.so.6]
+ 11,220,126 ( 1.18%)  ./malloc/./malloc/malloc.c:unlink_chunk.isra.0 [/usr/lib/x86_64-linux-gnu/libc.so.6]
+  4,263,714 ( 0.45%)  ./malloc/./malloc/arena.c:free
+== tcache
+862,392,562 (100.0%)  PROGRAM TOTALS
+99,502,605 (11.54%)  ./malloc/./malloc/malloc.c:malloc [/usr/lib/x86_64-linux-gnu/libc.so.6]
+76,746,900 ( 8.90%)  ./malloc/./malloc/malloc.c:_int_free [/usr/lib/x86_64-linux-gnu/libc.so.6]
+53,195,614 ( 6.17%)  ./malloc/./malloc/malloc.c:_int_malloc [/usr/lib/x86_64-linux-gnu/libc.so.6]
+39,794,664 ( 4.61%)  ./malloc/./malloc/malloc.c:free [/usr/lib/x86_64-linux-gnu/libc.so.6]
+35,378,736 ( 4.10%)  ???:operator new(unsigned long) [/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33]
+ 4,263,714 ( 0.49%)  ./malloc/./malloc/arena.c:free
+ 3,350,236 ( 0.39%)  ./malloc/./malloc/malloc.c:malloc_consolidate [/usr/lib/x86_64-linux-gnu/libc.so.6]
+  ./malloc/./malloc/arena.c

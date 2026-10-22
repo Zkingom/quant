@@ -1,0 +1,16 @@
+$ lob_soak --profile high_density --seeds 11-15 --commands 50000 --check-every 500 --fault-per-mille 20 --require-targets
+[run] profile=high_density seed=11 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.030
+[run] profile=high_density seed=12 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.029
+[run] profile=high_density seed=13 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.030
+[run] profile=high_density seed=14 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.030
+[run] profile=high_density seed=15 commands=50000 check_every=500 fault_per_mille=20 ok=1 seconds=0.031
+== profile high_density: most orders trade on arrival; large makers partially filled by many small takers
+[coverage] commands=248774 accepted=208756 trades=182887 cancels=17392
+[coverage] multi_maker=19863 multi_level=13388 taker_full=122382 taker_partial_rested=26008 rested_no_trade=60366 maker_partial=114262
+[coverage] accepted_while_full=0 reused_dead_id=19341 max_orders=74
+[coverage] rejects: INVALID_ORDER_ID=2975 INVALID_SIDE=3006 PRICE_OUT_OF_RANGE=3063 INVALID_QUANTITY=2995 QUANTITY_TOO_LARGE=2999 DUPLICATE_ORDER_ID=49 UNKNOWN_ORDER_ID=7539 BOOK_FULL=0
+[state] max_levels_per_side=14 max_level_orders=27 max_level_quantity=284 max_trades_in_command=19 max_levels_swept=7 side_emptied=7902 band_edge_accepts=0 band_edge_trades=0 accepted_quantity=2398281 full_checks=1731
+[faults] prepare=451 residual=775 armed_without_effect=3822
+[time] seconds=0.150 commands_per_second(harness incl. reference+audit)=1662024
+[targets] all met
+[resources] max_rss_kib=5920 user_s=0.14 sys_s=0.00

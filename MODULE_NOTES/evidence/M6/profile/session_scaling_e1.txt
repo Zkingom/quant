@@ -1,0 +1,5 @@
+# session.memory throughput vs stream length, E1 (m6-exp1-session-growth 1456fed), Release, vCPU 2
+n=20000   session.memory,throughput,1,1.07494e+06
+n=40000   session.memory,throughput,1,1.10264e+06
+n=80000   session.memory,throughput,1,1.11146e+06
+n=160000  session.memory,throughput,1,1.09789e+06

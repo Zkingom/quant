@@ -1,0 +1,39 @@
+# perf trace -s, lob_bench --filter session.ext4_fsync --reps 1 --engine-commands 20000 (default --durable-commands 5000); warmup + 1 rep + latency pass = 3 sessions
+# WSL2 ext4 (/tmp); syscall times include tracing overhead and are NOT used as performance results
+session.ext4_fsync,throughput,1,263.139
+session.ext4_fsync,samples,0,5000
+
+ Summary of events:
+
+ lob_bench (929), 60327 events, 100.0%
+
+   syscall            calls  errors  total       min       avg       max       stddev
+                                     (msec)    (msec)    (msec)    (msec)        (%)
+   --------------- --------  ------ -------- --------- --------- ---------     ------
+   fsync              15006      0 52154.875     0.143     3.476    40.497      0.51%
+   write              14979      0   319.889     0.004     0.021     6.330      4.18%
+   mmap                  45      0     0.262     0.003     0.006     0.028      9.86%
+   openat                38     13     0.221     0.002     0.006     0.080     35.16%
+   ftruncate              3      0     0.205     0.021     0.068     0.096     34.62%
+   execve                 2      0     0.191     0.000     0.096     0.191    100.00%
+   munmap                 4      0     0.149     0.006     0.037     0.076     43.14%
+   unlink                 1      0     0.136     0.136     0.136     0.136      0.00%
+   mprotect               9      0     0.101     0.005     0.011     0.025     23.38%
+   close                 25      0     0.089     0.002     0.004     0.026     29.97%
+   brk                    9      0     0.068     0.002     0.008     0.024     34.25%
+   sched_setaffinity        1      0     0.064     0.064     0.064     0.064      0.00%
+   fstat                 23      0     0.054     0.002     0.002     0.013     20.08%
+   read                   7      0     0.019     0.002     0.003     0.003      7.11%
+   futex                  2      0     0.016     0.003     0.008     0.013     65.86%
+   getrandom              2      0     0.015     0.002     0.008     0.013     68.15%
+   access                 2      2     0.008     0.004     0.004     0.004      7.14%
+   pread64                4      0     0.007     0.002     0.002     0.002      2.03%
+   lseek                  3      0     0.007     0.002     0.002     0.003      9.94%
+   prlimit64              2      0     0.005     0.002     0.002     0.003     10.22%
+   arch_prctl             2      0     0.004     0.002     0.002     0.002      2.00%
+   rseq                   2      0     0.004     0.002     0.002     0.002      4.17%
+   set_tid_address        2      0     0.004     0.002     0.002     0.002      4.41%
+   set_robust_list        2      0     0.003     0.002     0.002     0.002      0.23%
+   sched_getaffinity        1      0     0.003     0.003     0.003     0.003      0.00%
+
+

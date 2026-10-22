@@ -1,0 +1,15 @@
+    95.21%  [.] lob::io::Session::submit(lob::io::SequencedCommand const&)                                                                                                                                                            
+
+# perf annotate Session::submit (top instructions, % of the function's samples): 32-byte-stride copy loop after operator new
+   46.19 :   44db4:  movdqu 0x10(%rdx),%xmm2
+   26.79 :   44db9:  add    $0x20,%rax
+   11.62 :   44dc5:  movups %xmm2,-0x10(%rax)
+    9.00 :   44dc9:  cmp    %rcx,%rax
+    3.18 :   44db0:  movdqu (%rdx),%xmm1
+    1.79 :   44dc1:  movups %xmm1,-0x20(%rax)
+    1.33 :   44dbd:  add    $0x20,%rdx
+    0.02 :   44dd3:  mov    0xf0(%rbx),%rsi
+    0.02 :   44406:  mov    %rsi,0x20(%rsp)
+    0.01 :   450e8:  mov    0x10(%rsp),%rdi
+    0.01 :   44dda:  sub    %rdi,%rsi
+    0.01 :   44d84:  call   47f0 <operator new(unsigned long)@plt>

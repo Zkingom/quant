@@ -228,5 +228,29 @@ TEST(IoAllocFailure, SequenceExhaustionIsRefusedWithoutEffect) {
   EXPECT_EQ(last.last_seq, std::numeric_limits<SeqNum>::max());
 }
 
+// M6 E1: the commit record reserved before each command grows
+// geometrically. An exact reserve(size + 1) re-copies every earlier record on
+// every submit — about 32 * n^2 / 2 bytes over n commands, ~256 MB for
+// n = 4000, against a few MB of ordinary per-command allocations. Measured
+// with this test (gcc-release): 260.9 MB with the exact reserve, 5.1 MB
+// with geometric growth.
+TEST(IoAllocFailure, CommitRecordStorageDoesNotGrowQuadratically) {
+  const auto& profile = *testkit::find_profile("mixed");
+  const auto commands = test::generate(profile, 5, 4000);
+  MemorySink sink;
+  Session s{test::fresh(profile.config), sink, SessionOptions{.durable = false, .prepare_retries = 2}};
+  long long bytes = 0;
+  {
+    FaultWindow window{std::numeric_limits<long>::max()};  // count only, never inject
+    for (const auto& c : commands) {
+      ASSERT_EQ(s.submit(c).status, SubmitStatus::Committed);
+    }
+    bytes = testkit::alloc::allocated_bytes();
+    EXPECT_FALSE(window.injected());
+  }
+  std::printf("bytes allocated by 4000 submits: %lld\n", bytes);
+  EXPECT_LT(bytes, 64LL << 20);
+}
+
 }  // namespace
 }  // namespace lob::io

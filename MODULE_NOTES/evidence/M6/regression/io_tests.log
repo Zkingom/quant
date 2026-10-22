@@ -1,0 +1,164 @@
+Running main() from ./googletest/src/gtest_main.cc
+[==========] Running 43 tests from 10 test suites.
+[----------] Global test environment set-up.
+[----------] 7 tests from TextFormat
+[ RUN      ] TextFormat.EveryEventTypeRoundTripsAtExtremes
+[       OK ] TextFormat.EveryEventTypeRoundTripsAtExtremes (0 ms)
+[ RUN      ] TextFormat.EveryRejectReasonSpellingIsParsed
+[       OK ] TextFormat.EveryRejectReasonSpellingIsParsed (0 ms)
+[ RUN      ] TextFormat.CommandsRoundTrip
+[       OK ] TextFormat.CommandsRoundTrip (0 ms)
+[ RUN      ] TextFormat.ConfigRoundTripAndValidation
+[       OK ] TextFormat.ConfigRoundTripAndValidation (0 ms)
+[ RUN      ] TextFormat.NumbersAreStrictAndCanonical
+[       OK ] TextFormat.NumbersAreStrictAndCanonical (0 ms)
+[ RUN      ] TextFormat.FieldSeparationIsStrict
+[       OK ] TextFormat.FieldSeparationIsStrict (0 ms)
+[ RUN      ] TextFormat.MalformedEventsAreRejected
+[       OK ] TextFormat.MalformedEventsAreRejected (0 ms)
+[----------] 7 tests from TextFormat (3 ms total)
+
+[----------] 2 tests from CommandFile
+[ RUN      ] CommandFile.ParsesHeaderCommentsAndCommands
+[       OK ] CommandFile.ParsesHeaderCommentsAndCommands (0 ms)
+[ RUN      ] CommandFile.StructuralErrorsReportTheLine
+[       OK ] CommandFile.StructuralErrorsReportTheLine (0 ms)
+[----------] 2 tests from CommandFile (0 ms total)
+
+[----------] 7 tests from Journal
+[ RUN      ] Journal.EncodeScanRoundTrip
+[       OK ] Journal.EncodeScanRoundTrip (1 ms)
+[ RUN      ] Journal.EmptyAndTornHeaderCountAsEmptyJournal
+[       OK ] Journal.EmptyAndTornHeaderCountAsEmptyJournal (0 ms)
+[ RUN      ] Journal.TruncationAtEveryOffsetKeepsExactlyTheCompleteBatches
+[       OK ] Journal.TruncationAtEveryOffsetKeepsExactlyTheCompleteBatches (0 ms)
+[ RUN      ] Journal.NulPaddedTailIsTorn
+[       OK ] Journal.NulPaddedTailIsTorn (0 ms)
+[ RUN      ] Journal.NoSingleByteModificationOfTheLastBatchIsAccepted
+[journal] last-batch single-byte damage: 417 reported corrupt, 4 dropped as torn
+[       OK ] Journal.NoSingleByteModificationOfTheLastBatchIsAccepted (2 ms)
+[ RUN      ] Journal.DamageBeforeTheTailIsCorruption
+[       OK ] Journal.DamageBeforeTheTailIsCorruption (0 ms)
+[ RUN      ] Journal.FramingAndSequenceViolationsAreCorruption
+[       OK ] Journal.FramingAndSequenceViolationsAreCorruption (0 ms)
+[----------] 7 tests from Journal (7 ms total)
+
+[----------] 5 tests from EngineSnapshot
+[ RUN      ] EngineSnapshot.RestoreThenSnapshotIsTheIdentity
+[       OK ] EngineSnapshot.RestoreThenSnapshotIsTheIdentity (0 ms)
+[ RUN      ] EngineSnapshot.RestoredEngineContinuesWithTheNextSeqAndPriority
+[       OK ] EngineSnapshot.RestoredEngineContinuesWithTheNextSeqAndPriority (0 ms)
+[ RUN      ] EngineSnapshot.EveryViolationIsReported
+[       OK ] EngineSnapshot.EveryViolationIsReported (0 ms)
+[ RUN      ] EngineSnapshot.SeqExhaustionIsReachableThroughRestore
+[       OK ] EngineSnapshot.SeqExhaustionIsReachableThroughRestore (0 ms)
+[ RUN      ] EngineSnapshot.RestoredEngineBehavesIdenticallyAcrossProfilesLengthsAndCutPoints
+[snapshot] restored engines matched the originals on 81070 subsequent commands
+[       OK ] EngineSnapshot.RestoredEngineBehavesIdenticallyAcrossProfilesLengthsAndCutPoints (60 ms)
+[----------] 5 tests from EngineSnapshot (62 ms total)
+
+[----------] 2 tests from SnapshotFile
+[ RUN      ] SnapshotFile.RoundTripAndHash
+[       OK ] SnapshotFile.RoundTripAndHash (0 ms)
+[ RUN      ] SnapshotFile.DamageIsDetected
+[       OK ] SnapshotFile.DamageIsDetected (0 ms)
+[----------] 2 tests from SnapshotFile (2 ms total)
+
+[----------] 4 tests from Recovery
+[ RUN      ] Recovery.JournalAloneAndSnapshotPlusJournalReachTheLiveState
+[       OK ] Recovery.JournalAloneAndSnapshotPlusJournalReachTheLiveState (130 ms)
+[ RUN      ] Recovery.TruncatedJournalRecoversTheCommittedPrefix
+[       OK ] Recovery.TruncatedJournalRecoversTheCommittedPrefix (534 ms)
+[ RUN      ] Recovery.InconsistentSnapshotAndJournalAreRefused
+[       OK ] Recovery.InconsistentSnapshotAndJournalAreRefused (1 ms)
+[ RUN      ] Recovery.SemanticallyInconsistentBatchesAreCorruption
+[       OK ] Recovery.SemanticallyInconsistentBatchesAreCorruption (0 ms)
+[----------] 4 tests from Recovery (672 ms total)
+
+[----------] 6 tests from Session
+[ RUN      ] Session.IdentityChecksNeverExecuteACommittedCommandTwice
+[       OK ] Session.IdentityChecksNeverExecuteACommittedCommandTwice (0 ms)
+[ RUN      ] Session.RestartAfterAnyPrefixContinuesToTheIdenticalJournal
+[       OK ] Session.RestartAfterAnyPrefixContinuesToTheIdenticalJournal (4 ms)
+[ RUN      ] Session.WriteFailureAtAnyOffsetPoisonsAndRecoversToTheLastCommit
+[       OK ] Session.WriteFailureAtAnyOffsetPoisonsAndRecoversToTheLastCommit (35 ms)
+[ RUN      ] Session.SyncFailureIsNotAcknowledgedButMayBeCommitted
+[       OK ] Session.SyncFailureIsNotAcknowledgedButMayBeCommitted (0 ms)
+[ RUN      ] Session.DurableModeNeverLosesAnAcknowledgedCommandInTheCrashModel
+[       OK ] Session.DurableModeNeverLosesAnAcknowledgedCommandInTheCrashModel (5 ms)
+[ RUN      ] Session.BufferedModeCanLoseAcknowledgedCommandsInTheCrashModel
+[       OK ] Session.BufferedModeCanLoseAcknowledgedCommandsInTheCrashModel (0 ms)
+[----------] 6 tests from Session (53 ms total)
+
+[----------] 2 tests from FileSink
+[ RUN      ] FileSink.TruncatesToTheKeptLengthBeforeAppending
+[       OK ] FileSink.TruncatesToTheKeptLengthBeforeAppending (4 ms)
+[ RUN      ] FileSink.CreatesMissingFilesAndAppends
+[       OK ] FileSink.CreatesMissingFilesAndAppends (1 ms)
+[----------] 2 tests from FileSink (8 ms total)
+
+[----------] 2 tests from FileHelpers
+[ RUN      ] FileHelpers.ReadMissingFileIsEmpty
+[       OK ] FileHelpers.ReadMissingFileIsEmpty (0 ms)
+[ RUN      ] FileHelpers.AtomicWriteReplacesTheFileAndLeavesNoTemporary
+[       OK ] FileHelpers.AtomicWriteReplacesTheFileAndLeavesNoTemporary (7 ms)
+[----------] 2 tests from FileHelpers (8 ms total)
+
+[----------] 6 tests from Scenarios/Golden
+[ RUN      ] Scenarios/Golden.JournalAndSnapshotAreReproducedByteForByte/0
+[       OK ] Scenarios/Golden.JournalAndSnapshotAreReproducedByteForByte/0 (10 ms)
+[ RUN      ] Scenarios/Golden.JournalAndSnapshotAreReproducedByteForByte/1
+[       OK ] Scenarios/Golden.JournalAndSnapshotAreReproducedByteForByte/1 (9 ms)
+[ RUN      ] Scenarios/Golden.JournalAndSnapshotAreReproducedByteForByte/2
+[       OK ] Scenarios/Golden.JournalAndSnapshotAreReproducedByteForByte/2 (9 ms)
+[ RUN      ] Scenarios/Golden.JournalAndSnapshotAreReproducedByteForByte/3
+[       OK ] Scenarios/Golden.JournalAndSnapshotAreReproducedByteForByte/3 (9 ms)
+[ RUN      ] Scenarios/Golden.JournalAndSnapshotAreReproducedByteForByte/4
+[       OK ] Scenarios/Golden.JournalAndSnapshotAreReproducedByteForByte/4 (8 ms)
+[ RUN      ] Scenarios/Golden.JournalAndSnapshotAreReproducedByteForByte/5
+[       OK ] Scenarios/Golden.JournalAndSnapshotAreReproducedByteForByte/5 (24 ms)
+[----------] 6 tests from Scenarios/Golden (73 ms total)
+
+[----------] Global test environment tear-down
+[==========] 43 tests from 10 test suites ran. (899 ms total)
+[  PASSED  ] 43 tests.
+Running main() from ./googletest/src/gtest_main.cc
+[==========] Running 4 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 4 tests from IoAllocFailure
+[ RUN      ] IoAllocFailure.EveryCommandAndAllocationPointHasAContractOutcome
+[io-alloc] 80 commands, 917 injection points (max 19 per command): committed after an injected failure=3 resource_failure=141 poisoned=691 not_applied=82
+[       OK ] IoAllocFailure.EveryCommandAndAllocationPointHasAContractOutcome (100 ms)
+[ RUN      ] IoAllocFailure.LongFaultedRunsWithRestartsRecoverExactly
+[io-alloc] long runs, 10 profiles x 2000 faulted commands: restarts=442 resource_failure_batches=121 not_applied_retries=104
+[       OK ] IoAllocFailure.LongFaultedRunsWithRestartsRecoverExactly (452 ms)
+[ RUN      ] IoAllocFailure.SequenceExhaustionIsRefusedWithoutEffect
+[       OK ] IoAllocFailure.SequenceExhaustionIsRefusedWithoutEffect (0 ms)
+[ RUN      ] IoAllocFailure.CommitRecordStorageDoesNotGrowQuadratically
+bytes allocated by 4000 submits: 5109595
+[       OK ] IoAllocFailure.CommitRecordStorageDoesNotGrowQuadratically (4 ms)
+[----------] 4 tests from IoAllocFailure (561 ms total)
+
+[----------] Global test environment tear-down
+[==========] 4 tests from 1 test suite ran. (563 ms total)
+[  PASSED  ] 4 tests.
+Running main() from ./googletest/src/gtest_main.cc
+Note: Google Test filter = EngineDifferential.*
+[==========] Running 2 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 2 tests from EngineDifferential
+[ RUN      ] EngineDifferential.MixedProfileReproducesTheM3Stream
+[coverage] commands=100000 accepted=68558 trades=54005 cancels=13555
+[coverage] multi_maker=12191 multi_level=8145 taker_full=19829 taker_partial_rested=5924 rested_no_trade=42805 maker_partial=18970
+[coverage] accepted_while_full=8518 reused_dead_id=3601 max_orders=40
+[coverage] rejects: INVALID_ORDER_ID=1203 INVALID_SIDE=1200 PRICE_OUT_OF_RANGE=1273 INVALID_QUANTITY=1189 QUANTITY_TOO_LARGE=1213 DUPLICATE_ORDER_ID=136 UNKNOWN_ORDER_ID=5571 BOOK_FULL=6102
+[state] max_levels_per_side=28 max_level_orders=29 max_level_quantity=783 max_trades_in_command=13 max_levels_swept=9 side_emptied=1905 band_edge_accepts=15290 band_edge_trades=14080 accepted_quantity=1918124 full_checks=100020
+[faults] prepare=0 residual=0 armed_without_effect=0
+[       OK ] EngineDifferential.MixedProfileReproducesTheM3Stream (431 ms)
+[ RUN      ] EngineDifferential.CheckIntervalDoesNotChangeTheStream
+[       OK ] EngineDifferential.CheckIntervalDoesNotChangeTheStream (527 ms)
+[----------] 2 tests from EngineDifferential (960 ms total)
+
+[----------] Global test environment tear-down
+[==========] 2 tests from 1 test suite ran. (962 ms total)
+[  PASSED  ] 2 tests.

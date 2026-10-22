@@ -1,0 +1,9 @@
+date_utc=2026-10-22T05:57:01Z
+binary=/mnt/g/学习资料/quant/build/gcc-release/bench/lob_bench
+args=--ninep-dir /mnt/g/学习资料/quant/build
+pinned_vcpu=2
+Linux 6.6.87.2-microsoft-standard-WSL2 x86_64
+model name	: 12th Gen Intel(R) Core(TM) i7-12700H
+load_before=0.87 1.29 1.37
+load_after=1.38 1.43 1.42
+rev=a84271c build=gcc-release (from scripts/evidence_m6.sh check stage, tree 7e2b7c9)

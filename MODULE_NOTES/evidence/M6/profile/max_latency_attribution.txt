@@ -1,0 +1,30 @@
+# replay.session_memory max-latency attribution (bench_io max_latency_attribution), E1 code, gcc-release (~/lob_e1, Release), vCPU 2, 3 processes
+# max_at_sink_growth: submits where the MemorySink std::string (test-harness storage) reallocated
+# max_without_any_growth: also excluding submits where the commit-record vector grows (i = 0,1,2,4,...)
+replay.session_memory,lat_p999,0,11083
+replay.session_memory,lat_max,0,1.41306e+07
+replay.session_memory.max_diag,max_ns,0,1.54715e+07
+replay.session_memory.max_diag,max_index,0,171305
+replay.session_memory.max_diag,max_at_sink_growth,0,1.54715e+07
+replay.session_memory.max_diag,max_without_sink_growth,0,517411
+replay.session_memory.max_diag,max_without_any_growth,0,94480
+replay.session_memory.max_diag,sink_growths,0,19
+--
+replay.session_memory,lat_p999,0,10249
+replay.session_memory,lat_max,0,9.94941e+06
+replay.session_memory.max_diag,max_ns,0,1.12765e+07
+replay.session_memory.max_diag,max_index,0,171305
+replay.session_memory.max_diag,max_at_sink_growth,0,1.12765e+07
+replay.session_memory.max_diag,max_without_sink_growth,0,593655
+replay.session_memory.max_diag,max_without_any_growth,0,100818
+replay.session_memory.max_diag,sink_growths,0,19
+--
+replay.session_memory,lat_p999,0,7321
+replay.session_memory,lat_max,0,9.60085e+06
+replay.session_memory.max_diag,max_ns,0,1.15937e+07
+replay.session_memory.max_diag,max_index,0,171305
+replay.session_memory.max_diag,max_at_sink_growth,0,1.15937e+07
+replay.session_memory.max_diag,max_without_sink_growth,0,545676
+replay.session_memory.max_diag,max_without_any_growth,0,52167
+replay.session_memory.max_diag,sink_growths,0,19
+--

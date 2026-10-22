@@ -1,0 +1,97 @@
+--------------------------------------------------------------------------------
+Profile data file '/root/cg.book100k' (creator: callgrind-3.22.0)
+--------------------------------------------------------------------------------
+I1 cache: 32768 B, 64 B, 8-way associative
+D1 cache: 49152 B, 64 B, 12-way associative
+LL cache: 25165824 B, 64 B, 12-way associative
+Timerange: Basic block 0 - 274648389
+Trigger: Program termination
+Profiled target:  /root/lob_prof/bench/lob_bench --filter book.add_cancel@100000 --reps 1 (PID 573, part 1)
+Events recorded:  Ir Dr Dw I1mr D1mr D1mw ILmr DLmr DLmw Bc Bcm Bi Bim
+Events shown:     Ir D1mr DLmr Bcm
+Event sort order: Ir
+Thresholds:       99
+Include dirs:     
+User annotated:   
+Auto-annotation:  on
+
+--------------------------------------------------------------------------------
+Ir                   D1mr                DLmr             Bcm                 
+--------------------------------------------------------------------------------
+947,144,148 (100.0%) 20,854,965 (100.0%) 421,231 (100.0%) 13,757,143 (100.0%)  PROGRAM TOTALS
+
+--------------------------------------------------------------------------------
+Ir                   D1mr               DLmr             Bcm                 file:function
+--------------------------------------------------------------------------------
+106,767,289 (11.27%)    41,475 ( 0.20%)      58 ( 0.01%)    18,870 ( 0.14%)  ./malloc/./malloc/malloc.c:_int_malloc [/usr/lib/x86_64-linux-gnu/libc.so.6]
+ 99,502,605 (10.51%)    33,844 ( 0.16%)      10 ( 0.00%)    30,157 ( 0.22%)  ./malloc/./malloc/malloc.c:malloc [/usr/lib/x86_64-linux-gnu/libc.so.6]
+ 77,452,586 ( 8.18%)    12,502 ( 0.06%)       0             39,063 ( 0.28%)  ./malloc/./malloc/malloc.c:_int_free [/usr/lib/x86_64-linux-gnu/libc.so.6]
+ 52,165,620 ( 5.51%) 5,193,486 (24.90%)      76 ( 0.02%) 3,795,795 (27.59%)  bits/stl_tree.h:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::Orde
+ 51,917,277 ( 5.48%) 5,236,848 (25.11%)      63 ( 0.01%) 3,807,795 (27.68%)  bits/stl_tree.h:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBo
+ 47,912,628 ( 5.06%)        47 ( 0.00%)       0            123,693 ( 0.90%)  bits/hashtable.h:std::pair<std::__detail::_Node_iterator<std::pair<unsigned long const, lob::OrderBook::Locator>, false, false>, bool> std::_Hashtable<un
+ 39,794,664 ( 4.20%)   139,919 ( 0.67%)      94 ( 0.02%)    47,649 ( 0.35%)  ./malloc/./malloc/malloc.c:free [/usr/lib/x86_64-linux-gnu/libc.so.6]
+ 35,378,736 ( 3.74%)         2 ( 0.00%)       0                  9 ( 0.00%)  ???:operator new(unsigned long) [/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33]
+ 34,199,967 ( 3.61%)         2 ( 0.00%)       0                 35 ( 0.00%)  src/book/order_book.cpp:lob::OrderBook::add(lob::NewOrder const&, unsigned long) [/root/lob_prof/bench/lob_bench]
+ 31,831,371 ( 3.36%) 2,756,810 (13.22%)      93 ( 0.02%) 2,150,222 (15.63%)  bits/stl_tree.h:lob::OrderBook::cancel(unsigned long)
+ 22,200,000 ( 2.34%)   599,746 ( 2.88%)   3,271 ( 0.78%)   261,579 ( 1.90%)  src/book/order_book.cpp:lob::OrderBook::cancel(unsigned long) [/root/lob_prof/bench/lob_bench]
+ 20,851,643 ( 2.20%) 1,146,460 ( 5.50%)       3 ( 0.00%)   112,247 ( 0.82%)  ./malloc/./malloc/malloc.c:malloc_consolidate [/usr/lib/x86_64-linux-gnu/libc.so.6]
+ 19,765,050 ( 2.09%)        40 ( 0.00%)       0              6,347 ( 0.05%)  src/book/order_book.cpp:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, l
+ 19,757,208 ( 2.09%)        33 ( 0.00%)       0                  .           src/book/order_book.cpp:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob:
+ 19,198,206 ( 2.03%)         0                0             42,300 ( 0.31%)  bits/hashtable.h:std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lo
+ 18,900,000 ( 2.00%)   450,056 ( 2.16%) 412,596 (97.95%)        23 ( 0.00%)  include/lob/core/validation.hpp:lob::OrderBook::add(lob::NewOrder const&, unsigned long)
+ 18,069,525 ( 1.91%)   255,862 ( 1.23%)      69 ( 0.02%)   633,681 ( 4.61%)  ???:std::_Rb_tree_insert_and_rebalance(bool, std::_Rb_tree_node_base*, std::_Rb_tree_node_base*, std::_Rb_tree_node_base&) [/usr/lib/x86_64-linux-gnu/lib
+ 14,401,719 ( 1.52%)        29 ( 0.00%)       2 ( 0.00%)        72 ( 0.00%)  ???:std::__detail::_Prime_rehash_policy::_M_need_rehash(unsigned long, unsigned long, unsigned long) const [/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33
+ 11,220,126 ( 1.18%) 1,118,044 ( 5.36%)       0             41,636 ( 0.30%)  ./malloc/./malloc/malloc.c:unlink_chunk.isra.0 [/usr/lib/x86_64-linux-gnu/libc.so.6]
+ 11,207,460 ( 1.18%)   190,358 ( 0.91%)     117 ( 0.03%)   339,834 ( 2.47%)  ???:std::_Rb_tree_rebalance_for_erase(std::_Rb_tree_node_base*, std::_Rb_tree_node_base&) [/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33]
+ 10,011,114 ( 1.06%) 1,198,301 ( 5.75%)     832 ( 0.20%)    41,174 ( 0.30%)  bits/hashtable.h:lob::OrderBook::cancel(unsigned long)
+  9,956,871 ( 1.05%)         0                0             40,868 ( 0.30%)  bits/stl_tree.h:std::_Rb_tree_iterator<std::pair<long const, lob::OrderBook::PriceLevel> > std::_Rb_tree<long, std::pair<long const, lob::OrderBook::Pric
+  9,915,867 ( 1.05%)         2 ( 0.00%)       0             56,484 ( 0.41%)  bits/stl_tree.h:std::_Rb_tree_iterator<std::pair<long const, lob::OrderBook::PriceLevel> > std::_Rb_tree<long, std::pair<long const, lob::OrderBook::Pric
+  8,418,741 ( 0.89%)         2 ( 0.00%)       0                  .           bits/hashtable_policy.h:std::pair<std::__detail::_Node_iterator<std::pair<unsigned long const, lob::OrderBook::Locator>, false, false>, bool> std::_Hasht
+  8,174,976 ( 0.86%)        46 ( 0.00%)       0                 76 ( 0.00%)  ./string/../sysdeps/x86_64/multiarch/memset-vec-unaligned-erms.S:__memset_avx2_unaligned_erms [/usr/lib/x86_64-linux-gnu/libc.so.6]
+  8,100,000 ( 0.86%)   123,287 ( 0.59%)   1,187 ( 0.28%)         .           ???:std::__detail::_List_node_base::_M_hook(std::__detail::_List_node_base*) [/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33]
+  7,700,409 ( 0.81%)   175,969 ( 0.84%)      41 ( 0.01%)   863,994 ( 6.28%)  ???:std::_Rb_tree_decrement(std::_Rb_tree_node_base*) [/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33]
+  7,052,004 ( 0.74%)    62,284 ( 0.30%)       0                 74 ( 0.00%)  bits/hashtable.h:std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lo
+  7,043,130 ( 0.74%)   167,542 ( 0.80%)     646 ( 0.15%)   123,633 ( 0.90%)  bits/hashtable.h:lob::OrderBook::add(lob::NewOrder const&, unsigned long)
+  6,224,244 ( 0.66%)    37,334 ( 0.18%)      36 ( 0.01%)    41,083 ( 0.30%)  bits/hashtable_policy.h:lob::OrderBook::cancel(unsigned long)
+  4,500,000 ( 0.48%)         0                .                  .           bits/stl_pair.h:std::pair<std::__detail::_Node_iterator<std::pair<unsigned long const, lob::OrderBook::Locator>, false, false>, bool> std::_Hashtable<uns
+  4,422,342 ( 0.47%)         0                0                  0           ???:0x000000000010c7f0 [???]
+  4,422,342 ( 0.47%)        28 ( 0.00%)       2 ( 0.00%)         0           ???:0x00000000048ea210 [???]
+  4,263,714 ( 0.45%)         0                0             17,202 ( 0.13%)  ./malloc/./malloc/arena.c:free
+  4,236,948 ( 0.45%)    51,656 ( 0.25%)     309 ( 0.07%)         .           bits/hashtable_policy.h:lob::OrderBook::add(lob::NewOrder const&, unsigned long)
+  3,654,033 ( 0.39%)         0                0            184,144 ( 1.34%)  bits/stl_map.h:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::Order
+  3,646,014 ( 0.38%)         0                0            185,076 ( 1.35%)  bits/stl_map.h:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBoo
+  3,600,000 ( 0.38%)         0                .                  .           bits/new_allocator.h:std::pair<std::__detail::_Node_iterator<std::pair<unsigned long const, lob::OrderBook::Locator>, false, false>, bool> std::_Hashtabl
+  3,600,000 ( 0.38%)         0                0                  .           bits/stl_list.h:lob::OrderBook::cancel(unsigned long)
+  3,600,000 ( 0.38%)         0                0                  .           optional:lob::OrderBook::cancel(unsigned long)
+  3,600,000 ( 0.38%)   103,963 ( 0.50%)     144 ( 0.03%)         .           ???:std::__detail::_List_node_base::_M_unhook() [/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33]
+  3,236,757 ( 0.34%)    61,072 ( 0.29%)      92 ( 0.02%)   192,210 ( 1.40%)  ???:std::_Rb_tree_increment(std::_Rb_tree_node_base const*) [/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33]
+  3,152,140 ( 0.33%)         0                0                  4 ( 0.00%)  ./malloc/./malloc/malloc.c:alloc_perturb [/usr/lib/x86_64-linux-gnu/libc.so.6]
+  2,842,476 ( 0.30%)        25 ( 0.00%)       0                  0           ???:0x000000000010c800 [???]
+  2,842,476 ( 0.30%)        31 ( 0.00%)       0                  0           ???:0x00000000048ea430 [???]
+  2,842,476 ( 0.30%)        32 ( 0.00%)       0                  0           ???:0x00000000048eac60 [???]
+  2,842,476 ( 0.30%)         .                .                  .           ???:operator delete(void*) [/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33]
+  2,842,476 ( 0.30%)         .                .                  .           ???:operator delete(void*, unsigned long) [/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33]
+  2,518,323 ( 0.27%)   502,290 ( 2.41%)       .                  .           bits/hashtable_policy.h:std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long co
+  2,463,597 ( 0.26%)         .                .                  .           bits/new_allocator.h:lob::OrderBook::cancel(unsigned long)
+  2,250,360 ( 0.24%)         0                .                  .           bits/stl_construct.h:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob:
+  2,250,360 ( 0.24%)         0                0                  .           bits/stl_list.h:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::Orde
+  2,249,640 ( 0.24%)         0                0                  .           bits/stl_construct.h:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::Or
+  2,249,640 ( 0.24%)         0                0                  .           bits/stl_list.h:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBo
+  1,800,000 ( 0.19%)         9 ( 0.00%)       0                  0           ???:0x000000000010c580 [???]
+  1,800,000 ( 0.19%)        29 ( 0.00%)       2 ( 0.00%)         0           ???:0x000000000010c8a0 [???]
+  1,800,000 ( 0.19%)         0                0            448,389 ( 3.26%)  include/lob/core/types.hpp:lob::OrderBook::add(lob::NewOrder const&, unsigned long)
+  1,799,973 ( 0.19%)   594,134 ( 2.85%)     714 ( 0.17%)         .           bits/hashtable_policy.h:std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long co
+  1,799,970 ( 0.19%)       190 ( 0.00%)       .                  .           optional:lob::OrderBook::add(lob::NewOrder const&, unsigned long)
+  1,588,056 ( 0.17%)         0                0                 28 ( 0.00%)  ./malloc/./malloc/arena.c:malloc
+  1,350,216 ( 0.14%)         .                .                  .           bits/hashtable.h:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::Ord
+  1,350,216 ( 0.14%)         0                .                  .           bits/new_allocator.h:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob:
+  1,350,207 ( 0.14%)         .                .                  .           bits/stl_function.h:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::
+  1,349,784 ( 0.14%)         .                .                  .           bits/hashtable.h:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderB
+  1,349,784 ( 0.14%)         .                .                  .           bits/new_allocator.h:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::Or
+  1,349,775 ( 0.14%)         .                .                  .           bits/stl_function.h:void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::Ord
+  1,235,862 ( 0.13%)         0                0                  .           tuple:std::_Rb_tree_iterator<std::pair<long const, lob::OrderBook::PriceLevel> > std::_Rb_tree<long, std::pair<long const, lob::OrderBook::PriceLevel>, s
+  1,230,912 ( 0.13%)         1 ( 0.00%)       0                  .           tuple:std::_Rb_tree_iterator<std::pair<long const, lob::OrderBook::PriceLevel> > std::_Rb_tree<long, std::pair<long const, lob::OrderBook::PriceLevel>, s
+  1,200,000 ( 0.13%)         .                .                  .           bits/new_allocator.h:std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const
+  1,200,000 ( 0.13%)         3 ( 0.00%)       3 ( 0.00%)         0           ???:0x000000000010c970 [???]
+  1,029,885 ( 0.11%)         0                .                  .           bits/stl_list.h:std::_Rb_tree_iterator<std::pair<long const, lob::OrderBook::PriceLevel> > std::_Rb_tree<long, std::pair<long const, lob::OrderBook::Pric
+

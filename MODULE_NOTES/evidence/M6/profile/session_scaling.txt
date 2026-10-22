@@ -1,0 +1,5 @@
+# session.memory throughput vs stream length (baseline dbf9acf, Release -O3 -g, vCPU 2)
+n=20000   session.memory,throughput,1,104579
+n=40000   session.memory,throughput,1,32674.9
+n=80000   session.memory,throughput,1,15996.9
+n=160000  session.memory,throughput,1,4669.28
