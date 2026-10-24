@@ -1,0 +1,29 @@
+# Negative control for scripts/l2_equivalence.sh (2026-10-24)
+# A scratch copy of the tree built with LOB_BASELINE=ON plus ONE deliberate mutation, compared against build/l2-optimized.
+# The script must not report equivalence.
+
+1. M2 mutation "FIFO: new order joins the front of the queue" (src/book/order_book.cpp):
+   rc=2 - stopped by the self-check: recovering the mutated journal gives a different state_hash than the run (first input, gen_cancel_heavy).
+2. M3 mutation "trade executes at the taker limit instead of the maker price" (src/engine/matching_engine.cpp):
+   rc=2 - stopped by the self-check: lob_replay recover refuses the journal (TRADE inconsistent with the order or the resting book).
+3. M3 mutation "unknown cancel reported as INVALID_ORDER_ID" (internally consistent journal, so the self-check passes):
+   rc=1 - table path. Script output:
+     l2_equivalence: 16 inputs, all_equal=0 -> /root/lob_l2_negctl/report.md
+   Per input (verdict):
+     `gen_cancel_heavy_s1_n100000` | **不一致** 
+     `gen_capacity_edge_s1_n100000` | **不一致** 
+     `gen_deep_book_s1_n100000` | **不一致** 
+     `gen_extreme_price_s1_n100000` | **不一致** 
+     `gen_extreme_quantity_s1_n100000` | **不一致** 
+     `gen_high_density_s1_n100000` | **不一致** 
+     `gen_id_churn_s1_n100000` | **不一致** 
+     `gen_mixed_s1_n100000` | **不一致** 
+     `gen_single_price_s1_n100000` | **不一致** 
+     `gen_thin_book_s1_n100000` | **不一致** 
+     `golden_basic` | **不一致** 
+     `golden_id_reuse` | 一致 
+     `golden_priority` | 一致 
+     `golden_rejections` | **不一致** 
+     `golden_seeded_mixed_2000` | **不一致** 
+     `golden_sweep_partial` | 一致 
+   The 3 equal inputs contain no cancel of an unknown id, which is the only behaviour this mutation changes.
