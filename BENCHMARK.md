@@ -214,6 +214,16 @@ book.fill_front（56.0 vs 49.7 M/s）；其余场景的范围重叠。未分析�
 
 两种实现由同一源码树的编译期选项选择（D-045），只在 Session 的一个源文件上不同（E1）。
 
+**一条命令复现本节全部内容**（WSL 中，仓库根目录；`build/l2-optimized`、`build/l2-baseline` 会被删除并从空目录重建）：
+
+```bash
+scripts/l2_reproduce.sh
+```
+
+它依次执行：构建（`LOB_BASELINE=OFF/ON`，并断言缓存中的值）→ `scripts/l2_equivalence.sh` → 两种构建的 `lob_bench` 交替 5 对
+（`--filter session --reps 3` 与 `--filter engine.mixed`，同 §9）→ `scripts/l2_rss.sh`，输出写入 `MODULE_NOTES/evidence/L2/reproduce/`
+（`summary.md` 为汇总）。`QUICK=1` 只做冒烟检查。
+
 | 维度 | 基线（`LOB_BASELINE=ON`） | 优化（`OFF`） | 来源 |
 |---|---|---|---|
 | 吞吐 | 非持久 Session 4.3–4.6 k/s（200 000 条） | 0.71–1.09 M/s | §9（同会话交替 5 对） |
