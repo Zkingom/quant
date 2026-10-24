@@ -21,6 +21,10 @@ endif()
 option(LOB_BUILD_TESTS "Build unit tests" ON)
 option(LOB_BUILD_EXAMPLES "Build example programs" ON)
 option(LOB_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON)
+# L2: build the M6 baseline implementation (tag m6-baseline) instead of the
+# optimized one, for before/after comparison. The two differ only in the
+# Session source file (src/CMakeLists.txt); OFF is the shipped implementation.
+option(LOB_BASELINE "Build the m6-baseline implementation instead of the optimized one" OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 include(CompilerWarnings)

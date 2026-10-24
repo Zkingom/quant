@@ -249,7 +249,14 @@ TEST(IoAllocFailure, CommitRecordStorageDoesNotGrowQuadratically) {
     EXPECT_FALSE(window.injected());
   }
   std::printf("bytes allocated by 4000 submits: %lld\n", bytes);
+#if LOB_BASELINE
+  // LOB_BASELINE=ON builds the m6-baseline Session on purpose: there the
+  // quadratic copying must still be present, which also proves that the
+  // baseline implementation is the one compiled.
+  EXPECT_GT(bytes, 64LL << 20);
+#else
   EXPECT_LT(bytes, 64LL << 20);
+#endif
 }
 
 }  // namespace

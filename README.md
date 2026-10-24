@@ -128,6 +128,40 @@ python3 scripts/bench_report.py /tmp/lob_bench_runs
 两个修订的交替对照（`scripts/bench_compare.sh REV_A REV_B RUNS OUT [--filter …]`）、profiling（`scripts/profile.sh`）、
 优化后的完整回归（`scripts/evidence_m6.sh`）的用法见各脚本开头。
 
+
+### 基线实现与优化实现（L2，`LOB_BASELINE`）
+
+CMake 选项 `LOB_BASELINE`（默认 `OFF`）选择 Session 的实现：`OFF` 编译当前的优化实现 `src/io/session.cpp`；
+`ON` 编译 `src/io/baseline/session.cpp`——标签 `m6-baseline` 中 `src/io/session.cpp` 的逐字节副本。两者只有这一个文件不同。
+`lob_bench` 的 CSV 中 `env,lob_baseline` 行记录所用实现（0 / 1）。
+
+以下命令与本文件其余命令一样，在 **WSL/Linux shell** 中、仓库根目录下运行（工具链只安装在 WSL 中；
+Windows PowerShell 里没有 `cmake`）。从 PowerShell 运行时用 `wsl` 包装，例如：
+`wsl -e bash -lc "cd /mnt/g/学习资料/quant && cmake -S . -B build/l2-optimized -G Ninja -DCMAKE_BUILD_TYPE=Release -DLOB_BASELINE=OFF"`。
+
+优化版（默认）：
+
+```bash
+cmake -S . -B build/l2-optimized -G Ninja -DCMAKE_BUILD_TYPE=Release -DLOB_BASELINE=OFF
+```
+
+```bash
+cmake --build build/l2-optimized
+```
+
+基线版：
+
+```bash
+cmake -S . -B build/l2-baseline -G Ninja -DCMAKE_BUILD_TYPE=Release -DLOB_BASELINE=ON
+```
+
+```bash
+cmake --build build/l2-baseline
+```
+
+两种构建的 CTest 都应全部通过；其中 `IoAllocFailure.CommitRecordStorageDoesNotGrowQuadratically` 在基线构建中断言
+相反的结论（分配字节数 > 64 MB），以此证明编译的确实是基线实现。
+
 ## 文档
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) — 模块划分、依赖与数据流
