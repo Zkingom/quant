@@ -162,7 +162,7 @@ cmake --build build/l2-baseline
 两种构建的 CTest 都应全部通过；其中 `IoAllocFailure.CommitRecordStorageDoesNotGrowQuadratically` 在基线构建中断言
 相反的结论（分配字节数 > 64 MB），以此证明编译的确实是基线实现。
 
-**一条命令复现整个前后对比**（在 WSL 中运行，约 1.5–2 小时，绝大部分是基线 Session 场景的 O(n²) 成本；以 `summary.md` 中记录的实际耗时为准）：从空目录构建两种实现 → 等价性哈希比对 →
+**一条命令复现整个前后对比**（在 WSL 中运行；2026-10-24 实测 73 分钟，绝大部分是基线 Session 场景的 O(n²) 成本）：从空目录构建两种实现 → 等价性哈希比对 →
 吞吐/延迟交替对比（参数同 BENCHMARK §9）→ 峰值 RSS；全部原始数据与汇总 `summary.md` 写入 `MODULE_NOTES/evidence/L2/reproduce/`。
 
 ```bash

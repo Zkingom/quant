@@ -224,6 +224,10 @@ scripts/l2_reproduce.sh
 （`--filter session --reps 3` 与 `--filter engine.mixed`，同 §9）→ `scripts/l2_rss.sh`，输出写入 `MODULE_NOTES/evidence/L2/reproduce/`
 （`summary.md` 为汇总）。`QUICK=1` 只做冒烟检查。
 
+2026-10-24 的完整运行（源码 `21cc273`，73 分钟，`MODULE_NOTES/evidence/L2/reproduce/summary.md`）复现了本节与 §9 的结论：
+16 个输入全部等价；session.memory 4.9 k/s → 1.13 M/s、replay.session_memory 4.7 k/s → 1.11 M/s、ext4_buffered 4.9 k/s → 700 k/s；
+ext4_fsync 与 engine.mixed 对照在噪声内；峰值 RSS mixed −1 884 KiB、deep_book −5 464 KiB。ext4_fsync 再次出现一个约 192 /s 的离群进程（T6-5）。
+
 | 维度 | 基线（`LOB_BASELINE=ON`） | 优化（`OFF`） | 来源 |
 |---|---|---|---|
 | 吞吐 | 非持久 Session 4.3–4.6 k/s（200 000 条） | 0.71–1.09 M/s | §9（同会话交替 5 对） |
