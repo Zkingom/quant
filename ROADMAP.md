@@ -14,7 +14,7 @@
 | 4 | M4 testkit | 10-20（✅ 提前完成） | M3 | 把生成器 / 参考引擎 / 审计器整理为可复用的 `lob::testkit`（供 M5、M6 使用）；更大规模长跑（更多种子、更长序列）（D-023 调整） |
 | 5 | M5 replay / snapshot / recovery | 10-20 → 10-21（✅ 提前完成） | M3、M4 | 文本格式 v1、日志与提交会话、快照与恢复、`lob_replay`、Golden、崩溃测试 |
 | 6 | M6 bench 基线 | 11-19 → 11-23（✅ 提前于 10-21 → 10-22 完成并验收） | M4 | 固定负载基准、吞吐 + p50/p95/p99、方法学文档；profiling 与一项有假设的优化实验（E1，D-042） |
-| — | **L1 冻结评审** | **11-24**（10-24 提前评审，见 [MODULE_NOTES/L1_REVIEW.md](MODULE_NOTES/L1_REVIEW.md)） | 全部 | 见 §2.1 |
+| — | **L1 冻结评审** | **11-24**（✅ 10-24 提前评审并通过，见 [MODULE_NOTES/L1_REVIEW.md](MODULE_NOTES/L1_REVIEW.md)） | 全部 | 见 §2.1 |
 | 7 | L2 性能工程 | 11-25 → 12-07 | L1 通过 | perf 剖析、≥1 项有假设的优化实验、前后对比（大部分已由 M6 交付，现状见 §2.2） |
 | 8 | L3 网关（有条件） | 12-08 → 12-10 | L2 通过 | 单客户端 TCP 网关 |
 | 9 | 交付收尾 | 12-11 → 12-14 | — | 文档终审、AI_USAGE 定稿、复现脚本 |
@@ -34,41 +34,41 @@ Golden Test 依赖文本格式，格式稳定后再固化。
 
 ### 2.1 Level 1（核心系统）—— 必须全部满足
 
-> 2026-10-24 评审结论：全部满足、无阻断项（[MODULE_NOTES/L1_REVIEW.md](MODULE_NOTES/L1_REVIEW.md)）。复选框在作者确认 L1 通过后勾选。
+> 2026-10-24 评审结论：全部满足、无阻断项（[MODULE_NOTES/L1_REVIEW.md](MODULE_NOTES/L1_REVIEW.md)）；同日作者确认 **L1 通过**。
 
 **构建**
-- [ ] `gcc-debug`、`gcc-release`、`gcc-asan`、`clang-debug`、`clang-release`、`clang-asan` 六个预设全部零警告（`-Werror`）构建。
-- [ ] 六个预设下 CTest 全部通过；Sanitizer 构建使用 `-fno-sanitize-recover=all`，任何 UB 即失败。
+- [x] `gcc-debug`、`gcc-release`、`gcc-asan`、`clang-debug`、`clang-release`、`clang-asan` 六个预设全部零警告（`-Werror`）构建。
+- [x] 六个预设下 CTest 全部通过；Sanitizer 构建使用 `-fno-sanitize-recover=all`，任何 UB 即失败。
 
 **语义覆盖**（每项至少一个具名测试）
-- [ ] 价格优先：更优价格先成交。
-- [ ] 同价 FIFO：同价位按到达顺序成交。
-- [ ] 部分成交（taker 部分、maker 部分）与完全成交。
-- [ ] 跨多个价格层的一次性扫单，成交价为 maker 价格。
-- [ ] 撤单：撤活跃单、撤部分成交单、撤未知 ID、撤已成交 ID、重复撤单。
-- [ ] 重复 ID（与活跃订单冲突）、无效订单（每种拒单原因）。
-- [ ] 边界值：价格带上下界 ±1、数量 0/1/max/max+1、`INT64_MIN/MAX`、`UINT64_MAX` ID。
-- [ ] 容量上限（`max_live_orders`）拒单。
+- [x] 价格优先：更优价格先成交。
+- [x] 同价 FIFO：同价位按到达顺序成交。
+- [x] 部分成交（taker 部分、maker 部分）与完全成交。
+- [x] 跨多个价格层的一次性扫单，成交价为 maker 价格。
+- [x] 撤单：撤活跃单、撤部分成交单、撤未知 ID、撤已成交 ID、重复撤单。
+- [x] 重复 ID（与活跃订单冲突）、无效订单（每种拒单原因）。
+- [x] 边界值：价格带上下界 ±1、数量 0/1/max/max+1、`INT64_MIN/MAX`、`UINT64_MAX` ID。
+- [x] 容量上限（`max_live_orders`）拒单。
 
 **不变量与守恒**
-- [ ] 每条命令处理后 `find_invariant_violation()` 无违例（测试与差分驱动中逐步检查）。
-- [ ] 数量守恒：Σ 接受数量 = 2·Σ 成交数量 + Σ 剩余挂单 + Σ 撤单剩余。
-- [ ] 订单簿永不交叉：处理后 best_bid < best_ask（两侧非空时）。
+- [x] 每条命令处理后 `find_invariant_violation()` 无违例（测试与差分驱动中逐步检查）。
+- [x] 数量守恒：Σ 接受数量 = 2·Σ 成交数量 + Σ 剩余挂单 + Σ 撤单剩余。
+- [x] 订单簿永不交叉：处理后 best_bid < best_ask（两侧非空时）。
 
 **确定性**
-- [ ] 同一输入回放两次，事件流与快照哈希一致。
-- [ ] GCC 与 Clang 构建对同一输入产生相同快照哈希。
-- [ ] Golden Tests：≥ 5 个手写场景 + ≥ 1 个固定种子大场景（规模：≥ 2 000 条命令，2026-10-24 由作者确定），输出与提交的期望文件逐字节一致。
+- [x] 同一输入回放两次，事件流与快照哈希一致。
+- [x] GCC 与 Clang 构建对同一输入产生相同快照哈希。
+- [x] Golden Tests：≥ 5 个手写场景 + ≥ 1 个固定种子大场景（规模：≥ 2 000 条命令，2026-10-24 由作者确定），输出与提交的期望文件逐字节一致。
 
 **差分测试**
-- [ ] 固定种子（≥ 20 个种子 × ≥ 10⁴ 命令）下，引擎与朴素参考模型的事件流与快照完全一致。
+- [x] 固定种子（≥ 20 个种子 × ≥ 10⁴ 命令）下，引擎与朴素参考模型的事件流与快照完全一致。
   证据来源：`scripts/soak.sh`（经 `scripts/evidence_m6.sh`），不是 `check.sh`；CTest 中的差分（20 × 5 000，逐条全量检查）作为每次构建的快速回归。
 
 **基准**
 - [x] `lob_bench` 可运行，输出吞吐与 p50/p95/p99，负载与环境写入 `BENCHMARK.md`。
 
 **文档**
-- [ ] README / ARCHITECTURE / DESIGN / DECISIONS / BENCHMARK / MODULE_NOTES / AI_USAGE 与代码一致。
+- [x] README / ARCHITECTURE / DESIGN / DECISIONS / BENCHMARK / MODULE_NOTES / AI_USAGE 与代码一致。
 
 ### 2.2 Level 2（性能工程）—— L1 通过后
 
