@@ -156,3 +156,14 @@
 - [ ] 已独立复现一次 `scripts/bench_compare.sh m6-perf~3 m6-perf 3 …`（或等价的 E1 前后对照）
 - [ ] 已完成至少一项 M6 修改任务（T6-x）：
 - 修改/否决的设计决策：
+
+## L1 冻结评审（2026-10-24）
+
+**AI 贡献**
+- 按 ROADMAP §2.1 逐项核对 L1 门槛：每项对应到具名测试或证据文件，写出 `MODULE_NOTES/L1_REVIEW.md` 与缺口清单 G1–G6；评审本身不改代码与测试。
+- 按作者决定只在文档中处理缺口：差分门槛的证据来源、Golden 大场景规模、接口命名、ARCHITECTURE 数据流与 M6 小节、ROADMAP 日期与 L2 现状；
+  评审中另发现 ARCHITECTURE 指向已删除的 `tests/support/`，一并更正。
+
+**作者决策**
+- 2026-10-24：G1 以 `soak.sh` / `evidence_m6.sh` 为差分门槛的证据来源；G6 接受 2 000 条；修正 G2–G5，不改代码。
+- 2026-10-24：L1 通过；合并 `l1-review` 到 `main`（暂不推送）。

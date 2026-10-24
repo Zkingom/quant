@@ -68,22 +68,34 @@
   基准测试复用同一工作负载生成器，保证"测的就是测过正确性的负载"。
 - **io 在 engine 之上**：引擎对文本格式一无所知，网关（L3）可复用同一引擎接口。
 
-## 3. 数据流（目标形态）
+## 3. 数据流（实际形态，2026-10-24 L1 评审时按代码更新）
+
+M0 时这里画的是"目标形态"，引擎通过 `EventSink` 输出事件；M3 采用了不同的接口（D-022：事件追加到调用方的
+`std::vector<Event>`，以便在准备阶段预留容量、提交阶段不分配）。下图是实际实现：
 
 ```
-命令文件 ──parser──▶ Command(variant) ──▶ MatchingEngine::process()
-                                              │ 1. 无状态校验 (M1 validate_*)
-                                              │ 2. 有状态校验 (重复/未知 ID、容量)
-                                              │ 3. 撮合：与对手方最优价逐层、逐单成交
-                                              │ 4. 剩余挂单 / 撤单
-                                              ▼
-                                         EventSink (Accepted/Rejected/Trade/Rested/Cancelled)
-                                              │
-                         ┌────────────────────┼─────────────────────┐
-                         ▼                    ▼                     ▼
-                   事件文本写出         差分比较(参考模型)        统计/基准
-                                              
-回放结束 ──▶ 规范快照(文本) + FNV-1a 64 哈希
+命令文件 ──parse_command_file──▶ SequencedCommand{cmd_seq, Command(variant)}
+                                        │
+                                        ▼
+                              io::Session::submit()
+                                │ 1. 计算命令摘要、预留提交记录容量（几何增长，D-042）；失败 → NotApplied
+                                │ 2. 去重：已提交的 cmd_seq → Duplicate / ContentMismatch；跳号 → SequenceGap
+                                ▼
+                     MatchingEngine::process(Command, std::vector<Event>&)
+                                │ 准备：无状态校验 (M1) → 重复/未知 ID → plan_match 只读预演
+                                │       → BOOK_FULL → seq 区间 → 预留事件容量
+                                │ 提交：Accepted → 逐层逐单 Trade（maker 价）→ Rested / Cancelled / Rejected
+                                ▼
+                     本命令的事件 ──encode_batch──▶ ByteSink（MemorySink / FileSink）write [+ fsync]
+                                │                         └─ 日志：批次 + FNV-1a 64 校验
+                                ▼
+                              确认（Committed）
+
+日志 ──scan_journal──▶ 批次 ──EventFold──▶ 引擎状态（recover）    日志 + 命令 ──▶ verify（重新执行比较）
+引擎 snapshot() ──▶ 规范快照文本 + FNV-1a 64（临时文件 + fsync + rename）
+
+测试与基准（不进入生产目标）：同一命令流送入 MatchingEngine 与 testkit::ReferenceEngine，
+事件逐条比较、EventAuditor 逐条审计；lob_bench 只在计时区内调用上述生产接口。
 ```
 
 ## 4. 当前已实现部分（✅）
@@ -117,7 +129,7 @@
   `process(CancelOrder)` → 校验 → `book.cancel` → `Cancelled` / `Rejected`。
 - 只经 M2 公共接口访问订单簿；M2 为此新增只读 `for_each_order_while`（D-018）。
 - 测试结构：`lob_engine_tests`（单元、审计器自检、与参考引擎的差分）+ `lob_engine_alloc_tests`（独立进程，分配失败注入）；
-  测试支撑代码在 `tests/support/`（`rng.hpp`、`alloc_fault.{hpp,cpp}`，M2/M3 共用）。
+  测试支撑代码在 M3 时位于 `tests/support/`，M4 起并入 `lob::testkit`（`rng`、`alloc_fault` 等，见下文 M4 小节）。
 - 详见 [MODULE_NOTES/M3_engine.md](MODULE_NOTES/M3_engine.md)。
 
 ### M5 io（生产）与 lob_replay
@@ -147,6 +159,21 @@ testkit/tools/soak.cpp         lob_soak：画像 × 种子区间的长跑 CLI
   → 事件逐条比较、`EventAuditor` 逐条审计 → 周期性全量检查（簿、守恒、不变量）→ `Coverage` 与边界目标判定。
 - 故障注入通过 `FaultInjector` 接口接入执行器，实现在 `lob_testkit_alloc_fault`，只链接进 `*_alloc_tests` 与 `lob_soak`。
 - 详见 [MODULE_NOTES/M4_testkit.md](MODULE_NOTES/M4_testkit.md)。
+
+### M6 bench（仅在启用测试时构建）
+
+```
+bench/main.cpp             参数（--filter --reps --engine-commands --durable-commands --ninep-dir --quick）、环境行
+bench/bench_common.hpp     计时、精确分位数、CSV 输出、校验值、吞吐测量模板
+bench/bench_book.cpp       Book 层     bench/bench_engine.cpp   Engine 层（7 个画像）
+bench/bench_io.cpp         Replay 层与 Session 层（内存 / ext4 / ext4+fsync / 9P+fsync），最大延迟归因
+scripts/bench.sh · bench_compare.sh · bench_env_compare.sh · bench_report.py · profile.sh · evidence_m6.sh
+```
+
+- 依赖方向：`lob_bench → lob::io、lob::engine、lob::book`；`lob::testkit` 只用于计时区外生成命令流。
+- 数据流：预生成命令或订单簿操作 → 预热 → 吞吐重复（循环内无计时）与延迟重复（逐操作计时）→ 状态哈希校验 → CSV
+  → `bench_report.py` 汇总（多进程中位数、范围、A/B 噪声判定）。
+- CTest 中只有 `bench.smoke`（`--quick`）；性能数据与证据见 [BENCHMARK.md](BENCHMARK.md) 与 [MODULE_NOTES/M6_performance.md](MODULE_NOTES/M6_performance.md)。
 
 ## 5. 构建拓扑
 

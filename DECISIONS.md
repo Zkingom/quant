@@ -29,7 +29,7 @@
 
 - 外部输入非法是常态，不是异常：返回 `std::optional<RejectReason>`，热路径无异常、无分配。
 - 配置非法是部署错误，构造时抛 `std::invalid_argument` 立即失败。
-- 内部不变量破坏是程序错误：测试中由 `check_invariants()` 检出（Release 中也可调用，不依赖 `assert`）。
+- 内部不变量破坏是程序错误：测试中由 `find_invariant_violation()` 检出（Release 中也可调用，不依赖 `assert`；M1 时计划名为 `check_invariants()`，L1 评审时更正）。
 - 未使用 `std::expected`：属于 C++23，项目标准为 C++20。
 
 ### D-005 校验函数 `constexpr` 内联于头文件 — 已采纳（M1）
