@@ -173,7 +173,8 @@ session_scaling（E1，`evidence/M6/profile/session_scaling_e1.txt`，同一构�
   - 排除 MemorySink 扩容后 max 为 0.52–0.59 ms，与 `committed_` 翻倍（E1 预期的代价）一致；
   - 两者都排除后 max 为 52–101 µs，**未归因**（可能是虚拟机中断或抢占，未验证）。
   - 尚未确认的是：扩容尖峰中复制与缺页各占多少（T6-8 的剩余部分）。
-- 内存：`committed_` 容量 ≤ 2 × 已提交数（每条 32 字节）；200 000 条时容量为 262 144 条、约 8.4 MB（精确 reserve 时为 6.4 MB）。分配字节总量见上面的回归测试。
+- 内存（L2 实测，替换此前的容量估算）：`lob_replay run` 处理 200 000 条命令的峰值 RSS（`ru_maxrss`，5 次中位数）——mixed 优化 30 068 KiB / 基线 31 948 KiB，
+  deep_book 优化 30 484 KiB / 基线 35 948 KiB；优化版更低，与按最终容量的估算（优化 8.4 MB vs 基线 6.4 MB）方向相反，原因未验证（BENCHMARK §12）。分配字节总量见上面的回归测试。
 - 方差：B 的进程间范围与 A 的范围同量级（相对值）；A 的 session.memory / buffered 各有一个进程降到 1.9 k/s，原因未查。
 
 **结论**：采纳（D-042）。归因：E1 修复的是 M5 Session 实现中的复杂度缺陷，不是撮合算法、订单簿或引擎的加速；
