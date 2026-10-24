@@ -5,7 +5,7 @@
 - 证据来源：`MODULE_NOTES/evidence/M6/regression/`。该证据在树 `7e2b7c9` 上生成；`7e2b7c9` 到 `90dbfdf` 之间
   `src/ include/ tests/ testkit/ apps/ bench/ cmake/ scripts/`、`CMakeLists.txt`、`CMakePresets.json` 均无改动
   （`git diff 7e2b7c9 90dbfdf -- …` 为空），因此证据适用于被评审版本。本次评审没有重新运行测试。
-- 范围：只核对，不开发新功能，不修改代码与测试。发现的问题列入 §3，不在本次评审中修复。
+- 范围：只核对，不开发新功能，不修改代码与测试。发现的问题列入 §3；其中文档类问题按作者决定修正，见 §3.1。
 
 复验命令（在 WSL/Linux 中，仓库根目录）：
 
@@ -99,6 +99,19 @@ scripts/evidence_m6.sh
 
 - m2 变异表有 1 个存活者（"移动构造不清空源"），是 D-013 记录的等价变异（libstdc++ 的容器移动本就清空源），M4、M5、M6 中结果相同。
 - 长跑矩阵中订单簿与不变量每 1 000 条检查一次（事件流逐条比较）；"逐条检查"由 CTest 中的单元与差分测试承担。
+
+### 3.1 处理记录（2026-10-24，作者决定；只改文档，不改代码与测试）
+
+| ID | 作者决定 | 处理 |
+|---|---|---|
+| G1 | 差分门槛以 `soak.sh` / `evidence_m6.sh` 为证据来源 | ROADMAP §2 的证据规则写明该例外；§2.1 差分条目注明证据来源，CTest 差分定位为快速回归 |
+| G2 | 修正 | ROADMAP §1、§2.1 与 DECISIONS D-004 改为 `find_invariant_violation()` |
+| G3 | 修正 | ARCHITECTURE §3 改为按代码绘制的实际数据流（Session → 引擎 → 批次编码 → ByteSink → 确认；恢复、verify、快照）；ROADMAP §2.3 的 L3 条目改为实际接口并注明 `EventSink` 已被否决（D-022） |
+| G4 | 修正 | ARCHITECTURE §4 增加 M6 小节。评审中另发现 M3 小节仍指向已不存在的 `tests/support/`（M4 已并入 `lob::testkit`），一并更正 |
+| G5 | 修正 | ROADMAP §1 补实际完成日期与 L1 评审链接；§2.2 按 M6 证据标注现状（3 项满足、3 项部分满足或未满足，括注原因） |
+| G6 | 接受 2 000 条 | ROADMAP §2.1 写明"固定种子大场景"规模为 ≥ 2 000 条命令 |
+
+ROADMAP §2.1 的 L1 复选框保持未勾选，在作者确认 L1 通过后勾选。
 
 ## 4. 对 L2（ROADMAP §2.2）的现状说明（不属于 L1 评审，供后续决定）
 
