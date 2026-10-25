@@ -1,0 +1,914 @@
+desc: --massif-out-file=/root/l2m/massif200k_mixed_opt.out --threshold=0.5 --peak-inaccuracy=0.0
+cmd: build/l2-optimized/apps/lob_replay run --commands /root/l2m/mixed.200k.cmd --journal /root/l2m/j
+time_unit: i
+#-----------
+snapshot=0
+#-----------
+time=0
+mem_heap_B=0
+mem_heap_extra_B=0
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=1
+#-----------
+time=24793127
+mem_heap_B=5906631
+mem_heap_extra_B=89
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=2
+#-----------
+time=47075635
+mem_heap_B=6693047
+mem_heap_extra_B=65
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=3
+#-----------
+time=73360181
+mem_heap_B=8265911
+mem_heap_extra_B=65
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=4
+#-----------
+time=94876420
+mem_heap_B=8265975
+mem_heap_extra_B=73
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=5
+#-----------
+time=129109497
+mem_heap_B=11411639
+mem_heap_extra_B=4097
+mem_stacks_B=0
+heap_tree=detailed
+n4: 11411639 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 6291456 0x12754B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 6291456 0x1164A9: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 6291456 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 5046207 0x146B9C: lob::io::read_file_if_exists(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 5046207 0x1161D4: (anonymous namespace)::read_required(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 5046207 0x116485: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n0: 5046207 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 73728 0x490F38E: ??? (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33)
+  n1: 73728 0x400571E: call_init.part.0 (dl-init.c:74)
+   n1: 73728 0x4005823: call_init (dl-init.c:120)
+    n1: 73728 0x4005823: _dl_init (dl-init.c:121)
+     n1: 73728 0x401F59F: ??? (in /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2)
+      n1: 73728 0x5: ???
+       n1: 73728 0x1FFF0002F2: ???
+        n1: 73728 0x1FFF000315: ???
+         n1: 73728 0x1FFF000319: ???
+          n1: 73728 0x1FFF000324: ???
+           n1: 73728 0x1FFF00033D: ???
+            n0: 73728 0x1FFF000347: ???
+ n0: 248 in 7 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=6
+#-----------
+time=150144599
+mem_heap_B=11411767
+mem_heap_extra_B=4105
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=7
+#-----------
+time=176477286
+mem_heap_B=11411639
+mem_heap_extra_B=4097
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=8
+#-----------
+time=211039338
+mem_heap_B=11411639
+mem_heap_extra_B=4097
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=9
+#-----------
+time=232499810
+mem_heap_B=23994551
+mem_heap_extra_B=8137
+mem_stacks_B=0
+heap_tree=detailed
+n3: 23994551 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 18874368 0x12754B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 18874368 0x1164A9: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 18874368 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 5046207 0x146B9C: lob::io::read_file_if_exists(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 5046207 0x1161D4: (anonymous namespace)::read_required(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 5046207 0x116485: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n0: 5046207 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n0: 73976 in 8 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=10
+#-----------
+time=252466477
+mem_heap_B=17703111
+mem_heap_extra_B=4121
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=11
+#-----------
+time=276870252
+mem_heap_B=17703223
+mem_heap_extra_B=4105
+mem_stacks_B=0
+heap_tree=detailed
+n3: 17703223 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12582912 0x12754B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 12582912 0x1164A9: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 12582912 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 5046207 0x146B9C: lob::io::read_file_if_exists(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 5046207 0x1161D4: (anonymous namespace)::read_required(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 5046207 0x116485: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n0: 5046207 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n0: 74104 in 8 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=12
+#-----------
+time=314584543
+mem_heap_B=17703111
+mem_heap_extra_B=4121
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=13
+#-----------
+time=341207592
+mem_heap_B=17703095
+mem_heap_extra_B=4097
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=14
+#-----------
+time=363393152
+mem_heap_B=12728982
+mem_heap_extra_B=5386
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=15
+#-----------
+time=394453522
+mem_heap_B=12923979
+mem_heap_extra_B=5005
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=16
+#-----------
+time=425514428
+mem_heap_B=12924814
+mem_heap_extra_B=5226
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=17
+#-----------
+time=461012584
+mem_heap_B=13183457
+mem_heap_extra_B=4223
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=18
+#-----------
+time=487636166
+mem_heap_B=13184014
+mem_heap_extra_B=4450
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=19
+#-----------
+time=505385640
+mem_heap_B=13709809
+mem_heap_extra_B=4791
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=20
+#-----------
+time=536446689
+mem_heap_B=13711565
+mem_heap_extra_B=5291
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=21
+#-----------
+time=554195569
+mem_heap_B=13711318
+mem_heap_extra_B=5258
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=22
+#-----------
+time=583020070
+mem_heap_B=13712316
+mem_heap_extra_B=5492
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=23
+#-----------
+time=609618084
+mem_heap_B=13711750
+mem_heap_extra_B=5386
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=24
+#-----------
+time=649516854
+mem_heap_B=13711662
+mem_heap_extra_B=5330
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=25
+#-----------
+time=689413215
+mem_heap_B=14756549
+mem_heap_extra_B=4323
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=26
+#-----------
+time=716010606
+mem_heap_B=14756453
+mem_heap_extra_B=4299
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=27
+#-----------
+time=749257197
+mem_heap_B=14760309
+mem_heap_extra_B=5363
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=28
+#-----------
+time=789153156
+mem_heap_B=14757311
+mem_heap_extra_B=4529
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=29
+#-----------
+time=822400428
+mem_heap_B=14760295
+mem_heap_extra_B=5353
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=30
+#-----------
+time=848998307
+mem_heap_B=14760117
+mem_heap_extra_B=5283
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=31
+#-----------
+time=882245440
+mem_heap_B=14756585
+mem_heap_extra_B=4415
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=32
+#-----------
+time=904419640
+mem_heap_B=14759231
+mem_heap_extra_B=5089
+mem_stacks_B=0
+heap_tree=detailed
+n3: 14759231 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12582912 0x12754B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 12582912 0x1164A9: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 12582912 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 2097152 0x13E03F: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 2097152 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 2097152 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n0: 79167 in 46 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=33
+#-----------
+time=922169730
+mem_heap_B=14758144
+mem_heap_extra_B=4736
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=34
+#-----------
+time=948795628
+mem_heap_B=14756229
+mem_heap_extra_B=4243
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=35
+#-----------
+time=966546775
+mem_heap_B=16854278
+mem_heap_extra_B=8514
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=36
+#-----------
+time=993172895
+mem_heap_B=16853701
+mem_heap_extra_B=8387
+mem_stacks_B=0
+heap_tree=detailed
+n3: 16853701 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12582912 0x12754B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 12582912 0x1164A9: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 12582912 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 4194304 0x13E03F: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 4194304 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 4194304 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n0: 76485 in 46 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=37
+#-----------
+time=1019799494
+mem_heap_B=16857613
+mem_heap_extra_B=9419
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=38
+#-----------
+time=1046424910
+mem_heap_B=16858285
+mem_heap_extra_B=9579
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=39
+#-----------
+time=1081925476
+mem_heap_B=16857599
+mem_heap_extra_B=9425
+mem_stacks_B=0
+heap_tree=detailed
+n3: 16857599 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12582912 0x12754B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 12582912 0x1164A9: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 12582912 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 4194304 0x13E03F: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 4194304 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 4194304 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n0: 80383 in 46 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=40
+#-----------
+time=1108551553
+mem_heap_B=16857315
+mem_heap_extra_B=9301
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=41
+#-----------
+time=1144053286
+mem_heap_B=16853951
+mem_heap_extra_B=8449
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=42
+#-----------
+time=1161804146
+mem_heap_B=16852855
+mem_heap_extra_B=8169
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=43
+#-----------
+time=1188429848
+mem_heap_B=16854262
+mem_heap_extra_B=8538
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=44
+#-----------
+time=1206180432
+mem_heap_B=16854797
+mem_heap_extra_B=8643
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=45
+#-----------
+time=1232806208
+mem_heap_B=16858323
+mem_heap_extra_B=9597
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=46
+#-----------
+time=1259431742
+mem_heap_B=16858075
+mem_heap_extra_B=9501
+mem_stacks_B=0
+heap_tree=detailed
+n3: 16858075 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12582912 0x12754B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 12582912 0x1164A9: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 12582912 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 4194304 0x13E03F: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 4194304 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 4194304 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n0: 80859 in 46 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=47
+#-----------
+time=1294932763
+mem_heap_B=16857030
+mem_heap_extra_B=9266
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=48
+#-----------
+time=1312683773
+mem_heap_B=16857566
+mem_heap_extra_B=9394
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=49
+#-----------
+time=1339309656
+mem_heap_B=16853951
+mem_heap_extra_B=8401
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=50
+#-----------
+time=1357059187
+mem_heap_B=16854639
+mem_heap_extra_B=8609
+mem_stacks_B=0
+heap_tree=detailed
+n3: 16854639 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12582912 0x12754B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 12582912 0x1164A9: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 12582912 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 4194304 0x13E03F: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 4194304 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 4194304 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n0: 77423 in 47 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=51
+#-----------
+time=1374809050
+mem_heap_B=16854249
+mem_heap_extra_B=8535
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=52
+#-----------
+time=1392558809
+mem_heap_B=16853462
+mem_heap_extra_B=8306
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=53
+#-----------
+time=1410307844
+mem_heap_B=16854981
+mem_heap_extra_B=8755
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=54
+#-----------
+time=1428056770
+mem_heap_B=16856986
+mem_heap_extra_B=9198
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=55
+#-----------
+time=1445805782
+mem_heap_B=16857463
+mem_heap_extra_B=9417
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=56
+#-----------
+time=1463555264
+mem_heap_B=16856670
+mem_heap_extra_B=9186
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=57
+#-----------
+time=1481304540
+mem_heap_B=16857359
+mem_heap_extra_B=9337
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=58
+#-----------
+time=1499053844
+mem_heap_B=16857723
+mem_heap_extra_B=9445
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=59
+#-----------
+time=1516802729
+mem_heap_B=16857359
+mem_heap_extra_B=9337
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=60
+#-----------
+time=1534551634
+mem_heap_B=16855256
+mem_heap_extra_B=8704
+mem_stacks_B=0
+heap_tree=detailed
+n3: 16855256 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12582912 0x12754B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 12582912 0x1164A9: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 12582912 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 4194304 0x13E03F: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 4194304 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 4194304 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n0: 78040 in 47 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=61
+#-----------
+time=1552300673
+mem_heap_B=16853958
+mem_heap_extra_B=8426
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=62
+#-----------
+time=1564071422
+mem_heap_B=25245719
+mem_heap_extra_B=13313
+mem_stacks_B=0
+heap_tree=peak
+n3: 25245719 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12582912 0x12754B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 12582912 0x1164A9: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 12582912 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 12582912 0x13E03F: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 12582912 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 12582912 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n0: 79895 in 47 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=63
+#-----------
+time=1581820635
+mem_heap_B=21048167
+mem_heap_extra_B=8425
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=64
+#-----------
+time=1599569671
+mem_heap_B=21048711
+mem_heap_extra_B=8577
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=65
+#-----------
+time=1617319029
+mem_heap_B=21047962
+mem_heap_extra_B=8366
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=66
+#-----------
+time=1635068009
+mem_heap_B=21050811
+mem_heap_extra_B=9117
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=67
+#-----------
+time=1652817050
+mem_heap_B=21050357
+mem_heap_extra_B=9035
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=68
+#-----------
+time=1670565934
+mem_heap_B=21052212
+mem_heap_extra_B=9532
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=69
+#-----------
+time=1688315488
+mem_heap_B=21051335
+mem_heap_extra_B=9273
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=70
+#-----------
+time=1706064430
+mem_heap_B=21052294
+mem_heap_extra_B=9474
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=71
+#-----------
+time=1723813375
+mem_heap_B=21051706
+mem_heap_extra_B=9334
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=72
+#-----------
+time=1741562726
+mem_heap_B=21052070
+mem_heap_extra_B=9434
+mem_stacks_B=0
+heap_tree=detailed
+n3: 21052070 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12582912 0x12754B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 12582912 0x1164A9: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 12582912 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 8388608 0x13E03F: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 8388608 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 8388608 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n0: 80550 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=73
+#-----------
+time=1759312450
+mem_heap_B=21048102
+mem_heap_extra_B=8394
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=74
+#-----------
+time=1777061479
+mem_heap_B=21050312
+mem_heap_extra_B=9008
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=75
+#-----------
+time=1794810622
+mem_heap_B=21048257
+mem_heap_extra_B=8375
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=76
+#-----------
+time=1812560638
+mem_heap_B=21050417
+mem_heap_extra_B=9039
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=77
+#-----------
+time=1830309663
+mem_heap_B=21050507
+mem_heap_extra_B=9029
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=78
+#-----------
+time=1848058588
+mem_heap_B=21051438
+mem_heap_extra_B=9330
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=79
+#-----------
+time=1865808101
+mem_heap_B=21051995
+mem_heap_extra_B=9445
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=80
+#-----------
+time=1883557211
+mem_heap_B=21052138
+mem_heap_extra_B=9406
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=81
+#-----------
+time=1901306100
+mem_heap_B=21051191
+mem_heap_extra_B=9225
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=82
+#-----------
+time=1919054992
+mem_heap_B=21048014
+mem_heap_extra_B=8386
+mem_stacks_B=0
+heap_tree=detailed
+n3: 21048014 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12582912 0x12754B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 12582912 0x1164A9: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 12582912 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 8388608 0x13E03F: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 8388608 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 8388608 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n0: 76494 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=83
+#-----------
+time=1936804035
+mem_heap_B=21048173
+mem_heap_extra_B=8419
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=84
+#-----------
+time=1954553516
+mem_heap_B=21047809
+mem_heap_extra_B=8319
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=85
+#-----------
+time=1972302789
+mem_heap_B=21051171
+mem_heap_extra_B=9197
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=86
+#-----------
+time=1990051755
+mem_heap_B=21049624
+mem_heap_extra_B=8752
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=87
+#-----------
+time=2007800833
+mem_heap_B=21051786
+mem_heap_extra_B=9366
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=88
+#-----------
+time=2025549924
+mem_heap_B=21051535
+mem_heap_extra_B=9329
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=89
+#-----------
+time=2043298830
+mem_heap_B=21051709
+mem_heap_extra_B=9363
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=90
+#-----------
+time=2061048002
+mem_heap_B=21051914
+mem_heap_extra_B=9398
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=91
+#-----------
+time=2078797083
+mem_heap_B=21049031
+mem_heap_extra_B=8633
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=92
+#-----------
+time=2096546501
+mem_heap_B=21049179
+mem_heap_extra_B=8701
+mem_stacks_B=0
+heap_tree=detailed
+n3: 21049179 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12582912 0x12754B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 12582912 0x1164A9: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 12582912 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 8388608 0x13E03F: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 8388608 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 8388608 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n0: 77659 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=93
+#-----------
+time=2114295542
+mem_heap_B=21047978
+mem_heap_extra_B=8374
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=94
+#-----------
+time=2132044461
+mem_heap_B=21048607
+mem_heap_extra_B=8545
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=95
+#-----------
+time=2149794055
+mem_heap_B=21051315
+mem_heap_extra_B=9221
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=96
+#-----------
+time=2167543821
+mem_heap_B=21052158
+mem_heap_extra_B=9474
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=97
+#-----------
+time=2185292757
+mem_heap_B=21051384
+mem_heap_extra_B=9232
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=98
+#-----------
+time=2203041682
+mem_heap_B=21051791
+mem_heap_extra_B=9345
+mem_stacks_B=0
+heap_tree=empty

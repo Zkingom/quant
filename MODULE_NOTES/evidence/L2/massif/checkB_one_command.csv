@@ -1,0 +1,13 @@
+# check B: n=262144 vs 262145 deep_book seed 1, GNU time %M (KiB), interleaved
+build,n,run,max_rss_kib
+opt,262144,1,35120
+base,262144,1,41140
+opt,262145,1,47440
+base,262145,1,47436
+opt,262144,2,35116
+base,262144,2,41468
+opt,262145,2,47440
+base,262145,2,47436
+opt,262144,3,35116
+base,262144,3,41156
+opt,262145,3,47436

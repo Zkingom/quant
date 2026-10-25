@@ -1,0 +1,1052 @@
+desc: --massif-out-file=/root/l2m/massif_opt.out --threshold=0.5 --peak-inaccuracy=0.0
+cmd: build/l2-optimized/apps/lob_replay run --commands /root/l2m/d50000.cmd --journal /root/l2m/j
+time_unit: i
+#-----------
+snapshot=0
+#-----------
+time=0
+mem_heap_B=0
+mem_heap_extra_B=0
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=1
+#-----------
+time=9507478
+mem_heap_B=1584690
+mem_heap_extra_B=94
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=2
+#-----------
+time=14352715
+mem_heap_B=1781282
+mem_heap_extra_B=70
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=3
+#-----------
+time=23062365
+mem_heap_B=2174498
+mem_heap_extra_B=70
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=4
+#-----------
+time=30243425
+mem_heap_B=2174498
+mem_heap_extra_B=70
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=5
+#-----------
+time=40136107
+mem_heap_B=2961122
+mem_heap_extra_B=86
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=6
+#-----------
+time=48548792
+mem_heap_B=2960930
+mem_heap_extra_B=70
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=7
+#-----------
+time=58233440
+mem_heap_B=2960946
+mem_heap_extra_B=94
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=8
+#-----------
+time=62793193
+mem_heap_B=6106658
+mem_heap_extra_B=78
+mem_stacks_B=0
+heap_tree=detailed
+n4: 6106658 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 4718592 0x12754B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 4718592 0x1164A9: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 4718592 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 1314094 0x146B9C: lob::io::read_file_if_exists(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 1314094 0x1161D4: (anonymous namespace)::read_required(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 1314094 0x116485: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n0: 1314094 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 73728 0x490F38E: ??? (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33)
+  n1: 73728 0x400571E: call_init.part.0 (dl-init.c:74)
+   n1: 73728 0x4005823: call_init (dl-init.c:120)
+    n1: 73728 0x4005823: _dl_init (dl-init.c:121)
+     n1: 73728 0x401F59F: ??? (in /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2)
+      n1: 73728 0x5: ???
+       n1: 73728 0x1FFF0002F6: ???
+        n1: 73728 0x1FFF000319: ???
+         n1: 73728 0x1FFF00031D: ???
+          n1: 73728 0x1FFF000328: ???
+           n1: 73728 0x1FFF00033D: ???
+            n0: 73728 0x1FFF000347: ???
+ n0: 244 in 7 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=9
+#-----------
+time=70195817
+mem_heap_B=4533810
+mem_heap_extra_B=94
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=10
+#-----------
+time=77099355
+mem_heap_B=4533794
+mem_heap_extra_B=70
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=11
+#-----------
+time=86302145
+mem_heap_B=4533810
+mem_heap_extra_B=94
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=12
+#-----------
+time=92438575
+mem_heap_B=4533794
+mem_heap_extra_B=70
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=13
+#-----------
+time=102411223
+mem_heap_B=3423866
+mem_heap_extra_B=32662
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=14
+#-----------
+time=113390114
+mem_heap_B=3639306
+mem_heap_extra_B=68374
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=15
+#-----------
+time=120827711
+mem_heap_B=3751294
+mem_heap_extra_B=91546
+mem_stacks_B=0
+heap_tree=detailed
+n10: 3751294 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 3145728 0x12754B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 3145728 0x1164A9: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 3145728 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 131072 0x13E03F: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 131072 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 131072 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n2: 124944 0x15F8CC: std::pair<std::__detail::_Node_iterator<std::pair<unsigned long const, lob::OrderBook::Locator>, false, false>, bool> std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lob::OrderBook::Locator> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_emplace<unsigned long const&, lob::OrderBook::Locator>(std::integral_constant<bool, true>, unsigned long const&, lob::OrderBook::Locator&&) [clone .isra.0] (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 63072 0x16232E: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 63072 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 63072 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n1: 63072 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+      n0: 63072 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 61872 0x16258E: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 61872 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 61872 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n1: 61872 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+      n0: 61872 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 73728 0x490F38E: ??? (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33)
+  n1: 73728 0x400571E: call_init.part.0 (dl-init.c:74)
+   n1: 73728 0x4005823: call_init (dl-init.c:120)
+    n1: 73728 0x4005823: _dl_init (dl-init.c:121)
+     n1: 73728 0x401F59F: ??? (in /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2)
+      n1: 73728 0x5: ???
+       n1: 73728 0x1FFF0002F6: ???
+        n1: 73728 0x1FFF000319: ???
+         n1: 73728 0x1FFF00031D: ???
+          n1: 73728 0x1FFF000328: ???
+           n1: 73728 0x1FFF00033D: ???
+            n0: 73728 0x1FFF000347: ???
+ n1: 67464 0x161D34: std::_Rb_tree_iterator<std::pair<long const, lob::OrderBook::PriceLevel> > std::_Rb_tree<long, std::pair<long const, lob::OrderBook::PriceLevel>, std::_Select1st<std::pair<long const, lob::OrderBook::PriceLevel> >, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<long const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<long const, lob::OrderBook::PriceLevel> >, std::piecewise_construct_t const&, std::tuple<long const&>&&, std::tuple<>&&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 67464 0x16238C: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 67464 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 67464 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n1: 67464 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+      n0: 67464 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 62712 0x161A14: std::_Rb_tree_iterator<std::pair<long const, lob::OrderBook::PriceLevel> > std::_Rb_tree<long, std::pair<long const, lob::OrderBook::PriceLevel>, std::_Select1st<std::pair<long const, lob::OrderBook::PriceLevel> >, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<long const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<long const, lob::OrderBook::PriceLevel> >, std::piecewise_construct_t const&, std::tuple<long const&>&&, std::tuple<>&&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 62712 0x1625EC: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 62712 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 62712 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n1: 62712 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+      n0: 62712 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 52560 0x1622D4: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 52560 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 52560 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 52560 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n0: 52560 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 51560 0x162534: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 51560 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 51560 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 51560 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n0: 51560 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 40696 0x16211D: std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lob::OrderBook::Locator> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_rehash(unsigned long, unsigned long const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n2: 40696 0x15FA4A: std::pair<std::__detail::_Node_iterator<std::pair<unsigned long const, lob::OrderBook::Locator>, false, false>, bool> std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lob::OrderBook::Locator> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_emplace<unsigned long const&, lob::OrderBook::Locator>(std::integral_constant<bool, true>, unsigned long const&, lob::OrderBook::Locator&&) [clone .isra.0] (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 40696 0x16258E: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 40696 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n1: 40696 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+      n1: 40696 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+       n0: 40696 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 0 in 1 place, below massif's threshold (0.50%)
+ n0: 830 in 32 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=16
+#-----------
+time=127025065
+mem_heap_B=3822431
+mem_heap_extra_B=109969
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=17
+#-----------
+time=135702087
+mem_heap_B=4042879
+mem_heap_extra_B=133345
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=18
+#-----------
+time=145618325
+mem_heap_B=4142953
+mem_heap_extra_B=159679
+mem_stacks_B=0
+heap_tree=detailed
+n10: 4142953 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 3145728 0x12754B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 3145728 0x1164A9: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 3145728 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 262144 0x13E03F: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 262144 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 262144 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n2: 235632 0x15F8CC: std::pair<std::__detail::_Node_iterator<std::pair<unsigned long const, lob::OrderBook::Locator>, false, false>, bool> std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lob::OrderBook::Locator> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_emplace<unsigned long const&, lob::OrderBook::Locator>(std::integral_constant<bool, true>, unsigned long const&, lob::OrderBook::Locator&&) [clone .isra.0] (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 118464 0x16232E: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 118464 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 118464 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n1: 118464 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+      n0: 118464 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 117168 0x16258E: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 117168 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 117168 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n1: 117168 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+      n0: 117168 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 98720 0x1622D4: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 98720 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 98720 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 98720 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n0: 98720 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 97920 0x161D34: std::_Rb_tree_iterator<std::pair<long const, lob::OrderBook::PriceLevel> > std::_Rb_tree<long, std::pair<long const, lob::OrderBook::PriceLevel>, std::_Select1st<std::pair<long const, lob::OrderBook::PriceLevel> >, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<long const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<long const, lob::OrderBook::PriceLevel> >, std::piecewise_construct_t const&, std::tuple<long const&>&&, std::tuple<>&&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 97920 0x16238C: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 97920 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 97920 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n1: 97920 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+      n0: 97920 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 97640 0x162534: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 97640 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 97640 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 97640 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n0: 97640 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 89640 0x161A14: std::_Rb_tree_iterator<std::pair<long const, lob::OrderBook::PriceLevel> > std::_Rb_tree<long, std::pair<long const, lob::OrderBook::PriceLevel>, std::_Select1st<std::pair<long const, lob::OrderBook::PriceLevel> >, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<long const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<long const, lob::OrderBook::PriceLevel> >, std::piecewise_construct_t const&, std::tuple<long const&>&&, std::tuple<>&&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 89640 0x1625EC: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 89640 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 89640 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n1: 89640 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+      n0: 89640 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 73728 0x490F38E: ??? (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33)
+  n1: 73728 0x400571E: call_init.part.0 (dl-init.c:74)
+   n1: 73728 0x4005823: call_init (dl-init.c:120)
+    n1: 73728 0x4005823: _dl_init (dl-init.c:121)
+     n1: 73728 0x401F59F: ??? (in /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2)
+      n1: 73728 0x5: ???
+       n1: 73728 0x1FFF0002F6: ???
+        n1: 73728 0x1FFF000319: ???
+         n1: 73728 0x1FFF00031D: ???
+          n1: 73728 0x1FFF000328: ???
+           n1: 73728 0x1FFF00033D: ???
+            n0: 73728 0x1FFF000347: ???
+ n1: 40696 0x16211D: std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lob::OrderBook::Locator> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_rehash(unsigned long, unsigned long const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n2: 40696 0x15FA4A: std::pair<std::__detail::_Node_iterator<std::pair<unsigned long const, lob::OrderBook::Locator>, false, false>, bool> std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lob::OrderBook::Locator> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_emplace<unsigned long const&, lob::OrderBook::Locator>(std::integral_constant<bool, true>, unsigned long const&, lob::OrderBook::Locator&&) [clone .isra.0] (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 40696 0x16258E: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 40696 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n1: 40696 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+      n1: 40696 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+       n0: 40696 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 0 in 1 place, below massif's threshold (0.50%)
+ n0: 1105 in 34 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=19
+#-----------
+time=154295674
+mem_heap_B=3982095
+mem_heap_extra_B=116697
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=20
+#-----------
+time=166694157
+mem_heap_B=3789308
+mem_heap_extra_B=67164
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=21
+#-----------
+time=178931346
+mem_heap_B=3888439
+mem_heap_extra_B=25257
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=22
+#-----------
+time=189128465
+mem_heap_B=3808047
+mem_heap_extra_B=4705
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=23
+#-----------
+time=199326529
+mem_heap_B=3791527
+mem_heap_extra_B=425
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=24
+#-----------
+time=205445630
+mem_heap_B=3791895
+mem_heap_extra_B=513
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=25
+#-----------
+time=213602180
+mem_heap_B=3792118
+mem_heap_extra_B=578
+mem_stacks_B=0
+heap_tree=detailed
+n5: 3792118 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 3145728 0x12754B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 3145728 0x1164A9: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 3145728 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 524288 0x13E03F: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 524288 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 524288 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 73728 0x490F38E: ??? (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33)
+  n1: 73728 0x400571E: call_init.part.0 (dl-init.c:74)
+   n1: 73728 0x4005823: call_init (dl-init.c:120)
+    n1: 73728 0x4005823: _dl_init (dl-init.c:121)
+     n1: 73728 0x401F59F: ??? (in /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2)
+      n1: 73728 0x5: ???
+       n1: 73728 0x1FFF0002F6: ???
+        n1: 73728 0x1FFF000319: ???
+         n1: 73728 0x1FFF00031D: ???
+          n1: 73728 0x1FFF000328: ???
+           n1: 73728 0x1FFF00033D: ???
+            n0: 73728 0x1FFF000347: ???
+ n1: 40696 0x16211D: std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lob::OrderBook::Locator> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_rehash(unsigned long, unsigned long const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n2: 40696 0x15FA4A: std::pair<std::__detail::_Node_iterator<std::pair<unsigned long const, lob::OrderBook::Locator>, false, false>, bool> std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lob::OrderBook::Locator> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_emplace<unsigned long const&, lob::OrderBook::Locator>(std::integral_constant<bool, true>, unsigned long const&, lob::OrderBook::Locator&&) [clone .isra.0] (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 40696 0x16258E: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 40696 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n1: 40696 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+      n1: 40696 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+       n0: 40696 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 0 in 1 place, below massif's threshold (0.50%)
+ n0: 7678 in 39 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=26
+#-----------
+time=221759306
+mem_heap_B=3879332
+mem_heap_extra_B=22948
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=27
+#-----------
+time=231957457
+mem_heap_B=3989957
+mem_heap_extra_B=51531
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=28
+#-----------
+time=242153757
+mem_heap_B=4091822
+mem_heap_extra_B=78090
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=29
+#-----------
+time=250310414
+mem_heap_B=4173333
+mem_heap_extra_B=99499
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=30
+#-----------
+time=256428583
+mem_heap_B=4753313
+mem_heap_extra_B=114303
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=31
+#-----------
+time=264585608
+mem_heap_B=4827742
+mem_heap_extra_B=134082
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=32
+#-----------
+time=275296465
+mem_heap_B=4762686
+mem_heap_extra_B=117698
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=33
+#-----------
+time=281928195
+mem_heap_B=4649023
+mem_heap_extra_B=87329
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=34
+#-----------
+time=291876273
+mem_heap_B=4519501
+mem_heap_extra_B=53939
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=35
+#-----------
+time=298508240
+mem_heap_B=4442126
+mem_heap_extra_B=33554
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=36
+#-----------
+time=305140445
+mem_heap_B=4361071
+mem_heap_extra_B=12193
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=37
+#-----------
+time=318403922
+mem_heap_B=4318050
+mem_heap_extra_B=958
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=38
+#-----------
+time=328351791
+mem_heap_B=4318619
+mem_heap_extra_B=1173
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=39
+#-----------
+time=341615826
+mem_heap_B=4330865
+mem_heap_extra_B=4327
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=40
+#-----------
+time=351565216
+mem_heap_B=4436918
+mem_heap_extra_B=31922
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=41
+#-----------
+time=361513976
+mem_heap_B=4538054
+mem_heap_extra_B=58354
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=42
+#-----------
+time=371460986
+mem_heap_B=4635365
+mem_heap_extra_B=84051
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=43
+#-----------
+time=384723735
+mem_heap_B=4756847
+mem_heap_extra_B=116417
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=44
+#-----------
+time=391355629
+mem_heap_B=4818233
+mem_heap_extra_B=132823
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=45
+#-----------
+time=401303903
+mem_heap_B=4724382
+mem_heap_extra_B=108042
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=46
+#-----------
+time=407935771
+mem_heap_B=4601766
+mem_heap_extra_B=75730
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=47
+#-----------
+time=421198925
+mem_heap_B=4382496
+mem_heap_extra_B=18120
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=48
+#-----------
+time=427831890
+mem_heap_B=4316318
+mem_heap_extra_B=554
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=49
+#-----------
+time=434464240
+mem_heap_B=4316225
+mem_heap_extra_B=559
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=50
+#-----------
+time=435173796
+mem_heap_B=6414055
+mem_heap_extra_B=737
+mem_stacks_B=0
+heap_tree=peak
+n5: 6414055 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 3145728 0x12754B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 3145728 0x1164A9: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 3145728 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 3145728 0x13E03F: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 3145728 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 3145728 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 73728 0x490F38E: ??? (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33)
+  n1: 73728 0x400571E: call_init.part.0 (dl-init.c:74)
+   n1: 73728 0x4005823: call_init (dl-init.c:120)
+    n1: 73728 0x4005823: _dl_init (dl-init.c:121)
+     n1: 73728 0x401F59F: ??? (in /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2)
+      n1: 73728 0x5: ???
+       n1: 73728 0x1FFF0002F6: ???
+        n1: 73728 0x1FFF000319: ???
+         n1: 73728 0x1FFF00031D: ???
+          n1: 73728 0x1FFF000328: ???
+           n1: 73728 0x1FFF00033D: ???
+            n0: 73728 0x1FFF000347: ???
+ n1: 40696 0x16211D: std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lob::OrderBook::Locator> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_rehash(unsigned long, unsigned long const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n2: 40696 0x15FA4A: std::pair<std::__detail::_Node_iterator<std::pair<unsigned long const, lob::OrderBook::Locator>, false, false>, bool> std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lob::OrderBook::Locator> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_emplace<unsigned long const&, lob::OrderBook::Locator>(std::integral_constant<bool, true>, unsigned long const&, lob::OrderBook::Locator&&) [clone .isra.0] (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 40696 0x16258E: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 40696 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n1: 40696 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+      n1: 40696 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+       n0: 40696 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 0 in 1 place, below massif's threshold (0.50%)
+ n0: 8175 in 41 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=51
+#-----------
+time=439733645
+mem_heap_B=5364790
+mem_heap_extra_B=522
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=52
+#-----------
+time=444293747
+mem_heap_B=5365033
+mem_heap_extra_B=583
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=53
+#-----------
+time=448853807
+mem_heap_B=5364556
+mem_heap_extra_B=468
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=54
+#-----------
+time=453413989
+mem_heap_B=5364183
+mem_heap_extra_B=305
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=55
+#-----------
+time=457973822
+mem_heap_B=5365316
+mem_heap_extra_B=620
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=56
+#-----------
+time=462533615
+mem_heap_B=5364537
+mem_heap_extra_B=471
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=57
+#-----------
+time=467093556
+mem_heap_B=5381530
+mem_heap_extra_B=4838
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=58
+#-----------
+time=471653454
+mem_heap_B=5435255
+mem_heap_extra_B=18761
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=59
+#-----------
+time=476213714
+mem_heap_B=5487555
+mem_heap_extra_B=32317
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=60
+#-----------
+time=480774129
+mem_heap_B=5536454
+mem_heap_extra_B=45114
+mem_stacks_B=0
+heap_tree=detailed
+n9: 5536454 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 3145728 0x12754B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 3145728 0x1164A9: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 3145728 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 2097152 0x13E03F: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 2097152 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 2097152 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 73728 0x490F38E: ??? (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33)
+  n1: 73728 0x400571E: call_init.part.0 (dl-init.c:74)
+   n1: 73728 0x4005823: call_init (dl-init.c:120)
+    n1: 73728 0x4005823: _dl_init (dl-init.c:121)
+     n1: 73728 0x401F59F: ??? (in /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2)
+      n1: 73728 0x5: ???
+       n1: 73728 0x1FFF0002F6: ???
+        n1: 73728 0x1FFF000319: ???
+         n1: 73728 0x1FFF00031D: ???
+          n1: 73728 0x1FFF000328: ???
+           n1: 73728 0x1FFF00033D: ???
+            n0: 73728 0x1FFF000347: ???
+ n2: 70128 0x15F8CC: std::pair<std::__detail::_Node_iterator<std::pair<unsigned long const, lob::OrderBook::Locator>, false, false>, bool> std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lob::OrderBook::Locator> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_emplace<unsigned long const&, lob::OrderBook::Locator>(std::integral_constant<bool, true>, unsigned long const&, lob::OrderBook::Locator&&) [clone .isra.0] (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 35088 0x16232E: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 35088 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 35088 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n1: 35088 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+      n0: 35088 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 35040 0x16258E: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 35040 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 35040 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n1: 35040 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+      n0: 35040 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 42768 0x161D34: std::_Rb_tree_iterator<std::pair<long const, lob::OrderBook::PriceLevel> > std::_Rb_tree<long, std::pair<long const, lob::OrderBook::PriceLevel>, std::_Select1st<std::pair<long const, lob::OrderBook::PriceLevel> >, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<long const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<long const, lob::OrderBook::PriceLevel> >, std::piecewise_construct_t const&, std::tuple<long const&>&&, std::tuple<>&&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 42768 0x16238C: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 42768 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 42768 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n1: 42768 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+      n0: 42768 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 40696 0x16211D: std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lob::OrderBook::Locator> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_rehash(unsigned long, unsigned long const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n2: 40696 0x15FA4A: std::pair<std::__detail::_Node_iterator<std::pair<unsigned long const, lob::OrderBook::Locator>, false, false>, bool> std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lob::OrderBook::Locator> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_emplace<unsigned long const&, lob::OrderBook::Locator>(std::integral_constant<bool, true>, unsigned long const&, lob::OrderBook::Locator&&) [clone .isra.0] (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 40696 0x16258E: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 40696 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n1: 40696 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+      n1: 40696 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+       n0: 40696 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 0 in 1 place, below massif's threshold (0.50%)
+ n1: 29240 0x1622D4: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 29240 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 29240 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 29240 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n0: 29240 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 29200 0x162534: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 29200 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 29200 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 29200 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n0: 29200 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n0: 7814 in 37 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=61
+#-----------
+time=485334686
+mem_heap_B=5585470
+mem_heap_extra_B=57962
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=62
+#-----------
+time=489894646
+mem_heap_B=5631049
+mem_heap_extra_B=69887
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=63
+#-----------
+time=494455013
+mem_heap_B=5675635
+mem_heap_extra_B=81717
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=64
+#-----------
+time=499015151
+mem_heap_B=5721384
+mem_heap_extra_B=93816
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=65
+#-----------
+time=503575480
+mem_heap_B=5765030
+mem_heap_extra_B=105402
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=66
+#-----------
+time=508135233
+mem_heap_B=5809428
+mem_heap_extra_B=117172
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=67
+#-----------
+time=512695151
+mem_heap_B=5850606
+mem_heap_extra_B=128210
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=68
+#-----------
+time=517255438
+mem_heap_B=5891238
+mem_heap_extra_B=139106
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=69
+#-----------
+time=521815434
+mem_heap_B=5831210
+mem_heap_extra_B=123558
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=70
+#-----------
+time=526375383
+mem_heap_B=5759118
+mem_heap_extra_B=104522
+mem_stacks_B=0
+heap_tree=detailed
+n9: 5759118 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 3145728 0x12754B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 3145728 0x1164A9: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 3145728 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 2097152 0x13E03F: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 2097152 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 2097152 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n2: 177168 0x15F8CC: std::pair<std::__detail::_Node_iterator<std::pair<unsigned long const, lob::OrderBook::Locator>, false, false>, bool> std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lob::OrderBook::Locator> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_emplace<unsigned long const&, lob::OrderBook::Locator>(std::integral_constant<bool, true>, unsigned long const&, lob::OrderBook::Locator&&) [clone .isra.0] (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 90528 0x16258E: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 90528 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 90528 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n1: 90528 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+      n0: 90528 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 86640 0x16232E: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 86640 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 86640 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n1: 86640 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+      n0: 86640 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 75440 0x162534: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 75440 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 75440 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 75440 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n0: 75440 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 73728 0x490F38E: ??? (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33)
+  n1: 73728 0x400571E: call_init.part.0 (dl-init.c:74)
+   n1: 73728 0x4005823: call_init (dl-init.c:120)
+    n1: 73728 0x4005823: _dl_init (dl-init.c:121)
+     n1: 73728 0x401F59F: ??? (in /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2)
+      n1: 73728 0x5: ???
+       n1: 73728 0x1FFF0002F6: ???
+        n1: 73728 0x1FFF000319: ???
+         n1: 73728 0x1FFF00031D: ???
+          n1: 73728 0x1FFF000328: ???
+           n1: 73728 0x1FFF00033D: ???
+            n0: 73728 0x1FFF000347: ???
+ n1: 72200 0x1622D4: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 72200 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 72200 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 72200 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n0: 72200 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 71136 0x161D34: std::_Rb_tree_iterator<std::pair<long const, lob::OrderBook::PriceLevel> > std::_Rb_tree<long, std::pair<long const, lob::OrderBook::PriceLevel>, std::_Select1st<std::pair<long const, lob::OrderBook::PriceLevel> >, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<long const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<long const, lob::OrderBook::PriceLevel> >, std::piecewise_construct_t const&, std::tuple<long const&>&&, std::tuple<>&&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 71136 0x16238C: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::less<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 71136 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 71136 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n1: 71136 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+      n0: 71136 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 40696 0x16211D: std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lob::OrderBook::Locator> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_rehash(unsigned long, unsigned long const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n2: 40696 0x15FA4A: std::pair<std::__detail::_Node_iterator<std::pair<unsigned long const, lob::OrderBook::Locator>, false, false>, bool> std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lob::OrderBook::Locator> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_emplace<unsigned long const&, lob::OrderBook::Locator>(std::integral_constant<bool, true>, unsigned long const&, lob::OrderBook::Locator&&) [clone .isra.0] (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 40696 0x16258E: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 40696 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n1: 40696 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+      n1: 40696 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+       n0: 40696 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 0 in 1 place, below massif's threshold (0.50%)
+ n0: 5870 in 37 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=71
+#-----------
+time=530935313
+mem_heap_B=5684255
+mem_heap_extra_B=84657
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=72
+#-----------
+time=535495113
+mem_heap_B=5610364
+mem_heap_extra_B=64620
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=73
+#-----------
+time=540055785
+mem_heap_B=5522126
+mem_heap_extra_B=41506
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=74
+#-----------
+time=544615608
+mem_heap_B=5454783
+mem_heap_extra_B=23625
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=75
+#-----------
+time=549175426
+mem_heap_B=5438128
+mem_heap_extra_B=19272
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=76
+#-----------
+time=553735872
+mem_heap_B=5440193
+mem_heap_extra_B=19839
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=77
+#-----------
+time=558296228
+mem_heap_B=5423038
+mem_heap_extra_B=15450
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=78
+#-----------
+time=562856045
+mem_heap_B=5388630
+mem_heap_extra_B=6594
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=79
+#-----------
+time=567416150
+mem_heap_B=5387238
+mem_heap_extra_B=6282
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=80
+#-----------
+time=571976504
+mem_heap_B=5386773
+mem_heap_extra_B=6139
+mem_stacks_B=0
+heap_tree=detailed
+n5: 5386773 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 3145728 0x12754B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 3145728 0x1164A9: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 3145728 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 2097152 0x13E03F: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n1: 2097152 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 2097152 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+ n1: 73728 0x490F38E: ??? (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33)
+  n1: 73728 0x400571E: call_init.part.0 (dl-init.c:74)
+   n1: 73728 0x4005823: call_init (dl-init.c:120)
+    n1: 73728 0x4005823: _dl_init (dl-init.c:121)
+     n1: 73728 0x401F59F: ??? (in /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2)
+      n1: 73728 0x5: ???
+       n1: 73728 0x1FFF0002F6: ???
+        n1: 73728 0x1FFF000319: ???
+         n1: 73728 0x1FFF00031D: ???
+          n1: 73728 0x1FFF000328: ???
+           n1: 73728 0x1FFF00033D: ???
+            n0: 73728 0x1FFF000347: ???
+ n1: 40696 0x16211D: std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lob::OrderBook::Locator> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_rehash(unsigned long, unsigned long const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+  n2: 40696 0x15FA4A: std::pair<std::__detail::_Node_iterator<std::pair<unsigned long const, lob::OrderBook::Locator>, false, false>, bool> std::_Hashtable<unsigned long, std::pair<unsigned long const, lob::OrderBook::Locator>, std::allocator<std::pair<unsigned long const, lob::OrderBook::Locator> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_emplace<unsigned long const&, lob::OrderBook::Locator>(std::integral_constant<bool, true>, unsigned long const&, lob::OrderBook::Locator&&) [clone .isra.0] (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n1: 40696 0x16258E: void lob::OrderBook::insert<std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > > >(std::map<long, lob::OrderBook::PriceLevel, std::greater<void>, std::allocator<std::pair<long const, lob::OrderBook::PriceLevel> > >&, lob::NewOrder const&, unsigned long) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+    n1: 40696 0x148A9C: lob::MatchingEngine::process(lob::NewOrder const&, std::vector<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled>, std::allocator<std::variant<lob::OrderAccepted, lob::OrderRejected, lob::TradeExecuted, lob::OrderRested, lob::OrderCancelled> > >&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+     n1: 40696 0x13D680: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+      n1: 40696 0x116679: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+       n0: 40696 0x114F12: main (in /mnt/g/学习资料/quant/build/l2-optimized/apps/lob_replay)
+   n0: 0 in 1 place, below massif's threshold (0.50%)
+ n0: 29469 in 44 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=81
+#-----------
+time=576536303
+mem_heap_B=5368908
+mem_heap_extra_B=1588
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=82
+#-----------
+time=581096379
+mem_heap_B=5364395
+mem_heap_extra_B=421
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=83
+#-----------
+time=585656449
+mem_heap_B=5365254
+mem_heap_extra_B=650
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=84
+#-----------
+time=590217016
+mem_heap_B=5385902
+mem_heap_extra_B=5858
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=85
+#-----------
+time=594777345
+mem_heap_B=5437943
+mem_heap_extra_B=19345
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=86
+#-----------
+time=599337270
+mem_heap_B=5489418
+mem_heap_extra_B=32678
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=87
+#-----------
+time=603897059
+mem_heap_B=5536126
+mem_heap_extra_B=44930
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=88
+#-----------
+time=608517671
+mem_heap_B=5618511
+mem_heap_extra_B=49777
+mem_stacks_B=0
+heap_tree=empty
