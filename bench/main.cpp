@@ -53,6 +53,7 @@ int main(int argc, char** argv) {
 #endif
   std::printf("env,compiler,0,\"%s\"\n", __VERSION__);
   std::printf("env,ndebug,0,%s\n", ndebug);
+  std::printf("env,lob_baseline,0,%d\n", LOB_BASELINE);  // 1 = m6-baseline Session (LOB_BASELINE=ON)
   std::printf("env,clock_pair_ns,0,%.0f\n", lob::bench::clock_pair_ns());
   lob::bench::run_book(o);
   lob::bench::run_engine(o);

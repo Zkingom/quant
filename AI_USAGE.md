@@ -167,3 +167,26 @@
 **作者决策**
 - 2026-10-24：G1 以 `soak.sh` / `evidence_m6.sh` 为差分门槛的证据来源；G6 接受 2 000 条；修正 G2–G5，不改代码。
 - 2026-10-24：L1 通过；合并 `l1-review` 到 `main`（暂不推送）。
+
+## L2 performance engineering（2026-10-24 → 2026-10-25）
+
+**AI 贡献**
+- 编译期选项 `LOB_BASELINE`（基线 Session 的逐字节副本，D-045）；`scripts/l2_equivalence.sh`、`l2_rss.sh`、`l2_reproduce.sh`；
+  等价性（16 个输入）、峰值 RSS 实测、一条命令复现（73 分钟）、massif 与机制探针验证；BENCHMARK §12、MODULE_NOTES/L2_EQUIVALENCE.md。
+- AI 自查发现并修复的问题：
+  1. 等价性脚本初版从 stdout 解析 `lob_replay` 的状态行，但它们写在 stderr：所有字段错位，`state_hash` 一列实为快照文件哈希、
+     快照一列为空却仍判"一致"——提交前发现；改为读 stderr、要求每个哈希非空、失败即中止，并用 3 个变异构建做负对照；
+  2. RSS 初版用 Python `getrusage(RUSAGE_CHILDREN)`：`ru_maxrss` 保留 exec 之前的峰值，带进约 10 MB 的 Python 自身占用
+     （`/bin/true` 11.2 MB vs GNU time 1.1 MB）——改用 GNU time；
+  3. 对已有构建目录换编译器重新配置时，CMake 删除缓存并静默丢掉 `-DLOB_BASELINE=ON`，"基线"目录变成优化构建——
+     等价性脚本的构建检查拦下；复现脚本改为从空目录构建并断言缓存值；
+  4. README 中复现耗时先写"约 70 分钟"，中途误改为"1.5–2 小时"，按实测（73 分钟）改回；
+  5. 把 Windows PowerShell 下无法运行的构建命令直接给了作者（工具链只在 WSL 中）——README 补充说明与 `wsl` 包装形式；
+  6. "只差一条命令"的 RSS 实验设计时已预见、结果也证实无法分离（命令向量在同一条命令上翻倍），如实记为未验证；
+     20 万条的 RSS 差值仍未解释。
+- 一次断电中断了 massif 前的测量；已落盘的数据保留并使用，未重复的部分在报告中注明。
+
+**作者决策**
+- 2026-10-24：L2 按步骤推进、逐步审查；选项名用 `LOB_BASELINE`；第 3 步 RSS 细节由 AI 决定。
+- 2026-10-25：massif 验证限时 1 小时，可用内存约 5 GB。
+- 2026-10-25：勾选 ROADMAP §2.2 第 5 条（L2 全部满足），合并 `l2` 到 `main` 并推送（含 tags）。

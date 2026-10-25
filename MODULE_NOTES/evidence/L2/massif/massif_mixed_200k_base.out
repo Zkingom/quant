@@ -1,0 +1,1043 @@
+desc: --massif-out-file=/root/l2m/massif200k_mixed_base.out --threshold=0.5 --peak-inaccuracy=0.0
+cmd: build/l2-baseline/apps/lob_replay run --commands /root/l2m/mixed.200k.cmd --journal /root/l2m/j
+time_unit: i
+#-----------
+snapshot=0
+#-----------
+time=0
+mem_heap_B=0
+mem_heap_extra_B=0
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=1
+#-----------
+time=2781897991
+mem_heap_B=13415095
+mem_heap_extra_B=5145
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=2
+#-----------
+time=6611906538
+mem_heap_B=13892487
+mem_heap_extra_B=5313
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=3
+#-----------
+time=9726181028
+mem_heap_B=14174871
+mem_heap_extra_B=5153
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=4
+#-----------
+time=14371208541
+mem_heap_B=14520791
+mem_heap_extra_B=5321
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=5
+#-----------
+time=17183439099
+mem_heap_B=14699087
+mem_heap_extra_B=4545
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=6
+#-----------
+time=19213634770
+mem_heap_B=14823319
+mem_heap_extra_B=5257
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=7
+#-----------
+time=22029395581
+mem_heap_B=14982447
+mem_heap_extra_B=5465
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=8
+#-----------
+time=24470046852
+mem_heap_B=15110391
+mem_heap_extra_B=5193
+mem_stacks_B=0
+heap_tree=detailed
+n3: 15110391 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 2447840 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 2447840 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 2447840 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 79639 in 46 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=9
+#-----------
+time=27474308511
+mem_heap_B=15260495
+mem_heap_extra_B=5161
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=10
+#-----------
+time=31707469612
+mem_heap_B=15459031
+mem_heap_extra_B=5289
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=11
+#-----------
+time=33543710890
+mem_heap_B=15536407
+mem_heap_extra_B=4105
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=12
+#-----------
+time=36846382629
+mem_heap_B=15682215
+mem_heap_extra_B=5257
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=13
+#-----------
+time=39781223698
+mem_heap_B=15803231
+mem_heap_extra_B=5353
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=14
+#-----------
+time=43453503096
+mem_heap_B=15944991
+mem_heap_extra_B=4593
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=15
+#-----------
+time=47002285121
+mem_heap_B=16078103
+mem_heap_extra_B=4361
+mem_stacks_B=0
+heap_tree=detailed
+n3: 16078103 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 3418656 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 3418656 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 3418656 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 76535 in 47 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=16
+#-----------
+time=51290864154
+mem_heap_B=16235959
+mem_heap_extra_B=5041
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=17
+#-----------
+time=55580333509
+mem_heap_B=16386319
+mem_heap_extra_B=5417
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=18
+#-----------
+time=58643266168
+mem_heap_B=16487711
+mem_heap_extra_B=5065
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=19
+#-----------
+time=62931335417
+mem_heap_B=16624079
+mem_heap_extra_B=4169
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=20
+#-----------
+time=65382604400
+mem_heap_B=16705759
+mem_heap_extra_B=5233
+mem_stacks_B=0
+heap_tree=detailed
+n3: 16705759 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 4042976 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 4042976 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 4042976 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 79871 in 47 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=21
+#-----------
+time=69671300795
+mem_heap_B=16838519
+mem_heap_extra_B=5337
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=22
+#-----------
+time=72735665827
+mem_heap_B=16930391
+mem_heap_extra_B=5777
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=23
+#-----------
+time=75186556476
+mem_heap_B=17000383
+mem_heap_extra_B=6657
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=24
+#-----------
+time=78942536060
+mem_heap_B=17108687
+mem_heap_extra_B=4609
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=25
+#-----------
+time=82781607451
+mem_heap_B=17219775
+mem_heap_extra_B=7793
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=26
+#-----------
+time=86619693581
+mem_heap_B=17321431
+mem_heap_extra_B=7441
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=27
+#-----------
+time=90456646342
+mem_heap_B=17425199
+mem_heap_extra_B=6585
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=28
+#-----------
+time=94294976192
+mem_heap_B=17530239
+mem_heap_extra_B=8777
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=29
+#-----------
+time=96214999535
+mem_heap_B=17577063
+mem_heap_extra_B=7297
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=30
+#-----------
+time=100052667244
+mem_heap_B=17673559
+mem_heap_extra_B=6969
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=31
+#-----------
+time=102931619995
+mem_heap_B=17746135
+mem_heap_extra_B=4225
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=32
+#-----------
+time=104851028933
+mem_heap_B=17798111
+mem_heap_extra_B=6777
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=33
+#-----------
+time=107729747949
+mem_heap_B=17865735
+mem_heap_extra_B=4833
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=34
+#-----------
+time=111567744323
+mem_heap_B=17959711
+mem_heap_extra_B=6489
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=35
+#-----------
+time=115407917162
+mem_heap_B=18053183
+mem_heap_extra_B=5825
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=36
+#-----------
+time=119247085824
+mem_heap_B=18142415
+mem_heap_extra_B=6041
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=37
+#-----------
+time=122125311108
+mem_heap_B=18209431
+mem_heap_extra_B=9449
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=38
+#-----------
+time=125003808992
+mem_heap_B=18274943
+mem_heap_extra_B=9377
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=39
+#-----------
+time=128813556208
+mem_heap_B=24057015
+mem_heap_extra_B=5681
+mem_stacks_B=0
+heap_tree=detailed
+n3: 24057015 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 11394464 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 11394464 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 11394464 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 79639 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=40
+#-----------
+time=131698390015
+mem_heap_B=24183951
+mem_heap_extra_B=8369
+mem_stacks_B=0
+heap_tree=detailed
+n3: 24183951 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 11522528 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 11522528 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 11522528 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 78511 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=41
+#-----------
+time=134602361621
+mem_heap_B=24312095
+mem_heap_extra_B=12121
+mem_stacks_B=0
+heap_tree=detailed
+n3: 24312095 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 11650016 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 11650016 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 11650016 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 79167 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=42
+#-----------
+time=137539870699
+mem_heap_B=24439759
+mem_heap_extra_B=7465
+mem_stacks_B=0
+heap_tree=detailed
+n3: 24439759 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 11777568 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 11777568 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 11777568 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 79279 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=43
+#-----------
+time=140840074208
+mem_heap_B=24582207
+mem_heap_extra_B=9361
+mem_stacks_B=0
+heap_tree=detailed
+n3: 24582207 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 11919264 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 11919264 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 11919264 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 80031 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=44
+#-----------
+time=144800628432
+mem_heap_B=24746831
+mem_heap_extra_B=8545
+mem_stacks_B=0
+heap_tree=detailed
+n3: 24746831 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12087136 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12087136 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12087136 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 76783 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=45
+#-----------
+time=148243419961
+mem_heap_B=24894071
+mem_heap_extra_B=12785
+mem_stacks_B=0
+heap_tree=detailed
+n3: 24894071 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12231200 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12231200 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12231200 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 79959 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=46
+#-----------
+time=151208550875
+mem_heap_B=25016375
+mem_heap_extra_B=12769
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25016375 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12353952 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12353952 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12353952 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 79511 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=47
+#-----------
+time=154327494842
+mem_heap_B=25143263
+mem_heap_extra_B=7601
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25143263 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12481760 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12481760 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12481760 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 78591 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=48
+#-----------
+time=158240313620
+mem_heap_B=25302719
+mem_heap_extra_B=13177
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25302719 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12640288 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12640288 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12640288 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 79519 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=49
+#-----------
+time=161303848222
+mem_heap_B=25425951
+mem_heap_extra_B=9345
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25425951 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12763040 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12763040 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12763040 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 79999 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=50
+#-----------
+time=161305453032
+mem_heap_B=25426175
+mem_heap_extra_B=13417
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25426175 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12763104 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12763104 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12763104 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 80159 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=51
+#-----------
+time=161307057882
+mem_heap_B=25426327
+mem_heap_extra_B=13377
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25426327 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12763168 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12763168 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12763168 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 80247 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=52
+#-----------
+time=161321519908
+mem_heap_B=25426975
+mem_heap_extra_B=12817
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25426975 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12763744 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12763744 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12763744 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 80319 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=53
+#-----------
+time=161324732682
+mem_heap_B=25427103
+mem_heap_extra_B=12705
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25427103 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12763872 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12763872 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12763872 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 80319 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=54
+#-----------
+time=161340773953
+mem_heap_B=25427815
+mem_heap_extra_B=12081
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25427815 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12764512 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12764512 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12764512 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 80391 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=55
+#-----------
+time=161350419344
+mem_heap_B=25428271
+mem_heap_extra_B=11729
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25428271 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12764896 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12764896 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12764896 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 80463 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=56
+#-----------
+time=161368095718
+mem_heap_B=25429119
+mem_heap_extra_B=11057
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25429119 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12765600 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12765600 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12765600 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 80607 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=57
+#-----------
+time=161387360559
+mem_heap_B=25429959
+mem_heap_extra_B=10305
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25429959 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12766368 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12766368 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12766368 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 80679 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=58
+#-----------
+time=161509352055
+mem_heap_B=25432079
+mem_heap_extra_B=8777
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25432079 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12771232 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12771232 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12771232 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 77935 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=59
+#-----------
+time=161510955542
+mem_heap_B=25431983
+mem_heap_extra_B=12769
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25431983 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12771296 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12771296 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12771296 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 77775 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=60
+#-----------
+time=161512561433
+mem_heap_B=25432207
+mem_heap_extra_B=12745
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25432207 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12771360 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12771360 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12771360 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 77935 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=61
+#-----------
+time=161514167006
+mem_heap_B=25432359
+mem_heap_extra_B=12705
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25432359 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12771424 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12771424 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12771424 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 78023 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=62
+#-----------
+time=161714945802
+mem_heap_B=25439191
+mem_heap_extra_B=8497
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25439191 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12779424 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12779424 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12779424 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 76855 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=63
+#-----------
+time=161716552338
+mem_heap_B=25439343
+mem_heap_extra_B=12553
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25439343 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12779488 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12779488 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12779488 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 76943 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=64
+#-----------
+time=161721376318
+mem_heap_B=25439695
+mem_heap_extra_B=12401
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25439695 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12779680 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12779680 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12779680 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 77103 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=65
+#-----------
+time=161731023802
+mem_heap_B=25440239
+mem_heap_extra_B=12057
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25440239 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12780064 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12780064 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12780064 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 77263 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=66
+#-----------
+time=161734237307
+mem_heap_B=25440455
+mem_heap_extra_B=11953
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25440455 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12780192 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12780192 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12780192 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 77351 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=67
+#-----------
+time=161739058611
+mem_heap_B=25440735
+mem_heap_extra_B=11785
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25440735 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12780384 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12780384 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12780384 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 77439 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=68
+#-----------
+time=161920692651
+mem_heap_B=25446423
+mem_heap_extra_B=8257
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25446423 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12787616 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12787616 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12787616 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 75895 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=69
+#-----------
+time=161922300633
+mem_heap_B=25446647
+mem_heap_extra_B=12329
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25446647 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12787680 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12787680 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12787680 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 76055 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=70
+#-----------
+time=161923908653
+mem_heap_B=25446871
+mem_heap_extra_B=12305
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25446871 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12787744 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12787744 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12787744 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 76215 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=71
+#-----------
+time=161927124801
+mem_heap_B=25447087
+mem_heap_extra_B=12201
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25447087 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12787872 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12787872 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12787872 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 76303 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=72
+#-----------
+time=161928732030
+mem_heap_B=25447239
+mem_heap_extra_B=12161
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25447239 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12787936 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12787936 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12787936 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 76391 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=73
+#-----------
+time=162049330119
+mem_heap_B=25452111
+mem_heap_extra_B=7377
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25452111 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12792736 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12792736 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12792736 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 76463 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=74
+#-----------
+time=162055757662
+mem_heap_B=25452527
+mem_heap_extra_B=7161
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25452527 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12792992 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12792992 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12792992 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 76623 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=75
+#-----------
+time=162060584080
+mem_heap_B=25452807
+mem_heap_extra_B=6993
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25452807 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12793184 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12793184 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12793184 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 76711 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=76
+#-----------
+time=162068628210
+mem_heap_B=25453215
+mem_heap_extra_B=6697
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25453215 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12793504 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12793504 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12793504 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 76799 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=77
+#-----------
+time=162071848832
+mem_heap_B=25453415
+mem_heap_extra_B=6585
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25453415 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12793632 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12793632 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12793632 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 76871 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=78
+#-----------
+time=162073457420
+mem_heap_B=25453639
+mem_heap_extra_B=6561
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25453639 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12793696 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12793696 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12793696 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 77031 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=79
+#-----------
+time=162075065481
+mem_heap_B=25453791
+mem_heap_extra_B=6521
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25453791 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12793760 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12793760 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12793760 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 77119 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=80
+#-----------
+time=162076673792
+mem_heap_B=25453943
+mem_heap_extra_B=6481
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25453943 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12793824 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12793824 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12793824 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 77207 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=81
+#-----------
+time=162126528627
+mem_heap_B=25455535
+mem_heap_extra_B=8497
+mem_stacks_B=0
+heap_tree=detailed
+n3: 25455535 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12795808 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12795808 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12795808 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 76815 in 49 places, all below massif's threshold (0.50%)
+#-----------
+snapshot=82
+#-----------
+time=162128140864
+mem_heap_B=25455511
+mem_heap_extra_B=12505
+mem_stacks_B=0
+heap_tree=peak
+n3: 25455511 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 12795872 0x13E058: lob::io::Session::submit(lob::io::SequencedCommand const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12795872 0x116659: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12795872 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n1: 12582912 0x12752B: lob::io::parse_command_file(std::basic_string_view<char, std::char_traits<char> >) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+  n1: 12582912 0x116489: (anonymous namespace)::run((anonymous namespace)::Args const&) (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+   n0: 12582912 0x114EF2: main (in /mnt/g/学习资料/quant/build/l2-baseline/apps/lob_replay)
+ n0: 76727 in 49 places, all below massif's threshold (0.50%)

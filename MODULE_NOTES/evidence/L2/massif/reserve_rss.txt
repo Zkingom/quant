@@ -1,0 +1,13 @@
+# reserve_rss.cpp (this directory), g++ -O2 -std=c++20, WSL2 6.6.87.2, glibc 2.39; 3 runs per mode, 16 MiB of 32-byte records
+none 16 MiB reserved: capacity=0 size=0 max_rss_kib=3040
+none 16 MiB reserved: capacity=0 size=0 max_rss_kib=3040
+none 16 MiB reserved: capacity=0 size=0 max_rss_kib=3040
+reserve 16 MiB reserved: capacity=524288 size=0 max_rss_kib=3040
+reserve 16 MiB reserved: capacity=524288 size=0 max_rss_kib=3040
+reserve 16 MiB reserved: capacity=524288 size=0 max_rss_kib=3040
+touch-half 16 MiB reserved: capacity=524288 size=262144 max_rss_kib=11200
+touch-half 16 MiB reserved: capacity=524288 size=262144 max_rss_kib=11200
+touch-half 16 MiB reserved: capacity=524288 size=262144 max_rss_kib=11200
+touch-all 16 MiB reserved: capacity=524288 size=524288 max_rss_kib=19360
+touch-all 16 MiB reserved: capacity=524288 size=524288 max_rss_kib=19360
+touch-all 16 MiB reserved: capacity=524288 size=524288 max_rss_kib=19360

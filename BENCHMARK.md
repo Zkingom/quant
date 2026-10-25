@@ -209,3 +209,60 @@ book.fill_front（56.0 vs 49.7 M/s）；其余场景的范围重叠。未分析�
 - 持久模式的吞吐由 `fsync` 决定（本环境约 0.8–1.1 k 批/s），与引擎速度无关；9P 与 ext4 的 `fsync` 语义与成本不可外推到原生文件系统。
 - 约 ±10% 以内的差异在本环境中不可分辨；跨会话的比较不可用于归因。
 - 未验证：硬件计数器下的缓存与分支行为；裸机；libc++；多核或网络负载。
+
+## 12. L2 前后对比：基线实现 vs 优化实现（`LOB_BASELINE`）
+
+两种实现由同一源码树的编译期选项选择（D-045），只在 Session 的一个源文件上不同（E1）。
+
+**一条命令复现本节全部内容**（WSL 中，仓库根目录；`build/l2-optimized`、`build/l2-baseline` 会被删除并从空目录重建）：
+
+```bash
+scripts/l2_reproduce.sh
+```
+
+它依次执行：构建（`LOB_BASELINE=OFF/ON`，并断言缓存中的值）→ `scripts/l2_equivalence.sh` → 两种构建的 `lob_bench` 交替 5 对
+（`--filter session --reps 3` 与 `--filter engine.mixed`，同 §9）→ `scripts/l2_rss.sh`，输出写入 `MODULE_NOTES/evidence/L2/reproduce/`
+（`summary.md` 为汇总）。`QUICK=1` 只做冒烟检查。
+
+2026-10-24 的完整运行（源码 `21cc273`，73 分钟，`MODULE_NOTES/evidence/L2/reproduce/summary.md`）复现了本节与 §9 的结论：
+16 个输入全部等价；session.memory 4.9 k/s → 1.13 M/s、replay.session_memory 4.7 k/s → 1.11 M/s、ext4_buffered 4.9 k/s → 700 k/s；
+ext4_fsync 与 engine.mixed 对照在噪声内；峰值 RSS mixed −1 884 KiB、deep_book −5 464 KiB。ext4_fsync 再次出现一个约 192 /s 的离群进程（T6-5）。
+
+| 维度 | 基线（`LOB_BASELINE=ON`） | 优化（`OFF`） | 来源 |
+|---|---|---|---|
+| 吞吐 | 非持久 Session 4.3–4.6 k/s（200 000 条） | 0.71–1.09 M/s | §9（同会话交替 5 对） |
+| 延迟（replay.session_memory p50 / p99 / p99.9） | 152 µs / 1.11 ms / 1.52 ms | 0.78 / 2.56 / 10.2 µs | §9 |
+| 撮合引擎、订单簿 | 不变 | 不变 | §9 对照在噪声内；源码相同 |
+| **峰值 RSS**（实测，见下） | mixed 31 948 KiB；deep_book 35 948 KiB | mixed 30 068 KiB；deep_book 30 484 KiB | `evidence/L2/rss/rss.csv` |
+| 事件流 / 快照 | 与优化版逐字节相同 | 与基线逐字节相同 | [MODULE_NOTES/L2_EQUIVALENCE.md](MODULE_NOTES/L2_EQUIVALENCE.md)（16 个输入） |
+| 代码复杂度 | — | `src/io/session.cpp` +7 / −2 行（一个条件 + 一次 `reserve`），无新类型、无新接口 | 提交 `1456fed` |
+| 工程代价 | — | 回归测试 +24 行（分配字节数守卫），testkit 分配钩子 +5 行（字节计数），M5 变异表 +2 个变异；基线副本作为冻结代码保留（D-045） | `1456fed`、`a2b6375` |
+
+**峰值 RSS 的测量**（`scripts/l2_rss.sh`，2026-10-24 13:14 UTC，树 `419dec9`，gcc 13.3 Release，WSL2）：
+
+- 每次运行为 `lob_replay run --commands 输入 --journal 日志`（非持久，日志在 ext4），由 GNU `time -f %M` 取子进程的 `ru_maxrss`；
+  测量下限（同一方法下 `/bin/true`）为 1 120 KiB。两个构建交替运行，各 5 次，取中位数。
+- 输入：`lob_gen_commands` 种子 1、200 000 条；mixed 5 046 206 字节、deep_book 5 475 030 字节（`lob_replay` 把整个命令文件读入内存，两个构建相同）。
+
+| 画像 | 优化 中位数（范围） | 基线 中位数（范围） | 差值 |
+|---|---|---|---|
+| mixed | 30 068 KiB（30 064–30 068） | 31 948 KiB（31 912–31 952） | 优化低 1 880 KiB（−5.9%） |
+| deep_book | 30 484 KiB（30 484–30 488） | 35 948 KiB（35 792–35 948） | 优化低 5 464 KiB（−15.2%） |
+
+- 实测与此前的估算**方向相反**：M6 只按最终容量估算（200 000 条时优化版 `committed_` 容量 262 144 条 ≈ 8.4 MB，
+  基线精确容量 ≈ 6.4 MB），推断优化版占用更多。L2 第 2 步用 massif 与一个机制探针检验了两条解释
+  （`MODULE_NOTES/evidence/L2/massif/README.md`）：
+  - **已验证：基线扩容时新旧块并存。** 峰值快照中 `Session::submit` 名下的字节数恰为两块之和，例如 deep_book 20 万条
+    12 672 352 B = 32 × (198 005 + 198 006)，5 万条 3 199 968 B = 32 × (49 999 + 50 000)，且两块都已写满。
+    优化版在翻倍时同样新旧并存（4 MiB + 8 MiB），但新块此刻只写入了复制过去的一半。
+  - **已验证（机制）：预留但未写入的大块容量不计入 RSS。** 独立探针 `reserve_rss.cpp`：`reserve` 16 MiB 不写入时 RSS 不变，
+    写入一半 +8 160 KiB、写满 +16 320 KiB。限定于大块（mmap 路径）。
+  - **未能在本程序上直接分离：** "只差一条命令"的实验（262 144 vs 262 145 条）中两个构建在 262 145 条时峰值完全相同（47 436 KiB），
+    峰值落在共有的命令解析阶段——解析出的命令向量与提交记录在同一条命令上翻倍，无法错开。
+  - **定量：** 以上两条机制能解释 deep_book 5 万条的差值（预测 1 262 KiB，实测中位数 1 436 KiB，相差 12%），
+    但**不能解释 200 000 条的数字**：mixed 预测 4 301 KiB、实测 1 884 KiB；deep_book 预测 4 700 KiB、实测 5 464 KiB。
+    因此"deep_book 的差值为何远大于 mixed"**仍未解释**。可能的原因是 RSS 峰值不在堆峰值的时刻（例如落在共有的解析阶段）
+    或分配器对已释放内存的保留方式不同；确认需要按时间分辨的驻留页数据，massif 不提供。
+- 同一构建 5 次之间的差异 ≤ 156 KiB，远小于两种实现之间的差值。
+- 墙钟时间仅作背景（不是基准结果）：优化 0.30 / 0.34 s，基线 36.95 / 36.35 s（mixed / deep_book 中位数）。
+- 只适用于上述输入长度与非持久模式；RSS 随流长度的变化未测。

@@ -1,0 +1,26 @@
+# date_utc=2026-10-24T13:14:08Z rev=419dec9
+# opt=build/l2-optimized base=build/l2-baseline runs=5 commands=200000 profiles=mixed deep_book
+# Linux 6.6.87.2-microsoft-standard-WSL2 x86_64; 12th Gen Intel(R) Core(TM) i7-12700H; MemTotal 7959712 kB
+# journal: /root/lob_l2_rss.1A8izx (filesystem ext4); wall_seconds is context only, not a benchmark result
+# measurement floor: /bin/true under the same GNU time = 1120 KiB
+profile,build,run,max_rss_kib,wall_seconds,input_bytes
+mixed,opt,1,30068,0.30,5046206
+mixed,base,1,31948,36.90,5046206
+mixed,opt,2,30068,0.30,5046206
+mixed,base,2,31948,36.68,5046206
+mixed,opt,3,30064,0.30,5046206
+mixed,base,3,31952,36.95,5046206
+mixed,opt,4,30068,0.29,5046206
+mixed,base,4,31948,37.26,5046206
+mixed,opt,5,30064,0.30,5046206
+mixed,base,5,31912,37.37,5046206
+deep_book,opt,1,30484,0.34,5475030
+deep_book,base,1,35948,36.77,5475030
+deep_book,opt,2,30484,0.34,5475030
+deep_book,base,2,35948,36.33,5475030
+deep_book,opt,3,30488,0.34,5475030
+deep_book,base,3,35948,36.35,5475030
+deep_book,opt,4,30488,0.35,5475030
+deep_book,base,4,35792,36.16,5475030
+deep_book,opt,5,30484,0.34,5475030
+deep_book,base,5,35948,42.93,5475030
