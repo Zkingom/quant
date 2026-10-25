@@ -3,7 +3,7 @@
 C++20 实现的单线程、确定性、正确性优先的单标的限价订单簿与撮合引擎。
 目标：价格-时间优先撮合、可复现回放与快照、严格测试（差分 / Golden / Sanitizer）、可审计的基准。
 
-## 当前状态（2026-10-22）
+## 当前状态（2026-10-25）
 
 | 模块 | 状态 |
 |---|---|
@@ -14,6 +14,8 @@ C++20 实现的单线程、确定性、正确性优先的单标的限价订单�
 | M4 testkit：可复用测试基础设施、10 个工作负载画像、长跑与长序列故障注入、M5 契约测试 | ✅ 147 个 CTest 用例（含 10 个画像冒烟长跑）；长跑矩阵见 MODULE_NOTES/M4 |
 | M5 replay：文本格式 v1、带校验日志、快照与恢复、提交会话、`lob_replay` | ✅ 见 MODULE_NOTES/M5（含 Golden、逐字节截断、写失败与分配注入、`kill -9` 崩溃测试） |
 | M6 bench：四层基准、profiling、优化实验 | ✅ 2026-10-22 验收：基线与对照数据见 [BENCHMARK.md](BENCHMARK.md)，实验见 MODULE_NOTES/M6 |
+| L1 冻结评审 | ✅ 2026-10-24 通过（[MODULE_NOTES/L1_REVIEW.md](MODULE_NOTES/L1_REVIEW.md)） |
+| L2 性能工程：基线开关 `LOB_BASELINE`、等价性、峰值 RSS、一条命令复现 | ✅ 2026-10-25（BENCHMARK §12、[MODULE_NOTES/L2_EQUIVALENCE.md](MODULE_NOTES/L2_EQUIVALENCE.md)） |
 
 撮合引擎、回放与恢复已可用；性能数据只适用于 WSL2 上的测量环境（BENCHMARK §1），不代表裸机。掉电持久性未验证，见 DESIGN §6.6。 计划与验收门槛见 [ROADMAP.md](ROADMAP.md)。
 
