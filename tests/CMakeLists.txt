@@ -72,7 +72,28 @@ lob_add_test_suite(lob_md_tests
     md/test_itch_decoder.cpp
     md/test_md_book.cpp
     md/test_feed.cpp
+    md/test_md_robustness.cpp
   LIBS lob::md lob::testkit)
+target_compile_definitions(lob_md_tests PRIVATE LOB_GOLDEN_DIR="${CMAKE_CURRENT_SOURCE_DIR}/golden")
+
+# libFuzzer entry (L3' 1e): opt-in, Clang only, not part of CTest. The md
+# sources are compiled into the fuzzer directly so that they carry coverage
+# instrumentation. Run with scripts/fuzz_itch.sh.
+option(LOB_FUZZ "Build the libFuzzer target for the ITCH/feed path (Clang)" OFF)
+if(LOB_FUZZ)
+  if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    message(FATAL_ERROR "LOB_FUZZ requires Clang")
+  endif()
+  add_executable(lob_fuzz_itch_feed
+    fuzz/fuzz_itch_feed.cpp
+    ${PROJECT_SOURCE_DIR}/src/md/itch.cpp
+    ${PROJECT_SOURCE_DIR}/src/md/book.cpp
+    ${PROJECT_SOURCE_DIR}/src/md/feed.cpp)
+  target_include_directories(lob_fuzz_itch_feed PRIVATE ${PROJECT_SOURCE_DIR}/include)
+  target_compile_options(lob_fuzz_itch_feed PRIVATE -fsanitize=fuzzer,address,undefined)
+  target_link_options(lob_fuzz_itch_feed PRIVATE -fsanitize=fuzzer,address,undefined)
+  target_link_libraries(lob_fuzz_itch_feed PRIVATE lob_project_options)
+endif()
 
 if(LOB_REPLACE_OPERATOR_NEW)
 # Separate executables: lob_testkit_alloc_fault replaces the global
