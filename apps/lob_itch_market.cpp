@@ -2,6 +2,7 @@
 //
 //   lob_itch_market --input PATH|- [--shards N] [--max-orders N] [--queue N] [--hashes PATH]
 //   lob_itch_market --input PATH|- --bench-bytes B [--max-orders N]
+
 //
 // Replay mode streams the input (bounded memory; nothing stored) with
 // --shards 0 (default: single-threaded) or N worker shards, and prints the
@@ -19,6 +20,7 @@
 #include <sys/resource.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
@@ -76,6 +78,39 @@ void print_summary(const pl::MarketRun& r, double secs, const std::string& label
   std::printf("[%s] locked_updates=%llu crossed_updates=%llu resume_graces=%llu resolved=%llu\n", label.c_str(),
               static_cast<unsigned long long>(locked), static_cast<unsigned long long>(crossed),
               static_cast<unsigned long long>(graces), static_cast<unsigned long long>(resolved));
+  for (const auto& st : s.stocks) {
+    if (st.counters.graces > 0) {
+      std::printf("[%s]   resume grace: %s (locate %u) graces=%llu resolved=%llu crossed_updates=%llu\n", label.c_str(),
+                  st.symbol.c_str(), st.locate, static_cast<unsigned long long>(st.counters.graces),
+                  static_cast<unsigned long long>(st.counters.graces_resolved),
+                  static_cast<unsigned long long>(st.counters.crossed_updates));
+    }
+  }
+  std::size_t listed = 0;
+  for (const auto& st : s.stocks) {
+    if (st.state == md::FeedState::Stale && listed++ < 50) {
+      std::printf("[%s]   stale: %s (locate %u) reason %s\n", label.c_str(), st.symbol.c_str(), st.locate,
+                  std::string(md::to_string(st.stale_reason)).c_str());
+    }
+  }
+  {
+    std::vector<std::size_t> lv;
+    std::size_t sum = 0;
+    std::string top;
+    for (const auto& st : s.stocks) {
+      lv.push_back(st.peak_levels);
+      sum += st.peak_levels;
+    }
+    std::sort(lv.begin(), lv.end());
+    if (!lv.empty()) {
+      for (const auto& st : s.stocks) {
+        if (st.peak_levels == lv.back()) top = st.symbol;
+      }
+      std::printf("[%s] peak levels per side per instrument: max=%zu (%s) p99.9=%zu p99=%zu p50=%zu sum=%zu\n",
+                  label.c_str(), lv.back(), top.c_str(), lv[lv.size() * 999 / 1000], lv[lv.size() * 99 / 100],
+                  lv[lv.size() / 2], sum);
+    }
+  }
   std::printf("[%s] peak_live_orders:", label.c_str());
   for (const auto p : r.shard_peaks) std::printf(" %zu", p);
   std::printf(" (sum %zu%s)\n", s.pool_peak_sum, r.shard_peaks.size() == 1 ? ", exact market peak" : ", upper bound");
@@ -100,6 +135,7 @@ int main(int argc, char** argv) {
     else if (k == "--queue") a.queue = std::stoull(val());
     else if (k == "--hashes") a.hashes = val();
     else if (k == "--bench-bytes") a.bench_bytes = std::stoull(val());
+
     else usage(("unknown option " + k).c_str());
   }
   if (a.input.empty()) usage("--input is required");

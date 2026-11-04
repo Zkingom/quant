@@ -98,6 +98,7 @@ std::vector<StockResult> Shard::results() const {
     r.event_hash = s.hash;
     r.book_hash = s.h->book().state_hash();
     r.orders = s.h->book().order_count();
+    r.peak_levels = std::max(s.h->book().peak_level_count(Side::Buy), s.h->book().peak_level_count(Side::Sell));
     r.counters = s.h->counters();
     out.push_back(std::move(r));
   }

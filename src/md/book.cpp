@@ -277,6 +277,8 @@ void Book::link(std::uint32_t n, Side side, std::uint32_t price) noexcept {
   if (i == lv.size() || lv[i].price != price) {
     // Capacity was checked by the caller: this insert never reallocates.
     lv.insert(lv.begin() + static_cast<std::ptrdiff_t>(i), Level{price, 0, 0, kNil, kNil});
+    std::size_t& peak = side == Side::Buy ? peak_bids_ : peak_asks_;
+    if (lv.size() > peak) peak = lv.size();
   }
   Level& l = lv[i];
   Node& node = pool_->nodes[n];

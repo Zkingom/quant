@@ -134,6 +134,7 @@ struct StockResult {
   std::uint64_t event_hash{kHashSeed};
   std::uint64_t book_hash{0};
   std::size_t orders{0};
+  std::size_t peak_levels{0};  ///< max over both sides of the book's peak level count
   FeedCounters counters{};
 };
 
