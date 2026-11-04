@@ -114,6 +114,11 @@ inline Buf order_replace(std::uint16_t locate, std::uint64_t old_ref, std::uint6
   return MsgWriter('U', locate, 0, ts).u64(old_ref).u64(new_ref).u32(shares).u32(price).take();
 }
 
+inline Buf trading_action(std::uint16_t locate, std::string_view stock, char state, std::uint64_t ts = 0,
+                          std::string_view reason = "") {
+  return MsgWriter('H', locate, 0, ts).alpha(stock, 8).c(state).c(' ').alpha(reason, 4).take();
+}
+
 /// A spec-valid message outside the subset: Trade (non-cross), 44 bytes.
 inline Buf trade_message(std::uint16_t locate, std::uint64_t ts = 0) {
   return MsgWriter('P', locate, 0, ts)

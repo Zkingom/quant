@@ -39,6 +39,9 @@ struct BookTop {
   std::uint64_t bid_shares{0};
   std::uint64_t ask_shares{0};
   bool live{false};            ///< false: the book must not be used (feed not Live)
+  /// Regular hours, instrument trading, book neither locked nor crossed
+  /// (md::tradable). A strategy must not quote when false (D-054).
+  bool tradable{false};
 };
 
 struct Fill {
@@ -119,7 +122,9 @@ class VirtualStrategy {
 ///   bid = r - half_spread, ask = r + half_spread, both rounded to `tick`
 ///   and kept passive (bid < best ask, ask > best bid).
 /// A side stops quoting once |inventory| reaches max_inventory in that
-/// direction. When the book is not live it cancels everything and waits.
+/// direction. When the book is not live, or the instrument is not in a
+/// tradable phase (pre-market, auction, halt, pause, after hours, locked or
+/// crossed book), it cancels everything and waits.
 /// It requotes only when the desired price differs from the resting one.
 struct MarketMakerParams {
   std::uint32_t tick{100};          ///< $0.01

@@ -29,6 +29,8 @@ struct Reader {
 
 bool valid_side(char c) noexcept { return c == 'B' || c == 'S'; }
 
+bool valid_trading_state(char c) noexcept { return c == 'H' || c == 'P' || c == 'Q' || c == 'T'; }
+
 bool valid_event_code(char c) noexcept {
   switch (c) {
     case 'O': case 'S': case 'Q': case 'M': case 'E': case 'C':
@@ -169,6 +171,14 @@ DecodeStatus decode(Bytes payload, Message& out) noexcept {
     case 'U':
       out = OrderReplace{h, r.u64(11), r.u64(19), r.u32(27), r.u32(31)};
       return DecodeStatus::Decoded;
+    case 'H': {
+      const char state = r.alpha(19);
+      if (!valid_trading_state(state)) {
+        return DecodeStatus::InvalidField;
+      }
+      out = TradingAction{h, r.chars<8>(11), state, r.alpha(20), r.chars<4>(21)};
+      return DecodeStatus::Decoded;
+    }
     default:
       return DecodeStatus::Skipped;
   }

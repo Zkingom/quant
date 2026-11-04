@@ -53,17 +53,20 @@ TEST(Feed, GoldenEventStreamOfTheSampleSession) {
   md::FeedHandler h{config()};
   const std::string text = run_text(h, decode_all(session()));
   const std::string expected =
-      "seq=1 ts=1 SYSTEM state=UNINITIALIZED reason=- detail=79 type=S ref=0 bid=0x0 ask=0x0\n"
-      "seq=3 ts=3 STATE state=LIVE reason=- detail=0 type=R ref=0 bid=0x0 ask=0x0\n"
-      "seq=4 ts=10 BOOK state=LIVE reason=- detail=0 type=A ref=1 bid=10000x100 ask=0x0 msg=B10000x100\n"
-      "seq=6 ts=12 BOOK state=LIVE reason=- detail=0 type=A ref=3 bid=10000x100 ask=10100x200 msg=S10100x200\n"
-      "seq=7 ts=13 BOOK state=LIVE reason=- detail=0 type=F ref=4 bid=10000x150 ask=10100x200 msg=B10000x50\n"
-      "seq=9 ts=15 BOOK state=LIVE reason=- detail=0 type=E ref=1 bid=10000x110 ask=10100x200 msg=B10000x40\n"
-      "seq=10 ts=16 BOOK state=LIVE reason=- detail=0 type=C ref=3 bid=10000x110 ask=10100x180 msg=S10100x20\n"
-      "seq=11 ts=17 BOOK state=LIVE reason=- detail=0 type=X ref=4 bid=10000x100 ask=10100x180 msg=B10000x10\n"
-      "seq=12 ts=18 BOOK state=LIVE reason=- detail=0 type=U ref=5 bid=10000x100 ask=10050x150 msg=S10050x150 prev=3@10100x180\n"
-      "seq=14 ts=20 BOOK state=LIVE reason=- detail=0 type=D ref=1 bid=10000x40 ask=10050x150 msg=B10000x60\n"
-      "seq=15 ts=21 SYSTEM state=LIVE reason=- detail=67 type=S ref=0 bid=10000x40 ask=10050x150\n";
+      "seq=1 ts=1 SYSTEM state=UNINITIALIZED reason=- detail=79 type=S ref=0 bid=0x0 ask=0x0 sess=O trd=- cross=-\n"
+      "seq=3 ts=3 STATE state=LIVE reason=- detail=0 type=R ref=0 bid=0x0 ask=0x0 sess=O trd=- cross=-\n"
+      "seq=4 ts=4 TRADING state=LIVE reason=- detail=84 type=H ref=0 bid=0x0 ask=0x0 sess=O trd=T cross=-\n"
+      "seq=5 ts=5 SYSTEM state=LIVE reason=- detail=81 type=S ref=0 bid=0x0 ask=0x0 sess=Q trd=T cross=-\n"
+      "seq=6 ts=10 BOOK state=LIVE reason=- detail=0 type=A ref=1 bid=10000x100 ask=0x0 msg=B10000x100 sess=Q trd=T cross=-\n"
+      "seq=8 ts=12 BOOK state=LIVE reason=- detail=0 type=A ref=3 bid=10000x100 ask=10100x200 msg=S10100x200 sess=Q trd=T cross=-\n"
+      "seq=9 ts=13 BOOK state=LIVE reason=- detail=0 type=F ref=4 bid=10000x150 ask=10100x200 msg=B10000x50 sess=Q trd=T cross=-\n"
+      "seq=11 ts=15 BOOK state=LIVE reason=- detail=0 type=E ref=1 bid=10000x110 ask=10100x200 msg=B10000x40 sess=Q trd=T cross=-\n"
+      "seq=12 ts=16 BOOK state=LIVE reason=- detail=0 type=C ref=3 bid=10000x110 ask=10100x180 msg=S10100x20 sess=Q trd=T cross=-\n"
+      "seq=13 ts=17 BOOK state=LIVE reason=- detail=0 type=X ref=4 bid=10000x100 ask=10100x180 msg=B10000x10 sess=Q trd=T cross=-\n"
+      "seq=14 ts=18 BOOK state=LIVE reason=- detail=0 type=U ref=5 bid=10000x100 ask=10050x150 msg=S10050x150 prev=3@10100x180 sess=Q trd=T cross=-\n"
+      "seq=16 ts=20 BOOK state=LIVE reason=- detail=0 type=D ref=1 bid=10000x40 ask=10050x150 msg=B10000x60 sess=Q trd=T cross=-\n"
+      "seq=17 ts=21 SYSTEM state=LIVE reason=- detail=77 type=S ref=0 bid=10000x40 ask=10050x150 sess=M trd=T cross=-\n"
+      "seq=18 ts=22 SYSTEM state=LIVE reason=- detail=67 type=S ref=0 bid=10000x40 ask=10050x150 sess=C trd=T cross=-\n";
   EXPECT_EQ(text, expected);
   EXPECT_EQ(h.state(), FeedState::Live);
   EXPECT_EQ(h.counters().applied, 8U);
@@ -85,7 +88,7 @@ TEST(Feed, OrdersBeforeTheDirectoryAreNotApplied) {
 TEST(Feed, SequenceGapWithoutRecoveryGoesStaleAndStopsPublishing) {
   md::FeedHandler h{config()};
   auto in = decode_all(session());
-  in.erase(in.begin() + 5);  // drop seq 6 (ACME add of ref 3)
+  in.erase(in.begin() + 7);  // drop seq 8 (ACME add of ref 3)
   std::vector<FeedEvent> ev;
   std::size_t books_after_gap = 0;
   bool gap_seen = false;
@@ -95,8 +98,8 @@ TEST(Feed, SequenceGapWithoutRecoveryGoesStaleAndStopsPublishing) {
     for (const auto& e : ev) {
       if (e.reason == AlertReason::SequenceGap) {
         gap_seen = true;
-        EXPECT_EQ(e.gap_first, 6U);
-        EXPECT_EQ(e.gap_last, 6U);
+        EXPECT_EQ(e.gap_first, 8U);
+        EXPECT_EQ(e.gap_last, 8U);
         EXPECT_EQ(e.state, FeedState::Recovering);
       }
       if (gap_seen && e.kind == FeedEvent::Kind::BookUpdate) ++books_after_gap;
@@ -136,7 +139,7 @@ TEST(Feed, GapFilledByRetransmissionRecoversToTheSameBook) {
   VectorRecovery rec{all};
   md::FeedHandler h{config(), &rec};
   auto in = all;
-  in.erase(in.begin() + 4, in.begin() + 8);  // drop seq 5..8
+  in.erase(in.begin() + 6, in.begin() + 10);  // drop seq 7..10
   std::vector<FeedEvent> ev;
   std::vector<AlertReason> reasons;
   for (const auto& x : in) {
@@ -161,7 +164,7 @@ TEST(Feed, IncompleteRetransmissionIsAFailure) {
   rec.drop_one = true;
   md::FeedHandler h{config(), &rec};
   auto in = all;
-  in.erase(in.begin() + 4, in.begin() + 6);
+  in.erase(in.begin() + 6, in.begin() + 8);
   run_text(h, in);
   EXPECT_EQ(h.state(), FeedState::Stale);
 }
@@ -169,7 +172,7 @@ TEST(Feed, IncompleteRetransmissionIsAFailure) {
 TEST(Feed, DuplicateSequenceNumbersAreDropped) {
   md::FeedHandler h{config()};
   auto in = decode_all(session());
-  in.insert(in.begin() + 6, in[5]);  // replay seq 6 again
+  in.insert(in.begin() + 8, in[7]);  // replay seq 8 again
   run_text(h, in);
   EXPECT_EQ(h.state(), FeedState::Live);
   EXPECT_EQ(h.counters().duplicates, 1U);
@@ -181,7 +184,7 @@ TEST(Feed, DuplicateSequenceNumbersAreDropped) {
 TEST(Feed, TimestampRegressionGoesStale) {
   md::FeedHandler h{config()};
   auto msgs = session();
-  msgs[6] = tk::add_order_mpid(kLoc, 4, 'B', 50, "ACME", 10000, "MMID", 11);  // 11 < 12
+  msgs[8] = tk::add_order_mpid(kLoc, 4, 'B', 50, "ACME", 10000, "MMID", 11);  // 11 < 12
   const std::string text = run_text(h, decode_all(msgs));
   EXPECT_EQ(h.state(), FeedState::Stale);
   EXPECT_NE(text.find("reason=TIMESTAMP_REGRESSION"), std::string::npos);
@@ -191,7 +194,7 @@ TEST(Feed, TimestampRegressionGoesStale) {
 TEST(Feed, TimestampRegressionOnAnotherInstrumentAlsoCounts) {
   md::FeedHandler h{config()};
   auto msgs = session();
-  msgs[12] = tk::order_delete(kOther, 2, 5);
+  msgs[14] = tk::order_delete(kOther, 2, 5);
   run_text(h, decode_all(msgs));
   EXPECT_EQ(h.state(), FeedState::Stale);
 }
@@ -203,19 +206,21 @@ TEST(Feed, BookRejectionGoesStaleAndTheBookIsNotPublishedAgain) {
                           tk::add_order(kLoc, 1, 'B', 10, "ACME", 9000, 14)}) { // duplicate
     md::FeedHandler h{config()};
     auto msgs = session();
-    msgs[7] = bad;  // replaces the skipped trade message (seq 8)
+    msgs[9] = bad;  // replaces the skipped trade message (seq 10)
     const std::string text = run_text(h, decode_all(msgs));
     EXPECT_EQ(h.state(), FeedState::Stale);
-    EXPECT_NE(text.find("seq=8 ts=14 STATE state=STALE reason=BOOK_REJECTED"), std::string::npos) << text;
-    EXPECT_EQ(text.find("seq=9 "), std::string::npos) << "nothing published after the rejection";
-    EXPECT_EQ(h.counters().ignored_not_live, 7U);
+    EXPECT_NE(text.find("seq=10 ts=14 STATE state=STALE reason=BOOK_REJECTED"), std::string::npos) << text;
+    EXPECT_EQ(text.find("seq=11 "), std::string::npos) << "nothing published after the rejection";
+    // seq 11-16 are ignored; the phase messages (S 'M', S 'C') are still tracked.
+    EXPECT_EQ(h.counters().ignored_not_live, 6U);
+    EXPECT_EQ(h.session(), 'C');
   }
 }
 
 TEST(Feed, SymbolMismatchOnOurLocateGoesStale) {
   md::FeedHandler h{config()};
   auto msgs = session();
-  msgs[7] = tk::add_order(kLoc, 50, 'B', 10, "ACMX", 9000, 14);
+  msgs[9] = tk::add_order(kLoc, 50, 'B', 10, "ACMX", 9000, 14);
   run_text(h, decode_all(msgs));
   EXPECT_EQ(h.state(), FeedState::Stale);
 }
@@ -224,7 +229,7 @@ TEST(Feed, DecodeAndFrameErrorsGoStale) {
   {
     md::FeedHandler h{config()};
     auto msgs = session();
-    msgs[7] = tk::Buf{'A', 0, 1};  // truncated add order: BAD_LENGTH
+    msgs[9] = tk::Buf{'A', 0, 1};  // truncated add order: BAD_LENGTH
     const std::string text = run_text(h, decode_all(msgs));
     EXPECT_EQ(h.state(), FeedState::Stale);
     EXPECT_NE(text.find("reason=DECODE_ERROR detail=4"), std::string::npos) << text;
@@ -246,9 +251,12 @@ TEST(Feed, DecodeAndFrameErrorsGoStale) {
 TEST(Feed, SnapshotResyncLeavesStale) {
   md::FeedHandler h{config()};
   auto msgs = session();
-  msgs[7] = tk::order_delete(kLoc, 99, 14);
+  msgs[9] = tk::order_delete(kLoc, 99, 14);
+  msgs.pop_back();  // stay in regular hours: drop S 'M' and S 'C'
+  msgs.pop_back();
   run_text(h, decode_all(msgs));
   ASSERT_EQ(h.state(), FeedState::Stale);
+  ASSERT_TRUE(h.strict()) << "phase still followed while Stale";
 
   const std::vector<md::OrderView> snap{{21, md::Side::Buy, 10000, 300}, {22, md::Side::Sell, 10200, 100}};
   std::vector<FeedEvent> ev;
@@ -269,15 +277,29 @@ TEST(Feed, SnapshotResyncLeavesStale) {
   EXPECT_EQ(ev[0].bid_shares, 200U);
 }
 
-TEST(Feed, CrossedSnapshotIsRejected) {
+TEST(Feed, CrossedSnapshotIsRejectedInRegularTrading) {
   md::FeedHandler h{config()};
-  run_text(h, decode_all({tk::stock_directory(kLoc, "ACME", 1)}));
+  run_text(h, decode_all({tk::stock_directory(kLoc, "ACME", 1), tk::trading_action(kLoc, "ACME", 'T', 2),
+                          tk::system_event('Q', 3)}));
+  ASSERT_TRUE(h.strict());
   const std::vector<md::OrderView> snap{{1, md::Side::Buy, 10000, 1}, {2, md::Side::Sell, 9000, 1}};
   std::vector<FeedEvent> ev;
   h.resync_from_snapshot(snap, 10, ev);
   EXPECT_EQ(h.state(), FeedState::Stale);
   EXPECT_EQ(ev.back().reason, AlertReason::SnapshotRejected);
   EXPECT_EQ(h.book().order_count(), 0U);
+}
+
+TEST(Feed, CrossedSnapshotIsAcceptedDuringAHalt) {
+  md::FeedHandler h{config()};
+  run_text(h, decode_all({tk::stock_directory(kLoc, "ACME", 1), tk::trading_action(kLoc, "ACME", 'H', 2),
+                          tk::system_event('Q', 3)}));
+  ASSERT_FALSE(h.strict());
+  const std::vector<md::OrderView> snap{{1, md::Side::Buy, 10000, 1}, {2, md::Side::Sell, 9000, 1}};
+  std::vector<FeedEvent> ev;
+  h.resync_from_snapshot(snap, 10, ev);
+  EXPECT_EQ(h.state(), FeedState::Live);
+  EXPECT_EQ(ev.back().cross, 'X');
 }
 
 // ---------------------------------------------------------------- chunking

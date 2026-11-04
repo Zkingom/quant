@@ -177,6 +177,31 @@ TEST(ItchDecode, OrderReplaceLiteral) {
   EXPECT_EQ(bytes, tk::order_replace(1, 7, 8, 200, 1'000'000, 104));
 }
 
+// H: 'H' | locate 1 | 0 | ts 105 | "AAPL    " | state 'H' | reserved ' ' | reason "T1  "
+const char* const kTradingAction = "48 0001 0000 000000000069 4141504C20202020 48 20 54312020";
+
+TEST(ItchDecode, TradingActionLiteral) {
+  const auto bytes = hex(kTradingAction);
+  ASSERT_EQ(bytes.size(), 25U);
+  const auto m = std::get<itch::TradingAction>(decode_ok(bytes));
+  EXPECT_EQ(m.header.stock_locate, 1U);
+  EXPECT_EQ(m.header.timestamp, 105U);
+  EXPECT_EQ(sym(m.stock), "AAPL    ");
+  EXPECT_EQ(m.trading_state, 'H');
+  EXPECT_EQ(std::string(m.reason.data(), 4), "T1  ");
+  EXPECT_EQ(bytes, tk::trading_action(1, "AAPL", 'H', 105, "T1"));
+}
+
+TEST(ItchDecode, TradingStatesOutsideHPQTAreInvalid) {
+  itch::Message m;
+  for (const char st : std::string("HPQT")) {
+    EXPECT_EQ(itch::decode(tk::trading_action(1, "A", st), m), itch::DecodeStatus::Decoded) << st;
+  }
+  for (const char st : std::string("hRX ")) {
+    EXPECT_EQ(itch::decode(tk::trading_action(1, "A", st), m), itch::DecodeStatus::InvalidField) << st;
+  }
+}
+
 TEST(ItchDecode, LargestFieldValuesDecodeWithoutSignIssues) {
   const auto bytes = tk::order_replace(0xffff, ~0ULL, ~0ULL - 1, 0xffffffffU, 0xffffffffU,
                                        itch::kNanosPerDay - 1);
@@ -191,7 +216,7 @@ TEST(ItchDecode, LargestFieldValuesDecodeWithoutSignIssues) {
 
 TEST(ItchDecode, EverySubsetTypeRejectsLengthOffByOne) {
   for (const char* lit : {kSystemEvent, kStockDirectory, kAddOrder, kAddOrderMpid, kExecuted,
-                          kExecutedPrice, kCancel, kDelete, kReplace}) {
+                          kExecutedPrice, kCancel, kDelete, kReplace, kTradingAction}) {
     auto bytes = hex(lit);
     itch::Message m = itch::OrderDelete{};
     auto shorter = bytes;
@@ -205,7 +230,7 @@ TEST(ItchDecode, EverySubsetTypeRejectsLengthOffByOne) {
 }
 
 TEST(ItchDecode, NonSubsetSpecTypesAreSkippedOnlyAtTheirExactLength) {
-  const std::string non_subset = "HYLVWKJhPQBINO";
+  const std::string non_subset = "YLVWKJhPQBINO";
   for (const char t : non_subset) {
     const std::size_t len = itch::spec_length(t);
     ASSERT_GT(len, itch::kHeaderSize) << t;

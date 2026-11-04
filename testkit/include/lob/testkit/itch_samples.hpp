@@ -21,14 +21,19 @@ inline md::FeedConfig config() {
   return c;
 }
 
-/// Directories, orders for ACME and for another stock, every subset message
-/// type once or more, and one non-subset message (Trade).
+/// Directories, the trading phase (ACME trading, market open), orders for
+/// ACME and for another stock, every subset message type once or more, one
+/// non-subset message (Trade), market close.
+/// Indices: 0 O · 1-2 directories · 3 H 'T' · 4 S 'Q' · 5.. order flow ·
+/// 16 S 'M' · 17 S 'C'. (Index i has seq i + 1.)
 inline std::vector<itch::Buf> session() {
   using namespace lob::testkit::itch;
   return {
       system_event('O', 1),
       stock_directory(kOther, "ZZZZ", 2),
       stock_directory(kLocate, "ACME", 3),
+      trading_action(kLocate, "ACME", 'T', 4),
+      system_event('Q', 5),
       add_order(kLocate, 1, 'B', 100, "ACME", 10000, 10),
       add_order(kOther, 2, 'B', 100, "ZZZZ", 5000, 11),
       add_order(kLocate, 3, 'S', 200, "ACME", 10100, 12),
@@ -40,7 +45,8 @@ inline std::vector<itch::Buf> session() {
       order_replace(kLocate, 3, 5, 150, 10050, 18),
       order_delete(kOther, 2, 19),
       order_delete(kLocate, 1, 20),
-      system_event('C', 21),
+      system_event('M', 21),
+      system_event('C', 22),
   };
 }
 

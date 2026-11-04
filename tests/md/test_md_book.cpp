@@ -55,6 +55,33 @@ TEST(MdBook, NeverLocksOrCrosses) {
   EXPECT_CONSISTENT(b);
 }
 
+TEST(MdBook, NonStrictModeAllowsLockingAndCrossingAndReportsIt) {
+  Book b{BookConfig{16, 8}};
+  b.set_strict(false);
+  ASSERT_EQ(b.add(1, B, 100, 10000), BookStatus::Applied);
+  ASSERT_EQ(b.add(2, S, 100, 10100), BookStatus::Applied);
+  EXPECT_EQ(b.cross_state(), lob::md::CrossState::None);
+  ASSERT_EQ(b.add(3, S, 50, 10000), BookStatus::Applied);  // locks
+  EXPECT_EQ(b.cross_state(), lob::md::CrossState::Locked);
+  ASSERT_EQ(b.add(4, B, 50, 10200), BookStatus::Applied);  // crosses
+  EXPECT_EQ(b.cross_state(), lob::md::CrossState::Crossed);
+  ASSERT_EQ(b.replace(2, 5, 100, 9000), BookStatus::Applied);  // replace through the bid
+  EXPECT_CONSISTENT(b) << "a crossed book is consistent in non-strict mode";
+  // Other checks still apply.
+  EXPECT_EQ(b.add(6, B, 0, 10000), BookStatus::ZeroShares);
+  EXPECT_EQ(b.execute(4, 51), BookStatus::Overfill);
+  // Strict mode on a crossed book: the invariant check reports it, adds that cross are rejected.
+  b.set_strict(true);
+  EXPECT_NE(b.find_invariant_violation(), std::nullopt);
+  EXPECT_EQ(b.add(7, S, 1, 9000), BookStatus::WouldCross);
+  // Uncross (the halt cross executes the crossing orders), then strict holds again.
+  ASSERT_EQ(b.execute(4, 50), BookStatus::Applied);
+  ASSERT_EQ(b.remove(3), BookStatus::Applied);
+  ASSERT_EQ(b.remove(5), BookStatus::Applied);
+  EXPECT_EQ(b.cross_state(), lob::md::CrossState::None);
+  EXPECT_CONSISTENT(b);
+}
+
 TEST(MdBook, ExecutionsCanHitAnyOrderNotOnlyTheQueueHead) {
   Book b{BookConfig{16, 8}};
   ASSERT_EQ(b.add(1, S, 100, 10100), BookStatus::Applied);

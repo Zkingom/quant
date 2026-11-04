@@ -12,6 +12,7 @@ std::string_view to_string(Verdict v) noexcept {
   switch (v) {
     case Verdict::Accept: return "ACCEPT";
     case Verdict::KillSwitch: return "KILL_SWITCH";
+    case Verdict::NotTrading: return "NOT_TRADING";
     case Verdict::NoReference: return "NO_REFERENCE";
     case Verdict::FatFingerQty: return "FAT_FINGER_QTY";
     case Verdict::FatFingerNotional: return "FAT_FINGER_NOTIONAL";
@@ -58,8 +59,8 @@ void RiskGate::refill(std::uint64_t ts) noexcept {
 
 Verdict RiskGate::reject(Verdict v, std::uint64_t ts) noexcept {
   ++rejected_[static_cast<int>(v)];
-  if (v == Verdict::KillSwitch) {
-    return v;
+  if (v == Verdict::KillSwitch || v == Verdict::NotTrading) {
+    return v;  // expected states, not evidence of a runaway strategy
   }
   if (ts - window_start_ > limits_.reject_window_ns || window_rejects_ == 0) {
     window_start_ = ts;
@@ -76,6 +77,9 @@ Verdict RiskGate::check_new(Side side, std::uint32_t price, std::uint32_t qty, c
   refill(ts);
   if (tripped()) {
     return reject(Verdict::KillSwitch, ts);
+  }
+  if (!ref.tradable) {
+    return reject(Verdict::NotTrading, ts);
   }
   if (!ref.live || ref.bid == 0 || ref.ask == 0) {
     return reject(Verdict::NoReference, ts);

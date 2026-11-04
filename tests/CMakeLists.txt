@@ -73,6 +73,7 @@ lob_add_test_suite(lob_md_tests
     md/test_md_book.cpp
     md/test_feed.cpp
     md/test_md_robustness.cpp
+    md/test_trading_phase.cpp
   LIBS lob::md lob::testkit)
 target_compile_definitions(lob_md_tests PRIVATE LOB_GOLDEN_DIR="${CMAKE_CURRENT_SOURCE_DIR}/golden")
 

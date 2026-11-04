@@ -17,6 +17,17 @@
 //   Live --(timestamp regression | book rejected a message |
 //           undecodable or unframeable input)------------------------> Stale
 //   Stale --(resync_from_snapshot)---------------------------------> Live
+//
+// Trading phase (D-054), orthogonal to the states above: the last System
+// Event code (session) and the last Stock Trading Action for our symbol
+// (trading state). The book is STRICT -- never locked, never crossed --
+// only in regular market hours (between System Event 'Q' and 'M') while the
+// instrument is trading ('T'). Elsewhere (pre-market, opening/closing
+// auction, halt 'H', pause 'P', quotation only 'Q', after hours, or before
+// any Trading Action arrived) a locked or crossed book is legitimate: the
+// feed stays Live, counts it, and marks every event with `cross`. Entering
+// strict mode with a locked or crossed book is a contradiction -> Stale
+// (CrossedAtResume). Phase messages are tracked even while Stale.
 // While not Live the handler publishes no BookUpdate: downstream sees only
 // the StateChange / Alert events and must treat the book as unusable. A book
 // that rejected a message is never used again until a snapshot replaces it.
@@ -66,6 +77,7 @@ enum class AlertReason : std::uint8_t {
   FrameError,
   SnapshotLoaded,
   SnapshotRejected,  ///< `detail` holds the BookStatus of the first bad order
+  CrossedAtResume,   ///< strict mode began with a locked ('L') / crossed ('X') book; `detail` = that char
 };
 
 [[nodiscard]] std::string_view to_string(FeedState s) noexcept;
@@ -74,7 +86,7 @@ enum class AlertReason : std::uint8_t {
 /// Output event. Trivially copyable (crosses SPSC queues downstream); hash or
 /// print it with the helpers below, never by raw bytes (padding).
 struct FeedEvent {
-  enum class Kind : std::uint8_t { BookUpdate, StateChange, Alert, System };
+  enum class Kind : std::uint8_t { BookUpdate, StateChange, Alert, System, Trading };
   Kind kind{Kind::BookUpdate};
   FeedState state{FeedState::Uninitialized};  ///< state after this event
   AlertReason reason{AlertReason::None};
@@ -100,8 +112,18 @@ struct FeedEvent {
   std::uint64_t prev_ref{0};
   std::uint32_t prev_price{0};
   std::uint32_t prev_shares{0};
+  // Trading phase at the time of the event (every kind; 0 = not known yet).
+  char session{0};  ///< last System Event code: O S Q M E C
+  char trading{0};  ///< last Trading Action state for our symbol: H P Q T
+  char cross{'-'};  ///< book after the event: '-' normal, 'L' locked, 'X' crossed
 };
 static_assert(std::is_trivially_copyable_v<FeedEvent>);
+
+/// True when strategies may trade on this event: Live, regular hours,
+/// instrument trading, book neither locked nor crossed.
+[[nodiscard]] constexpr bool tradable(const FeedEvent& e) noexcept {
+  return e.state == FeedState::Live && e.session == 'Q' && e.trading == 'T' && e.cross == '-';
+}
 
 /// Canonical single-line text of an event (tests, golden files, logs).
 void append_text(const FeedEvent& e, std::string& out);
@@ -140,6 +162,10 @@ struct FeedCounters {
   std::uint64_t duplicates{0};    ///< seq < expected, dropped
   std::uint64_t ignored_not_live{0};
   std::uint64_t gaps{0};
+  std::uint64_t locked_updates{0};   ///< book updates published while locked (non-strict phase)
+  std::uint64_t crossed_updates{0};  ///< book updates published while crossed (non-strict phase)
+  std::uint64_t session_events{0};
+  std::uint64_t trading_actions{0};  ///< Trading Actions for our symbol
 };
 
 class FeedHandler {
@@ -162,6 +188,9 @@ class FeedHandler {
   [[nodiscard]] std::uint16_t locate() const noexcept { return locate_; }
   [[nodiscard]] std::uint64_t expected_seq() const noexcept { return expected_; }
   [[nodiscard]] const FeedCounters& counters() const noexcept { return counters_; }
+  [[nodiscard]] char session() const noexcept { return session_; }
+  [[nodiscard]] char trading_state() const noexcept { return trading_; }
+  [[nodiscard]] bool strict() const noexcept { return book_.strict(); }
 
  private:
   void process(const FeedInput& in, std::vector<FeedEvent>& out);
@@ -171,6 +200,9 @@ class FeedHandler {
   void publish(const FeedInput& in, char type, std::uint64_t ts, std::uint64_t ref, const FeedEvent& what,
                std::vector<FeedEvent>& out);
   void fill_bbo(FeedEvent& e) const noexcept;
+  /// Updates session_ / trading_ from a phase message; true if `in` was one.
+  bool track_phase(const FeedInput& in);
+  void update_strictness(const FeedInput& in, std::vector<FeedEvent>& out);
 
   FeedConfig config_;
   RecoverySource* recovery_;
@@ -180,6 +212,8 @@ class FeedHandler {
   bool have_locate_{false};
   std::uint64_t expected_;
   std::uint64_t last_ts_{0};
+  char session_{0};
+  char trading_{0};
   FeedCounters counters_{};
   std::vector<FeedInput> retransmit_buf_;
 };

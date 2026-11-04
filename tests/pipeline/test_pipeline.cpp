@@ -114,8 +114,8 @@ TEST(Pipeline, HashesArePinnedAcrossCompilers) {
   gp.messages = 5000;
   const Outcome o = run(tk::generate_stream(gp), true, 64, SIZE_MAX, target_config());
   EXPECT_EQ(o.frames, 5000U);
-  EXPECT_EQ(o.event_hash, 0xce612dccc09530d6ULL) << std::hex << "event hash 0x" << o.event_hash;
-  EXPECT_EQ(o.book_hash, 0xcc59750d4cf4f7c5ULL) << std::hex << "book hash 0x" << o.book_hash;
+  EXPECT_EQ(o.event_hash, 0x38ab7dce042ca73aULL) << std::hex << "event hash 0x" << o.event_hash;
+  EXPECT_EQ(o.book_hash, 0xbb6a53fbcefa0f27ULL) << std::hex << "book hash 0x" << o.book_hash;
 }
 
 TEST(Pipeline, FaultyStreamsAlsoAgree) {

@@ -41,7 +41,7 @@ void MarketMaker::requote(Side side, std::uint32_t price, bool allowed, Actions&
 }
 
 void MarketMaker::on_book_update(const BookTop& t, Actions& out) {
-  if (!t.live || t.bid_price == 0 || t.ask_price == 0) {
+  if (!t.live || !t.tradable || t.bid_price == 0 || t.ask_price == 0) {
     cancel_all(out);
     return;
   }

@@ -11,6 +11,11 @@
 //   3. timer: when ITCH time crosses the next boundary, strategy.on_timer
 // When the feed leaves Live: the kill switch trips (StaleBook), every open
 // order is cancelled, and the strategy sees top.live = false.
+// When the instrument leaves the tradable phase (halt, pause, quotation
+// only, market close, locked/crossed book; D-054): every open order is
+// cancelled and the strategy sees top.tradable = false; risk rejects new
+// orders (NotTrading) but the kill switch is NOT tripped -- trading resumes
+// by itself when the phase becomes tradable again.
 //
 // Why synchronous on the book thread: a separate exchange thread would make
 // the arrival of fills relative to market data depend on scheduling, and the
@@ -104,6 +109,8 @@ class TradingStage {
  private:
   void handle(const md::FeedEvent& e, const md::FeedHandler& feed) {
     if (e.timestamp > now_) now_ = e.timestamp;
+    const bool was_live = top_.live;
+    const bool was_tradable = top_.tradable;
     if (e.kind == md::FeedEvent::Kind::BookUpdate) {
       // 1. what the market did to our resting orders
       reports_.clear();
@@ -111,17 +118,22 @@ class TradingStage {
       ex_.on_market(e, reports_);
       t_engine_ += pipeline::ticks() - a;
       deliver(feed);
-      // 2. the strategy reacts to the new top of book
-      top_ = strategy::BookTop{e.seq, e.timestamp, e.bid_price, e.ask_price, e.bid_shares, e.ask_shares, true};
-      if (e.bid_price != 0 && e.ask_price != 0) {
-        last_mid_ = static_cast<std::uint32_t>((static_cast<std::uint64_t>(e.bid_price) + e.ask_price) / 2);
-      }
-      call([&](strategy::Actions& out) { strat_.book_update(top_, out); }, feed);
-    } else if (e.state != md::FeedState::Live && top_.live) {
-      // The book became unusable: kill switch, cancel everything, tell the strategy.
-      risk_.trip(risk::TripReason::StaleBook);
-      top_.live = false;
-      cancel_all(feed);
+    }
+    // Every event carries the BBO and the trading phase.
+    const bool live = e.state == md::FeedState::Live;
+    top_ = strategy::BookTop{e.seq, e.timestamp, e.bid_price, e.ask_price, e.bid_shares, e.ask_shares, live,
+                             md::tradable(e)};
+    if (top_.tradable && e.bid_price != 0 && e.ask_price != 0) {
+      last_mid_ = static_cast<std::uint32_t>((static_cast<std::uint64_t>(e.bid_price) + e.ask_price) / 2);
+    }
+    if (was_live && !live) {
+      risk_.trip(risk::TripReason::StaleBook);  // the book became unusable
+    }
+    if (was_tradable && !top_.tradable) {
+      cancel_all(feed);  // halt / pause / close / stale / locked or crossed
+    }
+    // 2. the strategy reacts to the new top of book, or to a phase change
+    if (e.kind == md::FeedEvent::Kind::BookUpdate || was_live != live || was_tradable != top_.tradable) {
       call([&](strategy::Actions& out) { strat_.book_update(top_, out); }, feed);
     }
     // 3. timers by market time
@@ -161,7 +173,7 @@ class TradingStage {
         detail::mix(d_.orders, static_cast<std::uint64_t>(r.side), 1);
         detail::mix(d_.orders, r.price, 4);
         detail::mix(d_.orders, r.qty, 4);
-        const risk::Reference ref{top_.bid_price, top_.ask_price, top_.live};
+        const risk::Reference ref{top_.bid_price, top_.ask_price, top_.live, top_.tradable};
         const std::uint64_t a = pipeline::ticks();
         const risk::Verdict v = risk_.check_new(r.side, r.price, r.qty, ex_pos_, ref, now_);
         t_risk_ += pipeline::ticks() - a;

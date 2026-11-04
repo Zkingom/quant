@@ -23,8 +23,8 @@ namespace tk = lob::testkit::itch;
 using Side = md::itch::Side;
 using st::OrderRequest;
 
-st::BookTop top(std::uint32_t bid, std::uint32_t ask, bool live = true) {
-  return st::BookTop{1, 1, bid, ask, 100, 100, live};
+st::BookTop top(std::uint32_t bid, std::uint32_t ask, bool live = true, bool tradable = true) {
+  return st::BookTop{1, 1, bid, ask, 100, 100, live, live && tradable};
 }
 
 // ---------------------------------------------------------------- strategy
@@ -88,6 +88,19 @@ TEST(MarketMaker, StopsQuotingASideAtMaxInventory) {
   mm.book_update(top(999'000, 1'001'000), out);
   ASSERT_EQ(out.size(), 1U);
   EXPECT_EQ(out[0].side, Side::Sell);
+}
+
+TEST(MarketMaker, CancelsEverythingWhenNotTradable) {
+  st::MarketMaker mm{};
+  st::Actions out;
+  mm.book_update(top(999'000, 1'001'000), out);
+  out.clear();
+  mm.book_update(top(999'000, 1'001'000, true, false), out);  // live but halted
+  ASSERT_EQ(out.size(), 2U);
+  EXPECT_EQ(out[0].kind, OrderRequest::Kind::Cancel);
+  out.clear();
+  mm.book_update(top(999'000, 1'001'000, true, false), out);
+  EXPECT_EQ(out.size(), 0U) << "nothing to cancel, nothing new";
 }
 
 TEST(MarketMaker, CancelsEverythingWhenTheBookIsNotLive) {
@@ -390,16 +403,24 @@ TEST(TradingConsistency, HashesArePinnedAcrossCompilers) {
   gp.seed = 42;
   gp.messages = 5000;
   const DualResult r = run_trading(tk::generate_stream(gp), true);
-  EXPECT_EQ(r.opt.orders, 0x9e2731535d5ae989ULL) << std::hex << "opt orders 0x" << r.opt.orders;
-  EXPECT_EQ(r.opt.fills, 0x59ff6c4b1944ee7fULL) << std::hex << "opt fills 0x" << r.opt.fills;
-  EXPECT_EQ(r.cons.fills, 0x405f2753e47ebceeULL) << std::hex << "cons fills 0x" << r.cons.fills;
-  EXPECT_EQ(r.cons.position, 0xd58f4d45f97e13b6ULL) << std::hex << "cons position 0x" << r.cons.position;
+  EXPECT_EQ(r.opt.orders, 0x3377879f6fbe2b23ULL) << std::hex << "opt orders 0x" << r.opt.orders;
+  EXPECT_EQ(r.opt.fills, 0xc9a1da769807a847ULL) << std::hex << "opt fills 0x" << r.opt.fills;
+  EXPECT_EQ(r.cons.fills, 0xf1f4f69458caf9c8ULL) << std::hex << "cons fills 0x" << r.cons.fills;
+  EXPECT_EQ(r.cons.position, 0x83945f2c91788ae7ULL) << std::hex << "cons position 0x" << r.cons.position;
+}
+
+/// Directory, instrument trading, market open: regular trading from seq 4.
+tk::Buf trading_open() {
+  tk::Buf s;
+  tk::append_frame(s, tk::stock_directory(1, tk::symbol_of(1), 1));
+  tk::append_frame(s, tk::trading_action(1, tk::symbol_of(1), 'T', 1));
+  tk::append_frame(s, tk::system_event('Q', 1));
+  return s;
 }
 
 TEST(TradingStage, StaleBookTripsTheKillSwitchAndCancelsOpenOrders) {
   // Valid session, then an order delete for an unknown ref -> feed Stale.
-  tk::Buf s;
-  tk::append_frame(s, tk::stock_directory(1, tk::symbol_of(1), 1));
+  tk::Buf s = trading_open();
   tk::append_frame(s, tk::add_order(1, 1, 'B', 500, tk::symbol_of(1), 999'000, 2));
   tk::append_frame(s, tk::add_order(1, 2, 'S', 500, tk::symbol_of(1), 1'001'000, 3));
   tk::append_frame(s, tk::order_delete(1, 999, 4));
@@ -418,8 +439,7 @@ TEST(TradingStage, StaleBookTripsTheKillSwitchAndCancelsOpenOrders) {
 }
 
 TEST(TradingStage, ManualKillSwitchStillAllowsCancels) {
-  tk::Buf s;
-  tk::append_frame(s, tk::stock_directory(1, tk::symbol_of(1), 1));
+  tk::Buf s = trading_open();
   tk::append_frame(s, tk::add_order(1, 1, 'B', 500, tk::symbol_of(1), 999'000, 2));
   tk::append_frame(s, tk::add_order(1, 2, 'S', 500, tk::symbol_of(1), 1'001'000, 3));
   tk::append_frame(s, tk::add_order(1, 3, 'S', 500, tk::symbol_of(1), 1'000'500, 4));  // moves the mid
@@ -430,7 +450,7 @@ TEST(TradingStage, ManualKillSwitchStillAllowsCancels) {
     sim::TradingStage<st::MarketMaker>& t;
     void on_feed(const md::FeedInput& in, std::span<const md::FeedEvent> ev, const md::FeedHandler& f,
                  std::uint64_t ts, pl::LatencyRecorder* r, bool smp) {
-      if (in.seq == 4) t.risk().trip(lob::risk::TripReason::Manual);
+      if (in.seq == 6) t.risk().trip(lob::risk::TripReason::Manual);
       t.on_feed(in, ev, f, ts, r, smp);
     }
   } tripper{t};
@@ -441,6 +461,97 @@ TEST(TradingStage, ManualKillSwitchStillAllowsCancels) {
   EXPECT_EQ(t.digest().n_accepted, 2U);
   EXPECT_GE(t.risk().rejected(lob::risk::Verdict::KillSwitch), 1U);
   EXPECT_EQ(t.exposure().open_sell, 0U) << "the old ask was cancelled despite the kill switch";
+}
+
+// ---------------------------------------------------------------- trading phase (D-054)
+
+/// trading_open(), two-sided book, halt, a crossing add during the halt,
+/// the halt cross executes it, trading resumes on a clean book.
+tk::Buf halt_and_resume() {
+  tk::Buf s = trading_open();
+  const std::string sym = tk::symbol_of(1);
+  tk::append_frame(s, tk::add_order(1, 1, 'B', 500, sym, 999'000, 2));    // seq 4
+  tk::append_frame(s, tk::add_order(1, 2, 'S', 500, sym, 1'001'000, 3));  // seq 5: MM quotes
+  tk::append_frame(s, tk::trading_action(1, sym, 'H', 4));                // seq 6: halt
+  tk::append_frame(s, tk::add_order(1, 3, 'S', 300, sym, 998'000, 5));    // seq 7: crosses the bid
+  tk::append_frame(s, tk::order_executed(1, 3, 300, 1, 6));               // seq 8: halt cross
+  tk::append_frame(s, tk::trading_action(1, sym, 'T', 7));                // seq 9: resume
+  return s;
+}
+
+TEST(TradingStage, HaltCancelsQuotesWithoutTrippingTheKillSwitchAndTradingResumes) {
+  st::MarketMaker mm{};
+  sim::TradingStage<st::MarketMaker> t{trading_cfg(sim::FillModel::Optimistic), mm};
+  struct Probe {
+    sim::TradingStage<st::MarketMaker>& t;
+    std::uint64_t open_during_halt = 99;
+    std::uint64_t accepted_during_halt = 99;
+    void on_feed(const md::FeedInput& in, std::span<const md::FeedEvent> ev, const md::FeedHandler& f,
+                 std::uint64_t ts, pl::LatencyRecorder* r, bool smp) {
+      t.on_feed(in, ev, f, ts, r, smp);
+      if (in.seq == 8) {  // halted, book crossed then uncrossed by the halt cross
+        open_during_halt = t.exposure().open_buy + t.exposure().open_sell;
+        accepted_during_halt = t.digest().n_accepted;
+      }
+    }
+  } probe{t};
+  pl::BookStage<Probe> stage{feed_cfg(), probe};
+  const tk::Buf s = halt_and_resume();
+  pl::MemorySource src{s};
+  pl::run_single(src, stage, pl::RunConfig{});
+  EXPECT_EQ(stage.feed().state(), md::FeedState::Live) << "a halt-time cross does not make the feed Stale";
+  EXPECT_EQ(stage.feed().counters().crossed_updates, 1U);
+  EXPECT_EQ(probe.open_during_halt, 0U) << "every quote cancelled at the halt";
+  EXPECT_EQ(probe.accepted_during_halt, 2U) << "nothing new while halted";
+  EXPECT_FALSE(t.risk().tripped()) << "a halt is not a kill-switch event";
+  EXPECT_EQ(t.digest().n_accepted, 4U) << "requoted when trading resumed";
+  EXPECT_EQ(t.exposure().open_buy, 100U);
+  EXPECT_EQ(t.exposure().open_sell, 100U);
+  EXPECT_EQ(t.digest().n_fills, 0U) << "no fills: our quotes were gone before the halt cross";
+}
+
+/// Sends a new order on every update, tradable or not: risk must refuse it
+/// while the instrument is not tradable.
+class Insistent : public st::StrategyBase<Insistent> {
+ public:
+  void on_book_update(const st::BookTop& t, st::Actions& out) {
+    if (t.bid_price == 0 || t.ask_price == 0) return;
+    out.push(OrderRequest{OrderRequest::Kind::New, next_++, Side::Buy, t.bid_price < t.ask_price ? t.bid_price : t.ask_price - 100, 1});
+  }
+  void on_fill(const st::Fill&, st::Actions&) {}
+  void on_timer(std::uint64_t, st::Actions&) {}
+
+ private:
+  std::uint64_t next_{1};
+};
+
+TEST(TradingStage, RiskRejectsNewOrdersWhileNotTradable) {
+  Insistent strat;
+  sim::TradingStage<Insistent> t{trading_cfg(sim::FillModel::Optimistic), strat};
+  pl::BookStage<decltype(t)> stage{feed_cfg(), t};
+  const tk::Buf s = halt_and_resume();
+  pl::MemorySource src{s};
+  pl::run_single(src, stage, pl::RunConfig{});
+  EXPECT_GE(t.risk().rejected(lob::risk::Verdict::NotTrading), 2U) << "halt (seq 6), crossed add (7), halt cross (8)";
+  EXPECT_FALSE(t.risk().tripped());
+  EXPECT_GE(t.risk().accepted(), 2U) << "accepted before the halt and after the resume";
+}
+
+TEST(TradingStage, MarketCloseCancelsQuotes) {
+  tk::Buf s = trading_open();
+  const std::string sym = tk::symbol_of(1);
+  tk::append_frame(s, tk::add_order(1, 1, 'B', 500, sym, 999'000, 2));
+  tk::append_frame(s, tk::add_order(1, 2, 'S', 500, sym, 1'001'000, 3));
+  tk::append_frame(s, tk::system_event('M', 4));
+  st::MarketMaker mm{};
+  sim::TradingStage<st::MarketMaker> t{trading_cfg(sim::FillModel::Optimistic), mm};
+  pl::BookStage<decltype(t)> stage{feed_cfg(), t};
+  pl::MemorySource src{s};
+  pl::run_single(src, stage, pl::RunConfig{});
+  EXPECT_EQ(t.digest().n_accepted, 2U);
+  EXPECT_EQ(t.exposure().open_buy + t.exposure().open_sell, 0U);
+  EXPECT_EQ(t.exchange().engine().book().order_count(), 0U);
+  EXPECT_FALSE(t.risk().tripped());
 }
 
 }  // namespace

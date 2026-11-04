@@ -231,7 +231,7 @@ int main(int argc, char** argv) {
     lob::testkit::Rng rng{7};
     for (int i = 0; i < 200000; ++i) {
       const auto bid = static_cast<std::uint32_t>(rng.uniform(9990, 10000)) * 100;
-      tops.push_back(st::BookTop{0, 0, bid, bid + static_cast<std::uint32_t>(rng.uniform(1, 20)) * 100, 100, 100, true});
+      tops.push_back(st::BookTop{0, 0, bid, bid + static_cast<std::uint32_t>(rng.uniform(1, 20)) * 100, 100, 100, true, true});
     }
     std::vector<double> crtp_ns, virt_ns;
     std::uint64_t sink = 0;
@@ -257,7 +257,7 @@ int main(int argc, char** argv) {
     std::vector<double> risk_ns;
     for (int rep = -1; rep < o.reps; ++rep) {
       lob::risk::RiskGate g{tc.risk};
-      const lob::risk::Reference ref{999'900, 1'000'100, true};
+      const lob::risk::Reference ref{999'900, 1'000'100, true, true};
       lob::risk::Exposure ex{};
       std::uint64_t t0 = pl::ticks();
       for (std::size_t i = 0; i < tops.size(); ++i) {

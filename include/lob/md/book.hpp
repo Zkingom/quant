@@ -19,6 +19,13 @@
 //     shares > 0, price > 0, no lock/cross at the new price
 // find_invariant_violation() re-derives everything (O(n)).
 //
+// Locked / crossed books (D-054): the "bid < ask" rule is enforced only in
+// STRICT mode (the default). The feed handler turns strict mode off outside
+// regular trading (pre-market, auctions, halts, pauses, after hours), when a
+// real exchange book can legitimately lock or cross; adds and replaces then
+// skip the lock/cross check and the invariant check skips "bid < ask".
+// cross_state() reports the current condition either way.
+//
 // Memory: all storage is reserved in the constructor from BookConfig
 // (order pool, open-addressing index, per-side level arrays). No member
 // function other than the constructor allocates; capacity exhaustion is a
@@ -41,6 +48,8 @@ struct BookConfig {
   std::size_t max_orders{1U << 20};        ///< live orders
   std::size_t max_levels_per_side{1U << 14};
 };
+
+enum class CrossState : std::uint8_t { None, Locked, Crossed };
 
 enum class BookStatus : std::uint8_t {
   Applied,
@@ -99,6 +108,13 @@ class Book {
 
   /// Clears all orders (used by recovery). Does not allocate.
   void clear() noexcept;
+
+  /// Strict mode enforces best bid < best ask on adds / replaces and in
+  /// find_invariant_violation(). Switching it on does not check the book:
+  /// the caller decides what a crossed book at that moment means.
+  void set_strict(bool strict) noexcept { strict_ = strict; }
+  [[nodiscard]] bool strict() const noexcept { return strict_; }
+  [[nodiscard]] CrossState cross_state() const noexcept;
 
   [[nodiscard]] std::optional<OrderView> find(std::uint64_t ref) const noexcept;
   [[nodiscard]] std::optional<LevelView> best(Side side) const noexcept;
@@ -175,6 +191,7 @@ class Book {
   Levels bids_;
   Levels asks_;
   Change last_change_{};
+  bool strict_{true};
 };
 
 template <typename F>

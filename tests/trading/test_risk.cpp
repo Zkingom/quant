@@ -15,7 +15,7 @@ using lob::risk::TripReason;
 using lob::risk::Verdict;
 using Side = lob::md::itch::Side;
 
-constexpr Reference kRef{1'000'000, 1'000'200, true};  // mid 1 000 100 ($100.01)
+constexpr Reference kRef{1'000'000, 1'000'200, true, true};  // mid 1 000 100 ($100.01), tradable
 constexpr std::uint64_t kSec = 1'000'000'000ULL;
 
 RiskLimits limits() {
@@ -84,11 +84,32 @@ TEST(Risk, FatFingerNotional) {
   EXPECT_EQ(g.check_new(Side::Buy, 1'000'001, 100, {}, kRef, kSec), Verdict::FatFingerNotional);
 }
 
-TEST(Risk, NoReferenceWhenTheBookIsNotLiveOrOneSided) {
+TEST(Risk, NoReferenceWhenTheBookIsOneSided) {
   RiskGate g{limits()};
-  EXPECT_EQ(g.check_new(Side::Buy, 1'000'000, 1, {}, Reference{1'000'000, 1'000'200, false}, kSec),
-            Verdict::NoReference);
-  EXPECT_EQ(g.check_new(Side::Buy, 1'000'000, 1, {}, Reference{1'000'000, 0, true}, kSec), Verdict::NoReference);
+  EXPECT_EQ(g.check_new(Side::Buy, 1'000'000, 1, {}, Reference{1'000'000, 0, true, true}, kSec), Verdict::NoReference);
+  EXPECT_EQ(g.check_new(Side::Buy, 1'000'000, 1, {}, Reference{0, 1'000'200, true, true}, kSec), Verdict::NoReference);
+}
+
+TEST(Risk, NotTradingWhileHaltedOrOutsideRegularHours) {
+  RiskGate g{limits()};
+  EXPECT_EQ(g.check_new(Side::Buy, 1'000'000, 1, {}, Reference{1'000'000, 1'000'200, true, false}, kSec),
+            Verdict::NotTrading);
+  EXPECT_EQ(g.check_new(Side::Buy, 1'000'000, 1, {}, Reference{1'000'000, 1'000'200, false, false}, kSec),
+            Verdict::NotTrading);
+  EXPECT_FALSE(g.tripped()) << "a halt is not a reason for the kill switch";
+  EXPECT_EQ(g.check_new(Side::Buy, 1'000'000, 1, {}, kRef, kSec), Verdict::Accept) << "resumes by itself";
+}
+
+TEST(Risk, NotTradingRejectsDoNotCountTowardTheRejectStorm) {
+  RiskLimits l = limits();
+  l.max_rejects_in_window = 3;
+  RiskGate g{l};
+  for (int i = 0; i < 100; ++i) {
+    EXPECT_EQ(g.check_new(Side::Buy, 1'000'000, 1, {}, Reference{1'000'000, 1'000'200, true, false}, kSec),
+              Verdict::NotTrading);
+  }
+  EXPECT_FALSE(g.tripped());
+  EXPECT_EQ(g.rejected(Verdict::NotTrading), 100U);
 }
 
 TEST(Risk, KillSwitchBlocksNewOrdersAndIsStickyUntilReset) {
@@ -132,13 +153,14 @@ TEST(Risk, ChecksRunInTheDocumentedOrder) {
   // An order violating everything reports the first check, and so on.
   RiskGate g{limits()};
   const Exposure huge{5000, 0, 0};
-  EXPECT_EQ(g.check_new(Side::Buy, 1, 0, huge, Reference{0, 0, false}, kSec), Verdict::NoReference);
+  EXPECT_EQ(g.check_new(Side::Buy, 1, 0, huge, Reference{0, 0, false, false}, kSec), Verdict::NotTrading);
+  EXPECT_EQ(g.check_new(Side::Buy, 1, 0, huge, Reference{0, 0, true, true}, kSec), Verdict::NoReference);
   EXPECT_EQ(g.check_new(Side::Buy, 1, 0, huge, kRef, kSec), Verdict::FatFingerQty);
   EXPECT_EQ(g.check_new(Side::Buy, 2'000'000, 500, huge, kRef, kSec), Verdict::FatFingerNotional);
   EXPECT_EQ(g.check_new(Side::Buy, 1, 1, huge, kRef, kSec), Verdict::PriceBand);
   EXPECT_EQ(g.check_new(Side::Buy, 1'000'000, 1, huge, kRef, kSec), Verdict::MaxPosition);
   g.trip(TripReason::Manual);
-  EXPECT_EQ(g.check_new(Side::Buy, 1, 0, huge, Reference{0, 0, false}, kSec), Verdict::KillSwitch);
+  EXPECT_EQ(g.check_new(Side::Buy, 1, 0, huge, Reference{0, 0, false, false}, kSec), Verdict::KillSwitch);
   EXPECT_EQ(g.rejected(Verdict::PriceBand), 1U);
 }
 

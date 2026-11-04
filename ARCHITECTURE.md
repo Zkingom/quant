@@ -197,6 +197,7 @@ L1 的 `core / book / engine / io` 源码不改动；L3' 只新增模块，唯�
  ┌──────────────────────── 订单簿线程 ─────────────────────────────────────────────┐
  │ FeedHandler：序号 / 时间戳检查 → Stock Directory 过滤 → md::Book（先校验后修改）   │
  │   状态 Uninitialized / Live / Recovering / Stale；非 Live 不发布                   │
+ │   交易阶段（S 会话码 + H 交易状态）：只在 Q 时段且 T 时强制永不交叉（D-054）         │
  │        │ FeedEvent（BBO + 本条消息的方向 / 价格 / 数量）                            │
  │        ▼                                                                         │
  │ TradingStage（×2：乐观 / 保守成交模型）                                          │
@@ -204,7 +205,7 @@ L1 的 `core / book / engine / io` 源码不改动；L3' 只新增模块，唯�
  │   strategy.on_book_update / on_timer（CRTP，ITCH 时间驱动）                         │
  │        │ OrderRequest                                                             │
  │        ▼                                                                         │
- │   RiskGate.check_new（熔断 → 参考价 → 乌龙指 → 价格带 → 持仓 → 令牌桶）             │
+ │   RiskGate.check_new（熔断 → 交易阶段 → 参考价 → 乌龙指 → 价格带 → 持仓 → 令牌桶）  │
  │        │ 通过                                                                     │
  │        ▼                                                                         │
  │   SimExchange.submit ──▶ L1 MatchingEngine::process（未改动）──▶ 事件 ──▶ 成交回报   │
@@ -219,7 +220,7 @@ L1 的 `core / book / engine / io` 源码不改动；L3' 只新增模块，唯�
 - 测试：`lob_concurrent_tests`、`lob_md_tests`、`lob_pipeline_tests`、`lob_trading_tests`（并发相关带 `concurrency` 标签，TSan 预设下运行）；
   `lob_pipeline_alloc_tests`、`lob_trading_alloc_tests`（替换 `operator new`，零分配）；libFuzzer 入口 `-DLOB_FUZZ=ON`。
 - 基准：`lob_itch_bench`（墙钟，本地）、`lob_itch_icount`（cachegrind 指令数，CI 门槛 `scripts/icount_gate.sh`）。
-- 详见 [MODULE_NOTES/L3.md](MODULE_NOTES/L3.md)、DESIGN §7、BENCHMARK §13–§14、DECISIONS D-046–D-053。
+- 详见 [MODULE_NOTES/L3.md](MODULE_NOTES/L3.md)、DESIGN §7、BENCHMARK §13–§14、DECISIONS D-046–D-054。
 
 ## 5. 构建拓扑
 

@@ -15,7 +15,7 @@
 //   S System Event 12 · R Stock Directory 39 · A Add Order 36 ·
 //   F Add Order with MPID 40 · E Order Executed 31 ·
 //   C Order Executed with Price 36 · X Order Cancel 23 · D Order Delete 19 ·
-//   U Order Replace 35
+//   U Order Replace 35 · H Stock Trading Action 25
 // Every other message type defined by the 5.0 specification is recognised
 // by its exact length and reported as Skipped (real files contain them);
 // any other type byte is rejected.
@@ -123,8 +123,20 @@ struct OrderReplace {
   std::uint32_t price{};
 };
 
+/// 'H' Stock Trading Action. Trading State: 'H' halted, 'P' paused (LULD
+/// pause), 'Q' quotation only (halt/IPO quoting period, no trading),
+/// 'T' trading. Reason is a 4-character code (e.g. "T1  ").
+struct TradingAction {
+  Header header;
+  Symbol stock{};
+  char trading_state{};
+  char reserved{};
+  std::array<char, 4> reason{};
+};
+
 using Message = std::variant<SystemEvent, StockDirectory, AddOrder, OrderExecuted,
-                             OrderExecutedWithPrice, OrderCancel, OrderDelete, OrderReplace>;
+                             OrderExecutedWithPrice, OrderCancel, OrderDelete, OrderReplace,
+                             TradingAction>;
 static_assert(std::is_trivially_copyable_v<Message>, "decoded messages cross the SPSC queue");
 
 [[nodiscard]] inline const Header& header_of(const Message& m) noexcept {

@@ -5,6 +5,10 @@
 // Every NEW order request passes, in this fixed order (the first failure is
 // the reported reason; the order is observable and tested):
 //   1. kill switch      -- tripped: reject every new order
+//   1b. trading phase   -- the instrument must be tradable (regular hours,
+//                          state 'T', book not locked/crossed; D-054).
+//                          Expected during halts: NOT counted toward the
+//                          reject storm and does not trip the kill switch.
 //   2. reference price  -- the book must be live and two-sided (the band and
 //                          the notional need a reference)
 //   3. fat finger: qty  -- 0 < qty <= max_order_qty
@@ -47,6 +51,7 @@ struct RiskLimits {
 enum class Verdict : std::uint8_t {
   Accept,
   KillSwitch,
+  NotTrading,
   NoReference,
   FatFingerQty,
   FatFingerNotional,
@@ -70,6 +75,7 @@ struct Reference {
   std::uint32_t bid{0};
   std::uint32_t ask{0};
   bool live{false};
+  bool tradable{false};  ///< md::tradable() of the latest event
 };
 
 class RiskGate {
@@ -106,7 +112,7 @@ class RiskGate {
   std::uint64_t window_start_{0};
   std::uint32_t window_rejects_{0};
   std::uint64_t accepted_{0};
-  std::uint64_t rejected_[8]{};
+  std::uint64_t rejected_[9]{};
 };
 
 }  // namespace lob::risk

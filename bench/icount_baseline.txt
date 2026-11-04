@@ -1,6 +1,6 @@
 # Instruction-count baseline for scripts/icount_gate.sh (see its header).
 # compiler: g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
 # valgrind: valgrind-3.22.0 / ldd (Ubuntu GLIBC 2.39-0ubuntu8.9) 2.39
-decode 33087523 0x00000000000324d6
-book 115912230 0xa722803ae700b680
-trading 263082714 0x90fb21193d32bab6
+decode 33494621 0x000000000003249a
+book 118826882 0xc51993905fb40f16
+trading 264163217 0xf36833ca345f0c34

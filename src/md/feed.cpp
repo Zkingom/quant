@@ -19,6 +19,7 @@ std::string_view kind_name(FeedEvent::Kind k) noexcept {
     case FeedEvent::Kind::StateChange: return "STATE";
     case FeedEvent::Kind::Alert: return "ALERT";
     case FeedEvent::Kind::System: return "SYSTEM";
+    case FeedEvent::Kind::Trading: return "TRADING";
   }
   return "?";
 }
@@ -55,6 +56,7 @@ std::string_view to_string(AlertReason r) noexcept {
     case AlertReason::FrameError: return "FRAME_ERROR";
     case AlertReason::SnapshotLoaded: return "SNAPSHOT_LOADED";
     case AlertReason::SnapshotRejected: return "SNAPSHOT_REJECTED";
+    case AlertReason::CrossedAtResume: return "CROSSED_AT_RESUME";
   }
   return "?";
 }
@@ -107,6 +109,12 @@ void append_text(const FeedEvent& e, std::string& out) {
       out += std::to_string(e.prev_shares);
     }
   }
+  out += " sess=";
+  out += e.session == 0 ? '-' : e.session;
+  out += " trd=";
+  out += e.trading == 0 ? '-' : e.trading;
+  out += " cross=";
+  out += e.cross;
   if (e.reason == AlertReason::SequenceGap) {
     out += " gap=";
     out += std::to_string(e.gap_first);
@@ -137,13 +145,25 @@ std::uint64_t hash_event(const FeedEvent& e, std::uint64_t h) noexcept {
   mix(h, e.prev_ref, 8);
   mix(h, e.prev_price, 4);
   mix(h, e.prev_shares, 4);
+  mix(h, static_cast<std::uint8_t>(e.session), 1);
+  mix(h, static_cast<std::uint8_t>(e.trading), 1);
+  mix(h, static_cast<std::uint8_t>(e.cross), 1);
   return h;
 }
 
 FeedHandler::FeedHandler(const FeedConfig& config, RecoverySource* recovery)
-    : config_(config), recovery_(recovery), book_(config.book), expected_(config.first_seq) {}
+    : config_(config), recovery_(recovery), book_(config.book), expected_(config.first_seq) {
+  book_.set_strict(false);  // no phase known yet: not regular trading
+}
 
 void FeedHandler::fill_bbo(FeedEvent& e) const noexcept {
+  e.session = session_;
+  e.trading = trading_;
+  switch (book_.cross_state()) {
+    case CrossState::None: e.cross = '-'; break;
+    case CrossState::Locked: e.cross = 'L'; break;
+    case CrossState::Crossed: e.cross = 'X'; break;
+  }
   if (const auto b = book_.best(Side::Buy)) {
     e.bid_price = b->price;
     e.bid_shares = b->shares;
@@ -256,24 +276,68 @@ void FeedHandler::process(const FeedInput& in, std::vector<FeedEvent>& out) {
   }
   last_ts_ = h.timestamp;
   if (state_ == FeedState::Stale) {
-    ++counters_.ignored_not_live;
+    // The book is unusable, but the trading phase is still followed so that
+    // a later snapshot resync knows which rules apply.
+    if (!track_phase(in)) {
+      ++counters_.ignored_not_live;
+    } else {
+      book_.set_strict(session_ == 'Q' && trading_ == 'T');
+    }
     return;
   }
   apply(in, out);
 }
 
+bool FeedHandler::track_phase(const FeedInput& in) {
+  if (const auto* se = std::get_if<itch::SystemEvent>(&in.msg)) {
+    session_ = se->event_code;
+    ++counters_.session_events;
+    return true;
+  }
+  if (const auto* ta = std::get_if<itch::TradingAction>(&in.msg)) {
+    if (ta->stock == config_.symbol) {
+      trading_ = ta->trading_state;
+      ++counters_.trading_actions;
+      return true;
+    }
+  }
+  return false;
+}
+
+void FeedHandler::update_strictness(const FeedInput& in, std::vector<FeedEvent>& out) {
+  const bool strict = session_ == 'Q' && trading_ == 'T';
+  if (strict == book_.strict()) {
+    return;
+  }
+  book_.set_strict(strict);
+  const CrossState cs = book_.cross_state();
+  if (strict && cs != CrossState::None) {
+    // Regular trading cannot begin on a locked or crossed book: the auction
+    // or halt cross should have resolved it. The book (or the feed) is wrong.
+    go(FeedState::Stale, &in, AlertReason::CrossedAtResume,
+       static_cast<std::uint8_t>(cs == CrossState::Locked ? 'L' : 'X'), out);
+  }
+}
+
 void FeedHandler::apply(const FeedInput& in, std::vector<FeedEvent>& out) {
   const itch::Header& h = itch::header_of(in.msg);
-  if (const auto* se = std::get_if<itch::SystemEvent>(&in.msg)) {
+  if (track_phase(in)) {
+    const auto* se = std::get_if<itch::SystemEvent>(&in.msg);
     FeedEvent e{};
-    e.kind = FeedEvent::Kind::System;
+    e.kind = se != nullptr ? FeedEvent::Kind::System : FeedEvent::Kind::Trading;
     e.state = state_;
-    e.detail = static_cast<std::uint8_t>(se->event_code);
-    e.msg_type = 'S';
+    e.detail = static_cast<std::uint8_t>(se != nullptr ? se->event_code
+                                                        : std::get<itch::TradingAction>(in.msg).trading_state);
+    e.msg_type = h.type;
     e.seq = in.seq;
     e.timestamp = h.timestamp;
     fill_bbo(e);
     out.push_back(e);
+    update_strictness(in, out);
+    return;
+  }
+  if (std::holds_alternative<itch::TradingAction>(in.msg)) {
+    ++counters_.other_stock;  // another instrument's trading state
     return;
   }
   if (const auto* dir = std::get_if<itch::StockDirectory>(&in.msg)) {
@@ -348,6 +412,7 @@ void FeedHandler::apply(const FeedInput& in, std::vector<FeedEvent>& out) {
                  },
                  [](const itch::SystemEvent&) {},
                  [](const itch::StockDirectory&) {},
+                 [](const itch::TradingAction&) {},
              },
              in.msg);
   if (symbol_mismatch) {
@@ -359,6 +424,11 @@ void FeedHandler::apply(const FeedInput& in, std::vector<FeedEvent>& out) {
     return;
   }
   ++counters_.applied;
+  switch (book_.cross_state()) {  // only possible outside strict mode
+    case CrossState::None: break;
+    case CrossState::Locked: ++counters_.locked_updates; break;
+    case CrossState::Crossed: ++counters_.crossed_updates; break;
+  }
   if (state_ == FeedState::Live) {
     publish(in, h.type, h.timestamp, ref, what, out);
   }

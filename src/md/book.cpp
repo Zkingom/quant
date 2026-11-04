@@ -273,7 +273,7 @@ BookStatus Book::check_new(Side side, std::uint32_t shares, std::uint32_t price,
     return BookStatus::ZeroPrice;
   }
   const Levels& opp = levels(opposite(side));
-  if (!opp.empty()) {
+  if (strict_ && !opp.empty()) {
     const std::uint32_t o = opp.back().price;
     if (price == o) {
       return BookStatus::WouldLock;
@@ -366,6 +366,15 @@ BookStatus Book::replace(std::uint64_t old_ref, std::uint64_t new_ref, std::uint
 
 // ---------------------------------------------------------------- checks
 
+CrossState Book::cross_state() const noexcept {
+  if (bids_.empty() || asks_.empty()) {
+    return CrossState::None;
+  }
+  const std::uint32_t b = bids_.back().price;
+  const std::uint32_t a = asks_.back().price;
+  return b < a ? CrossState::None : (b == a ? CrossState::Locked : CrossState::Crossed);
+}
+
 std::uint64_t Book::state_hash() const noexcept {
   std::uint64_t h = kFnvOffset;
   for (const Side s : {Side::Buy, Side::Sell}) {
@@ -455,7 +464,7 @@ std::optional<std::string> Book::find_invariant_violation() const {
   if (free_count + live_orders_ != nodes_.size()) {
     return "free list size mismatch";
   }
-  if (!bids_.empty() && !asks_.empty() && bids_.back().price >= asks_.back().price) {
+  if (strict_ && cross_state() != CrossState::None) {
     return "book locked or crossed: bid " + std::to_string(bids_.back().price) + " ask " +
            std::to_string(asks_.back().price);
   }

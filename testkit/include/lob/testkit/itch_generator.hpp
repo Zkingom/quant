@@ -37,17 +37,30 @@ class StreamGenerator {
   explicit StreamGenerator(const GeneratorParams& p) : p_(p), rng_(p.seed), books_(static_cast<std::size_t>(p.instruments)) {}
 
   Buf generate() {
+    // A trading day in miniature: start of messages, directories, start of
+    // system hours, every instrument trading ('T'), market open ('Q'), the
+    // order flow, market close ('M'), end of system hours, end of messages.
     Buf out;
-    append_frame(out, system_event('O', tick()));
-    for (int i = 1; i <= p_.instruments; ++i) {
-      append_frame(out, stock_directory(static_cast<std::uint16_t>(i), symbol_of(i), tick()));
-    }
-    std::size_t emitted = 1 + static_cast<std::size_t>(p_.instruments);
-    while (emitted + 1 < p_.messages) {
-      append_frame(out, next_message());
+    std::size_t emitted = 0;
+    auto put = [&](const Buf& m) {
+      append_frame(out, m);
       ++emitted;
+    };
+    put(system_event('O', tick()));
+    for (int i = 1; i <= p_.instruments; ++i) {
+      put(stock_directory(static_cast<std::uint16_t>(i), symbol_of(i), tick()));
     }
-    append_frame(out, system_event('C', tick()));
+    put(system_event('S', tick()));
+    for (int i = 1; i <= p_.instruments; ++i) {
+      put(trading_action(static_cast<std::uint16_t>(i), symbol_of(i), 'T', tick()));
+    }
+    put(system_event('Q', tick()));
+    while (emitted + 3 < p_.messages) {
+      put(next_message());
+    }
+    put(system_event('M', tick()));
+    put(system_event('E', tick()));
+    put(system_event('C', tick()));
     return out;
   }
 
