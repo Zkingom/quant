@@ -2,6 +2,13 @@
 //
 //   lob_itch_market --input PATH|- [--shards N] [--max-orders N] [--queue N] [--hashes PATH]
 //   lob_itch_market --input PATH|- --bench-bytes B [--max-orders N]
+//   ... [--write-profile PATH] [--profile PATH [--profile-margin X]]
+//
+// --write-profile writes "locate symbol peak_levels" per instrument after
+// the replay. --profile pre-creates those instruments with level arrays
+// reserved (and capped) at max(16, ceil(peak_levels * margin)) per side,
+// default margin 2: the zero-allocation mode (D-058) -- instruments not in
+// the profile are still created on the fly and reported as "late".
 //
 // Replay mode streams the input (bounded memory; nothing stored) with
 // --shards 0 (default: single-threaded) or N worker shards, and prints the
@@ -19,6 +26,7 @@
 #include <sys/resource.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
@@ -39,6 +47,9 @@ struct Args {
   std::size_t queue{1U << 14};
   std::string hashes;
   std::size_t bench_bytes{0};
+  std::string write_profile;
+  std::string profile;
+  double profile_margin{2.0};
 };
 
 [[noreturn]] void usage(const char* m) {
@@ -76,6 +87,40 @@ void print_summary(const pl::MarketRun& r, double secs, const std::string& label
   std::printf("[%s] locked_updates=%llu crossed_updates=%llu resume_graces=%llu resolved=%llu\n", label.c_str(),
               static_cast<unsigned long long>(locked), static_cast<unsigned long long>(crossed),
               static_cast<unsigned long long>(graces), static_cast<unsigned long long>(resolved));
+  for (const auto& st : s.stocks) {
+    if (st.counters.graces > 0) {
+      std::printf("[%s]   resume grace: %s (locate %u) graces=%llu resolved=%llu crossed_updates=%llu\n", label.c_str(),
+                  st.symbol.c_str(), st.locate, static_cast<unsigned long long>(st.counters.graces),
+                  static_cast<unsigned long long>(st.counters.graces_resolved),
+                  static_cast<unsigned long long>(st.counters.crossed_updates));
+    }
+  }
+  std::size_t listed = 0;
+  for (const auto& st : s.stocks) {
+    if (st.state == md::FeedState::Stale && listed++ < 50) {
+      std::printf("[%s]   stale: %s (locate %u) reason %s\n", label.c_str(), st.symbol.c_str(), st.locate,
+                  std::string(md::to_string(st.stale_reason)).c_str());
+    }
+  }
+  {
+    std::vector<std::size_t> lv;
+    std::size_t sum = 0;
+    std::string top;
+    for (const auto& st : s.stocks) {
+      lv.push_back(st.peak_levels);
+      sum += st.peak_levels;
+    }
+    std::sort(lv.begin(), lv.end());
+    if (!lv.empty()) {
+      for (const auto& st : s.stocks) {
+        if (st.peak_levels == lv.back()) top = st.symbol;
+      }
+      std::printf("[%s] peak levels per side per instrument: max=%zu (%s) p99.9=%zu p99=%zu p50=%zu sum=%zu\n",
+                  label.c_str(), lv.back(), top.c_str(), lv[lv.size() * 999 / 1000], lv[lv.size() * 99 / 100],
+                  lv[lv.size() / 2], sum);
+    }
+  }
+  std::printf("[%s] instruments created during the replay (late): %zu\n", label.c_str(), s.late_instruments);
   std::printf("[%s] peak_live_orders:", label.c_str());
   for (const auto p : r.shard_peaks) std::printf(" %zu", p);
   std::printf(" (sum %zu%s)\n", s.pool_peak_sum, r.shard_peaks.size() == 1 ? ", exact market peak" : ", upper bound");
@@ -100,6 +145,9 @@ int main(int argc, char** argv) {
     else if (k == "--queue") a.queue = std::stoull(val());
     else if (k == "--hashes") a.hashes = val();
     else if (k == "--bench-bytes") a.bench_bytes = std::stoull(val());
+    else if (k == "--write-profile") a.write_profile = val();
+    else if (k == "--profile") a.profile = val();
+    else if (k == "--profile-margin") a.profile_margin = std::stod(val());
     else usage(("unknown option " + k).c_str());
   }
   if (a.input.empty()) usage("--input is required");
@@ -109,6 +157,20 @@ int main(int argc, char** argv) {
     return 1;
   }
   md::MarketConfig mc;
+  if (!a.profile.empty()) {
+    std::ifstream in(a.profile);
+    unsigned loc = 0;
+    std::string sym;
+    std::size_t peak = 0;
+    while (in >> loc >> sym >> peak) {
+      const auto lv = static_cast<std::size_t>(static_cast<double>(peak) * a.profile_margin + 0.999);
+      mc.instruments.push_back(md::InstrumentSpec{static_cast<std::uint16_t>(loc), md::make_symbol(sym), std::max<std::size_t>(16, lv)});
+    }
+    std::size_t total = 0;
+    for (const auto& i : mc.instruments) total += i.levels;
+    std::printf("profile: %zu instruments pre-created, %zu levels per side in total (%.1f MiB for both sides)\n",
+                mc.instruments.size(), total, static_cast<double>(total) * 2.0 * 24.0 / 1048576.0);
+  }
   pl::RunConfig rc;
   rc.queue_capacity = a.queue;
 
@@ -120,6 +182,10 @@ int main(int argc, char** argv) {
       const pl::MarketRun r = pl::run_market(src, mc, a.shards, rc);
       const double secs = static_cast<double>(pl::steady_ns() - t0) / 1e9;
       print_summary(r, secs, a.shards == 0 ? "single" : "shards=" + std::to_string(a.shards));
+      if (!a.write_profile.empty()) {
+        std::ofstream out(a.write_profile);
+        for (const auto& s : r.summary.stocks) out << s.locate << ' ' << s.symbol << ' ' << s.peak_levels << '\n';
+      }
       if (!a.hashes.empty()) {
         std::ofstream out(a.hashes);
         for (const auto& s : r.summary.stocks) {

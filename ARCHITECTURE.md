@@ -63,7 +63,7 @@
 | L3' md | `lob::md` | ITCH 5.0 子集解码与分帧、`md::Book` 订单簿重建、feed handler（过滤、缺口检测、恢复状态机）、MoldUDP64 | 无（不依赖 L1） | ✅ |
 | L3' pipeline | `lob::pipeline` + `lob_itch` | 解码线程 → SPSC → 订单簿线程、分块数据源、延迟记录、异步日志 | md, concurrent | ✅ |
 | L3' strategy / risk | `lob::strategy`、`lob::risk` | 策略接口（CRTP / 虚函数）与做市示例；事前风控与熔断 | md | ✅ |
-| L3' market-wide | `lob::md`（`OrderPool`、`Router`、`Shard`）+ `pipeline::run_market` + `lob_itch_market` | 全市场每只股票的订单簿：共享订单池、按 locate 分片的多线程（D-056） | md, pipeline | ✅ |
+| L3' market-wide | `lob::md`（`OrderPool`、`Router`、`Shard`）+ `pipeline::run_market` + `lob_itch_market` | 全市场每只股票的订单簿：共享订单池、按 locate 分片的多线程（D-056）；按实测画像预创建后零分配（D-058） | md, pipeline | ✅ |
 | L3' sim | `lob::sim` | 模拟交易所（L1 引擎 + 两个成交模型）与交易阶段（OMS） | engine, md, strategy, risk, pipeline | ✅ |
 
 模块划分理由：
@@ -221,7 +221,7 @@ L1 的 `core / book / engine / io` 源码不改动；L3' 只新增模块，唯�
 - 测试：`lob_concurrent_tests`、`lob_md_tests`、`lob_pipeline_tests`、`lob_trading_tests`（并发相关带 `concurrency` 标签，TSan 预设下运行）；
   `lob_pipeline_alloc_tests`、`lob_trading_alloc_tests`（替换 `operator new`，零分配）；libFuzzer 入口 `-DLOB_FUZZ=ON`。
 - 基准：`lob_itch_bench`（墙钟，本地）、`lob_itch_icount`（cachegrind 指令数，CI 门槛 `scripts/icount_gate.sh`）。
-- 详见 [MODULE_NOTES/L3.md](MODULE_NOTES/L3.md)、DESIGN §7、BENCHMARK §13–§14、DECISIONS D-046–D-056。
+- 详见 [MODULE_NOTES/L3.md](MODULE_NOTES/L3.md)、DESIGN §7、BENCHMARK §13–§14、DECISIONS D-046–D-058。
 
 ## 5. 构建拓扑
 

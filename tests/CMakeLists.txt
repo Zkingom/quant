@@ -140,6 +140,12 @@ lob_add_test_suite(lob_pipeline_alloc_tests
     pipeline/test_pipeline_alloc.cpp
   LIBS lob::pipeline lob::testkit lob_testkit_alloc_guard)
 
+# D-058: market-wide mode with pre-created instruments must not allocate.
+lob_add_test_suite(lob_market_alloc_tests
+  SOURCES
+    pipeline/test_market_alloc.cpp
+  LIBS lob::pipeline lob::testkit lob_testkit_alloc_guard)
+
 # L3' stage 3: strategy and risk must not allocate.
 lob_add_test_suite(lob_trading_alloc_tests
   SOURCES

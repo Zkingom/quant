@@ -2,7 +2,7 @@
 # Market-wide real-data validation (D-056), streaming, nothing stored but
 # small text reports.
 #
-#   scripts/itch_market_survey.sh OUT_DIR [URL] [BENCH_BYTES]
+#   scripts/itch_market_survey.sh OUT_DIR [URL] [BENCH_BYTES]     (SKIP_BENCH=1: run 1 only)
 #
 # Run 1: one download split by tee into lob_itch_market single-threaded and
 #        with 4 shards; per-instrument hash files compared with cmp.
@@ -15,7 +15,7 @@ cd "$(dirname "$0")/.."
 out="${1:?OUT_DIR}"
 url="${2:-https://emi.nasdaq.com/ITCH/Nasdaq%20ITCH/01302019.NASDAQ_ITCH50.gz}"
 bench_bytes="${3:-3000000000}"
-bin=build/gcc-release/apps/lob_itch_market
+bin="${LOB_ITCH_MARKET:-build/gcc-release/apps/lob_itch_market}"
 mkdir -p "${out}"
 rm -f "${out}/single.fifo"; mkfifo "${out}/single.fifo"
 
@@ -36,6 +36,8 @@ rm -f "${out}/single.fifo"
   if cmp -s "${out}/hashes_single.txt" "${out}/hashes_shards4.txt"; then echo "per-instrument hashes: IDENTICAL ($(wc -l < "${out}/hashes_single.txt") instruments)"; else echo "per-instrument hashes: DIFFER"; fi
   grep -h summary_hash "${out}/single.out" "${out}/shards4.out"
 } | tee "${out}/status.txt"
+
+[[ "${SKIP_BENCH:-0}" == "1" ]] && exit 0
 
 # Run 2: throughput on an in-memory prefix (head closes the pipe early; curl's exit status is then 23).
 curl -sS "${url}" 2> "${out}/curl2.err" | gzip -dc 2>/dev/null | head -c "${bench_bytes}" \

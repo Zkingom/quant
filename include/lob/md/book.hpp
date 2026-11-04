@@ -177,6 +177,10 @@ class Book {
   [[nodiscard]] std::uint64_t shares_ahead(std::uint64_t ref) const noexcept;
   [[nodiscard]] std::size_t order_count() const noexcept { return live_orders_; }
   [[nodiscard]] std::size_t level_count(Side side) const noexcept;
+  /// Largest number of levels this side has ever had (sizing, D-056).
+  [[nodiscard]] std::size_t peak_level_count(Side side) const noexcept {
+    return side == Side::Buy ? peak_bids_ : peak_asks_;
+  }
   [[nodiscard]] const Change& last_change() const noexcept { return last_change_; }
 
   /// Level `i` from the best (0 = best). Precondition: i < level_count(side).
@@ -244,6 +248,8 @@ class Book {
   Levels asks_;
   Change last_change_{};
   bool strict_{true};
+  std::size_t peak_bids_{0};
+  std::size_t peak_asks_{0};
 };
 
 template <typename F>
