@@ -18,6 +18,11 @@ add_library(lob_testkit_alloc_fault OBJECT src/alloc_fault.cpp)
 target_include_directories(lob_testkit_alloc_fault PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(lob_testkit_alloc_fault PUBLIC lob::engine PRIVATE lob_project_options)
 
+# Zero-allocation guard: counts allocations made by armed threads (L3').
+add_library(lob_testkit_alloc_guard OBJECT src/alloc_guard.cpp)
+target_include_directories(lob_testkit_alloc_guard PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(lob_testkit_alloc_guard PRIVATE lob_project_options)
+
 add_executable(lob_soak tools/soak.cpp)
 target_link_libraries(lob_soak PRIVATE lob::testkit lob_testkit_alloc_fault lob_project_options)
 

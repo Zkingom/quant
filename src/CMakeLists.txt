@@ -61,3 +61,11 @@ add_library(lob::md ALIAS lob_md)
 target_include_directories(lob_md PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_compile_features(lob_md PUBLIC cxx_std_20)
 target_link_libraries(lob_md PRIVATE lob_project_options)
+
+# L3' pipeline: decoder thread -> SPSC -> book thread, latency recorder,
+# chunk sources, asynchronous logger.
+add_library(lob_pipeline
+  pipeline/pipeline.cpp
+  pipeline/async_logger.cpp)
+add_library(lob::pipeline ALIAS lob_pipeline)
+target_link_libraries(lob_pipeline PUBLIC lob::md lob::concurrent PRIVATE lob_project_options)

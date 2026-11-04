@@ -76,6 +76,14 @@ lob_add_test_suite(lob_md_tests
   LIBS lob::md lob::testkit)
 target_compile_definitions(lob_md_tests PRIVATE LOB_GOLDEN_DIR="${CMAKE_CURRENT_SOURCE_DIR}/golden")
 
+# L3' stage 2: pipeline equivalence, latency recorder, sources, async logger.
+lob_add_test_suite(lob_pipeline_tests
+  SOURCES
+    pipeline/test_pipeline.cpp
+  LIBS lob::pipeline lob::testkit
+  LABELS concurrency)
+target_compile_definitions(lob_pipeline_tests PRIVATE LOB_GOLDEN_DIR="${CMAKE_CURRENT_SOURCE_DIR}/golden")
+
 # libFuzzer entry (L3' 1e): opt-in, Clang only, not part of CTest. The md
 # sources are compiled into the fuzzer directly so that they carry coverage
 # instrumentation. Run with scripts/fuzz_itch.sh.
@@ -113,6 +121,12 @@ lob_add_test_suite(lob_io_alloc_tests
   SOURCES
     io/test_io_faults.cpp
   LIBS lob::io lob::testkit lob_testkit_alloc_fault)
+
+# L3' stage 2: the hot path must not allocate (operator new replaced).
+lob_add_test_suite(lob_pipeline_alloc_tests
+  SOURCES
+    pipeline/test_pipeline_alloc.cpp
+  LIBS lob::pipeline lob::testkit lob_testkit_alloc_guard)
 endif()
 
 # CLI-level tests (Linux shell; they run the real binaries).
