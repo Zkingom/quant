@@ -1,0 +1,37 @@
+# L3' stage 4. Correctness gate (six presets + TSan) and the instruction-
+# count performance gate. Wall-clock benchmarks are never run here (shared
+# runners are too noisy); see BENCHMARK §13 and scripts/icount_gate.sh.
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04   # pinned image: GCC 13.3, Clang 18
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build g++ clang libclang-rt-18-dev libgtest-dev
+      - name: Allow TSan's shadow mapping (high-entropy ASLR on recent kernels)
+        run: sudo sysctl vm.mmap_rnd_bits=28
+      - name: Six presets + TSan
+        run: bash scripts/check.sh --tsan
+
+  icount:
+    runs-on: ubuntu-24.04   # the baseline is tied to this image's GCC, valgrind and glibc
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build g++ valgrind libgtest-dev
+      - name: Toolchain versions
+        run: g++ --version | head -1; valgrind --version; ldd --version | head -1
+      - name: Instruction-count gate (cachegrind Ir, tolerance 2%)
+        run: bash scripts/icount_gate.sh

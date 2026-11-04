@@ -1,9 +1,33 @@
 # Deterministic Limit Order Book & Matching Engine
 
-C++20 实现的单线程、确定性、正确性优先的单标的限价订单簿与撮合引擎。
-目标：价格-时间优先撮合、可复现回放与快照、严格测试（差分 / Golden / Sanitizer）、可审计的基准。
+C++20 实现的单线程、确定性、正确性优先的单标的限价订单簿与撮合引擎（L1/L2），
+以及在其上的 L3'：Nasdaq TotalView-ITCH 5.0 行情解码与订单簿重建、无锁 SPSC 多线程流水线、策略与事前风控。
+目标：价格-时间优先撮合、可复现回放与快照、严格测试（差分 / Golden / Sanitizer / TSan / fuzz）、可审计的基准。
 
-## 当前状态（2026-10-25）
+## 关键数字
+
+> **待本机复测**：下表墙钟数字测于云端容器（4 vCPU，Linux 6.18，GCC 13.3 `-O3`，2026-11-04），**不是**作者的 WSL2 环境，
+> 只用于验证测量方法可行（BENCHMARK §13–§14）。指令数与正确性数字与机器无关。本机复测（WSL 中、仓库根目录）：
+>
+> ```bash
+> cmake --preset gcc-release && cmake --build --preset gcc-release && taskset -c 2,4 build/gcc-release/bench/lob_itch_bench --messages 1000000 --reps 5
+> ```
+
+| 项 | 数值 | 说明 |
+|---|---|---|
+| ITCH 回放吞吐（单线程，含解码 + 订单簿） | 7.7–8.9 M msg/s（待本机复测） | 合成流 1 M 条，5 次中位数；两次会话间相差可达 2 倍 |
+| 解码一跳 p50 / p99 | 14–21 ns / 48–80 ns（待本机复测） | 扣除计时开销 13 ns |
+| 订单簿一跳 p50 / p99 | 9–13 ns / 223–265 ns（待本机复测） | 单线程模式 |
+| 跨线程交接（限速 1 msg/µs）p50 | 350–650 ns（待本机复测） | p99 在重复间相差 15 倍：虚拟化噪声 |
+| 风控单次检查 | ≈ 8 ns（待本机复测） | 7 项检查全为整数比较 |
+| CRTP vs 虚函数（做市策略一次 `on_book_update`） | 13.3 vs 13.1 ns（待本机复测） | 分辨不出差别，见 BENCHMARK §14 |
+| 回放峰值内存 | ≈ 47 MB，与输入大小无关（待本机复测） | 33 MB / 328 MB / 984 MB（管道）输入相同 |
+| 多线程 == 单线程回放 | 事件流、订单簿、订单 / 成交 / 持仓哈希逐字节一致 | GCC 与 Clang 固定为同一常量 |
+| 热路径分配 | 0 次 | 解码 → SPSC → 订单簿 → 策略 → 风控（L1 撮合引擎除外，D-046） |
+| CI 性能门槛（cachegrind Ir，200 k 条） | decode 33.5 M / book 118.8 M / trading 264.2 M 条指令 | 容差 +2%，`scripts/icount_gate.sh` |
+| 交易状态感知 | 只在常规时段 + 个股交易中强制"永不交叉"；停牌 / 集合竞价允许交叉、计数并标记；非交易状态撤单、拒新单 | D-054 |
+
+## 当前状态（2026-11-04）
 
 | 模块 | 状态 |
 |---|---|
@@ -16,6 +40,11 @@ C++20 实现的单线程、确定性、正确性优先的单标的限价订单�
 | M6 bench：四层基准、profiling、优化实验 | ✅ 2026-10-22 验收：基线与对照数据见 [BENCHMARK.md](BENCHMARK.md)，实验见 MODULE_NOTES/M6 |
 | L1 冻结评审 | ✅ 2026-10-24 通过（[MODULE_NOTES/L1_REVIEW.md](MODULE_NOTES/L1_REVIEW.md)） |
 | L2 性能工程：基线开关 `LOB_BASELINE`、等价性、峰值 RSS、一条命令复现 | ✅ 2026-10-25（BENCHMARK §12、[MODULE_NOTES/L2_EQUIVALENCE.md](MODULE_NOTES/L2_EQUIVALENCE.md)） |
+| L3' 阶段 1 行情层：SPSC、ITCH 5.0 解码、`md::Book`、缺口恢复、fuzz / 截断 | ✅ 2026-11-04（[MODULE_NOTES/L3.md](MODULE_NOTES/L3.md)） |
+| L3' 阶段 2 流水线与延迟：解码线程 → SPSC → 订单簿线程、延迟瀑布、零分配、异步日志 | ✅ 2026-11-04（BENCHMARK §13） |
+| L3' 阶段 3 策略与风控：CRTP 策略、事前风控与熔断、L1 引擎上的两种成交模型、回放 == 流水线 | ✅ 2026-11-04（BENCHMARK §14） |
+| L3' 阶段 4 工程化：CI（六预设 + TSan + cachegrind 指令数门槛）、文档 | ✅ 2026-11-04（[docs/INTERVIEW_QA.md](docs/INTERVIEW_QA.md)） |
+| L3' 追加：交易状态感知（Trading Action / System Event，D-054） | ✅ 2026-11-04 |
 
 撮合引擎、回放与恢复已可用；性能数据只适用于 WSL2 上的测量环境（BENCHMARK §1），不代表裸机。掉电持久性未验证，见 DESIGN §6.6。 计划与验收门槛见 [ROADMAP.md](ROADMAP.md)。
 
@@ -25,6 +54,12 @@ C++20 实现的单线程、确定性、正确性优先的单标的限价订单�
 
 ```bash
 sudo apt-get install -y cmake ninja-build g++ clang libgtest-dev
+```
+
+L3' 的 Clang TSan 预设与 libFuzzer 还需要 Clang 运行库，CI 指令数门槛需要 valgrind：
+
+```bash
+sudo apt-get install -y libclang-rt-18-dev valgrind
 ```
 
 单个预设：
@@ -37,6 +72,12 @@ cmake --preset gcc-debug && cmake --build --preset gcc-debug && ctest --preset g
 
 ```bash
 scripts/check.sh
+```
+
+六个预设 + 两个 TSan 预设（只跑 `concurrency` 标签的测试，L3' 每次提交前运行）：
+
+```bash
+scripts/check.sh --tsan
 ```
 
 示例：
@@ -177,6 +218,33 @@ scripts/l2_reproduce.sh
 QUICK=1 scripts/l2_reproduce.sh /tmp/l2_smoke
 ```
 
+## L3' 行情回放（ITCH 5.0）
+
+真实 ITCH 数据不进仓库。下载一个 Nasdaq 公开样本日到 `data/itch/`（已在 `.gitignore` 中；文件数 GB，流式下载、可断点续传）：
+
+```bash
+scripts/fetch_itch.sh
+```
+
+边解压边回放一只股票（管道 + 固定 1 MiB 读缓冲：内存与文件大小无关，默认配置峰值约 50 MB，开启默认延迟采样约 100 MB）：
+
+```bash
+gzip -dc data/itch/01302019.NASDAQ_ITCH50.gz | build/gcc-release/apps/lob_itch --input - --symbol AAPL --stride 400
+```
+
+`--mode single` 为单线程回放；两种模式输出的 `event_hash` / `book_hash` 应相同。选项见 `apps/lob_itch.cpp` 头部。
+延迟瀑布与策略 / 风控测量见上方"关键数字"的复测命令；CI 指令数门槛：
+
+```bash
+scripts/icount_gate.sh
+```
+
+libFuzzer（Clang，60 秒）：
+
+```bash
+scripts/fuzz_itch.sh 60
+```
+
 ## 文档
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) — 模块划分、依赖与数据流
@@ -186,6 +254,7 @@ QUICK=1 scripts/l2_reproduce.sh /tmp/l2_smoke
 - [BENCHMARK.md](BENCHMARK.md) — 基准方法与实测结果
 - [MODULE_NOTES/](MODULE_NOTES/) — 各模块技术说明与修改任务
 - [AI_USAGE.md](AI_USAGE.md) — AI 参与情况披露
+- [docs/INTERVIEW_QA.md](docs/INTERVIEW_QA.md) — L3' 设计问答（memory order、确定性、延迟测量、缺口恢复、风控、指令数门槛）与 10 道追问
 
 ## 目录结构
 
@@ -197,7 +266,9 @@ examples/               可运行示例
 cmake/                  警告与 Sanitizer 配置
 scripts/check.sh        全预设构建 + 测试
 scripts/mutation/       模块变异测试脚本
-apps/                   lob_replay（回放 / 恢复 / 校验 CLI）
+apps/                   lob_replay（回放 / 恢复 / 校验 CLI）、lob_itch（L3' ITCH 回放）
+docs/                   面试问答
+.github/workflows/      CI
 testkit/                测试基础设施（仅测试构建）、长跑工具 lob_soak、命令生成器 lob_gen_commands
 tests/golden/           Golden 场景（命令、日志、快照）
 ```

@@ -21,7 +21,7 @@
 
 ```
             ┌──────────────────────────────────────────────┐
-  apps/     │ lob_replay (CLI)   lob_bench   [L3] gateway  │
+  apps/     │ lob_replay (CLI)   lob_bench   lob_itch (L3')│
             └──────┬───────────────────┬───────────────────┘
                    │                   │
   M5 io     ┌──────▼──────┐     ┌──────▼──────┐
@@ -58,7 +58,12 @@
 | M4 testkit | `lob::testkit`（仅测试） | 参考引擎、事件审计器、工作负载画像与生成器、差分执行器、分配故障注入、长跑工具 `lob_soak` | core, book, engine | ✅ |
 | M5 io | `lob::io` + `lob_replay` | 文本格式 v1、日志（批次 + 校验和）、快照文件、恢复（事件折叠）、提交会话、verify；`lob_replay` CLI；Golden 与崩溃测试 | core, engine | ✅ |
 | M6 bench | `bench/`（`lob_bench`，位于 `bench/` 而不是 `apps/`，只在启用测试时构建） | Book / Engine / Replay / Session 四层的吞吐与延迟分布（p50/p95/p99/p99.9） | book, engine, io, testkit（只用于计时区外的生成） | ✅（2026-10-22 验收） |
-| L3 gateway | `lob_gateway` | 单客户端 TCP 网关（有条件执行） | engine, io | 📝 |
+| ~~L3 gateway~~ | — | 单客户端 TCP 网关：2026-11-04 废弃，由 L3' 替代（D-046） | — | 已废弃 |
+| L3' concurrent | `lob::concurrent`（头文件） | 无锁 SPSC 环形队列 | 无 | ✅ |
+| L3' md | `lob::md` | ITCH 5.0 子集解码与分帧、`md::Book` 订单簿重建、feed handler（过滤、缺口检测、恢复状态机）、MoldUDP64 | 无（不依赖 L1） | ✅ |
+| L3' pipeline | `lob::pipeline` + `lob_itch` | 解码线程 → SPSC → 订单簿线程、分块数据源、延迟记录、异步日志 | md, concurrent | ✅ |
+| L3' strategy / risk | `lob::strategy`、`lob::risk` | 策略接口（CRTP / 虚函数）与做市示例；事前风控与熔断 | md | ✅ |
+| L3' sim | `lob::sim` | 模拟交易所（L1 引擎 + 两个成交模型）与交易阶段（OMS） | engine, md, strategy, risk, pipeline | ✅ |
 
 模块划分理由：
 
@@ -175,8 +180,51 @@ scripts/bench.sh · bench_compare.sh · bench_env_compare.sh · bench_report.py 
   → `bench_report.py` 汇总（多进程中位数、范围、A/B 噪声判定）。
 - CTest 中只有 `bench.smoke`（`--quick`）；性能数据与证据见 [BENCHMARK.md](BENCHMARK.md) 与 [MODULE_NOTES/M6_performance.md](MODULE_NOTES/M6_performance.md)。
 
+## 4.1 L3'：行情 → 流水线 → 策略与风控（✅ 2026-11-04）
+
+L1 的 `core / book / engine / io` 源码不改动；L3' 只新增模块，唯一的依赖点是 `lob::sim` 通过 `MatchingEngine::process` 使用 L1 引擎。
+
+```
+ ITCH 文件 / 管道 / MoldUDP64 包
+        │  read(2) 到固定大小缓冲（不 mmap；内存上限由配置决定）
+        ▼
+ ┌──────────────── 解码线程 ────────────────┐
+ │ FrameCursor（2 字节长度前缀，零拷贝 span） │
+ │ itch::decode（9 种子集消息，其余按规范跳过）│──▶ Item{FeedInput{seq, kind, msg}, t_decode, t_push}
+ └──────────────────────────────────────────┘
+        │  SpscQueue<Item>（release/acquire，满即自旋：无损背压）
+        ▼
+ ┌──────────────────────── 订单簿线程 ─────────────────────────────────────────────┐
+ │ FeedHandler：序号 / 时间戳检查 → Stock Directory 过滤 → md::Book（先校验后修改）   │
+ │   状态 Uninitialized / Live / Recovering / Stale；非 Live 不发布                   │
+ │   交易阶段（S 会话码 + H 交易状态）：只在 Q 时段且 T 时强制永不交叉（D-054）         │
+ │        │ FeedEvent（BBO + 本条消息的方向 / 价格 / 数量）                            │
+ │        ▼                                                                         │
+ │ TradingStage（×2：乐观 / 保守成交模型）                                          │
+ │   SimExchange.on_market ──▶ 我们挂单的成交 ──▶ OMS ──▶ strategy.on_fill           │
+ │   strategy.on_book_update / on_timer（CRTP，ITCH 时间驱动）                         │
+ │        │ OrderRequest                                                             │
+ │        ▼                                                                         │
+ │   RiskGate.check_new（熔断 → 交易阶段 → 参考价 → 乌龙指 → 价格带 → 持仓 → 令牌桶）  │
+ │        │ 通过                                                                     │
+ │        ▼                                                                         │
+ │   SimExchange.submit ──▶ L1 MatchingEngine::process（未改动）──▶ 事件 ──▶ 成交回报   │
+ └──────────────────────────────────────────────────────────────────────────────────┘
+        │  每跳 TSC 时间戳 ──▶ LatencyRecorder（预分配）      AsyncLogger（每线程一个 SPSC 通道）──▶ 后台线程写出
+
+ 单线程回放（run_single）= 同一个解码函数 + 同一个订单簿线程对象，在一个线程里交替执行；
+ 两种模式的事件流、订单簿、订单 / 成交 / 持仓哈希逐字节一致（tests/pipeline、tests/trading）。
+```
+
+- 依赖方向：`lob::sim → lob::engine (L1)、lob::pipeline → lob::md、lob::concurrent`；`lob::md` 不依赖任何 L1 模块。
+- 测试：`lob_concurrent_tests`、`lob_md_tests`、`lob_pipeline_tests`、`lob_trading_tests`（并发相关带 `concurrency` 标签，TSan 预设下运行）；
+  `lob_pipeline_alloc_tests`、`lob_trading_alloc_tests`（替换 `operator new`，零分配）；libFuzzer 入口 `-DLOB_FUZZ=ON`。
+- 基准：`lob_itch_bench`（墙钟，本地）、`lob_itch_icount`（cachegrind 指令数，CI 门槛 `scripts/icount_gate.sh`）。
+- 详见 [MODULE_NOTES/L3.md](MODULE_NOTES/L3.md)、DESIGN §7、BENCHMARK §13–§14、DECISIONS D-046–D-054。
+
 ## 5. 构建拓扑
 
 - 构建系统：CMake ≥ 3.25 + Ninja，`CMakePresets.json` 定义 GCC/Clang × Debug/Release/ASan+UBSan 六个预设。
 - 开发环境：Windows 宿主 + WSL2 Ubuntu 24.04（构建与测试均在 Linux 内执行）。
-- 统一入口：`scripts/check.sh [preset...]`（配置 → 构建 → CTest）。
+- 统一入口：`scripts/check.sh [--tsan] [preset...]`（配置 → 构建 → CTest）；`--tsan` 追加 `gcc-tsan` / `clang-tsan`（只跑 `concurrency` 标签，D-047）。
+- CI：`.github/workflows/ci.yml`（六预设 + TSan；cachegrind 指令数门槛）。
