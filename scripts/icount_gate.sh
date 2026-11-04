@@ -52,7 +52,7 @@ if ! log="$(cmake -S . -B "${build}" -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE
 fi
 
 compiler="$(g++ --version | head -1)"
-vg="$(valgrind --version) / $(ldd --version | head -1)"  # libc: memcpy/memmove are in the measured region
+vg="$(valgrind --version) / $(ldd --version 2>/dev/null | sed -n 1p)"  # libc: memcpy/memmove are in the measured region
 declare -A ir digest
 for s in decode book trading; do
   out="${build}/cachegrind.${s}.out"

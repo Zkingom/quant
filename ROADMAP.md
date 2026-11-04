@@ -83,7 +83,7 @@ Golden Test 依赖文本格式，格式稳定后再固化。
 
 ### 2.3 Level 3'（系统扩展，替代原 TCP 网关，D-046）
 
-> 现状（2026-11-04）：阶段 1–4 全部完成（MODULE_NOTES/L3.md）；真实 ITCH 文件、本机墙钟数字与 GitHub Actions 首次运行见其中的未验证项。
+> 现状（2026-11-04）：阶段 1–4 全部完成（MODULE_NOTES/L3.md）；CI 首次运行已通过；真实 ITCH 文件与本机墙钟数字见其中的未验证项。
 > 原 L3（单客户端 TCP 网关）于 2026-11-04 由作者决定废弃，替换为下列 L3'。L1 冻结的 `core / book / engine / io`
 > 源码与测试不改动；L3' 只新增模块。每个子阶段独立提交；提交前六个预设零警告、`scripts/check.sh` 全绿，
 > 并发相关测试另在 TSan 预设下通过（`scripts/check.sh --tsan`）。
