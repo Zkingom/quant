@@ -1,3 +1,11 @@
+# L3' concurrency primitives (header-only): SPSC ring buffer.
+add_library(lob_concurrent INTERFACE)
+add_library(lob::concurrent ALIAS lob_concurrent)
+target_include_directories(lob_concurrent INTERFACE ${PROJECT_SOURCE_DIR}/include)
+target_compile_features(lob_concurrent INTERFACE cxx_std_20)
+find_package(Threads REQUIRED)
+target_link_libraries(lob_concurrent INTERFACE Threads::Threads)
+
 # M1 core: types, commands, reject reasons, config, stateless validation.
 add_library(lob_core
   core/config.cpp)
@@ -42,3 +50,4 @@ target_link_libraries(lob_io PUBLIC lob::engine PRIVATE lob_project_options)
 # Visible to everything that links lob::io (tests, bench), so they can tell
 # which implementation they run against.
 target_compile_definitions(lob_io PUBLIC LOB_BASELINE=$<BOOL:${LOB_BASELINE}>)
+

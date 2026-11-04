@@ -14,10 +14,15 @@ include(GoogleTest)
 
 # One test executable per module: lob_<module>_tests.
 function(lob_add_test_suite name)
-  cmake_parse_arguments(ARG "" "" "SOURCES;LIBS" ${ARGN})
+  cmake_parse_arguments(ARG "" "" "SOURCES;LIBS;LABELS" ${ARGN})
   add_executable(${name} ${ARG_SOURCES})
   target_link_libraries(${name} PRIVATE ${ARG_LIBS} GTest::gtest_main lob_project_options)
-  gtest_discover_tests(${name} DISCOVERY_MODE PRE_TEST)
+  if(ARG_LABELS)
+    # Labels select test subsets, e.g. the TSan presets run only "concurrency".
+    gtest_discover_tests(${name} DISCOVERY_MODE PRE_TEST PROPERTIES LABELS "${ARG_LABELS}")
+  else()
+    gtest_discover_tests(${name} DISCOVERY_MODE PRE_TEST)
+  endif()
 endfunction()
 
 lob_add_test_suite(lob_core_tests
@@ -54,6 +59,14 @@ lob_add_test_suite(lob_io_tests
   LIBS lob::io lob::testkit)
 target_compile_definitions(lob_io_tests PRIVATE LOB_GOLDEN_DIR="${CMAKE_CURRENT_SOURCE_DIR}/golden")
 
+# L3' 1a: SPSC queue (semantics, differential vs std::queue, two-thread stress).
+lob_add_test_suite(lob_concurrent_tests
+  SOURCES
+    concurrent/test_spsc_queue.cpp
+  LIBS lob::concurrent lob::testkit
+  LABELS concurrency)
+
+if(LOB_REPLACE_OPERATOR_NEW)
 # Separate executables: lob_testkit_alloc_fault replaces the global
 # operator new/delete of the binary it is linked into.
 lob_add_test_suite(lob_book_alloc_tests
@@ -71,6 +84,7 @@ lob_add_test_suite(lob_io_alloc_tests
   SOURCES
     io/test_io_faults.cpp
   LIBS lob::io lob::testkit lob_testkit_alloc_fault)
+endif()
 
 # CLI-level tests (Linux shell; they run the real binaries).
 add_test(NAME cli.golden

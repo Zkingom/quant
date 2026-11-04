@@ -30,6 +30,17 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 include(CompilerWarnings)
 include(Sanitizers)
 
+# Targets that replace the global operator new/delete (allocation-failure
+# injection, allocation counting) cannot link under TSan: Clang's TSan
+# runtime defines operator new itself. The TSan presets only run tests
+# labelled "concurrency", none of which needs a replacement (D-047).
+if("thread" IN_LIST LOB_SANITIZERS)
+  set(LOB_REPLACE_OPERATOR_NEW OFF)
+  message(STATUS "TSan build: targets replacing operator new are not built")
+else()
+  set(LOB_REPLACE_OPERATOR_NEW ON)
+endif()
+
 add_subdirectory(src)
 add_subdirectory(apps)
 
