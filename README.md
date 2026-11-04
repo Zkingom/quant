@@ -22,6 +22,7 @@ C++20 实现的单线程、确定性、正确性优先的单标的限价订单�
 | 风控单次检查 | ≈ 8 ns（待本机复测） | 7 项检查全为整数比较 |
 | CRTP vs 虚函数（做市策略一次 `on_book_update`） | 13.3 vs 13.1 ns（待本机复测） | 分辨不出差别，见 BENCHMARK §14 |
 | 回放峰值内存 | ≈ 47 MB，与输入大小无关（待本机复测） | 33 MB / 328 MB / 984 MB（管道）输入相同 |
+| 真实数据回放（Nasdaq 2019-01-30 全天，AAPL） | 11.2 GB / 3.68 亿帧，195.7 s，峰值 RSS 98.7 MiB；0 次 Stale、0 次锁定 / 交叉 | 云端流式（`curl \| gzip -dc \| lob_itch`），耗时受下载速度限制（24 MB/s） |
 | 多线程 == 单线程回放 | 事件流、订单簿、订单 / 成交 / 持仓哈希逐字节一致 | GCC 与 Clang 固定为同一常量 |
 | 热路径分配 | 0 次 | 解码 → SPSC → 订单簿 → 策略 → 风控（L1 撮合引擎除外，D-046） |
 | CI 性能门槛（cachegrind Ir，200 k 条） | decode 33.5 M / book 118.8 M / trading 264.2 M 条指令 | 容差 +2%，`scripts/icount_gate.sh` |
@@ -45,6 +46,7 @@ C++20 实现的单线程、确定性、正确性优先的单标的限价订单�
 | L3' 阶段 3 策略与风控：CRTP 策略、事前风控与熔断、L1 引擎上的两种成交模型、回放 == 流水线 | ✅ 2026-11-04（BENCHMARK §14） |
 | L3' 阶段 4 工程化：CI（六预设 + TSan + cachegrind 指令数门槛）、文档 | ✅ 2026-11-04（[docs/INTERVIEW_QA.md](docs/INTERVIEW_QA.md)） |
 | L3' 追加：交易状态感知（Trading Action / System Event，D-054） | ✅ 2026-11-04 |
+| L3' 真实数据验证：Nasdaq 2019-01-30 全天，AAPL，流式不落盘 | ✅ 2026-11-04：0 次 Stale、0 次锁定 / 交叉，开盘未误判；停牌恢复路径未覆盖（AAPL 当天无停牌），见 [MODULE_NOTES/L3.md](MODULE_NOTES/L3.md) |
 
 撮合引擎、回放与恢复已可用；性能数据只适用于 WSL2 上的测量环境（BENCHMARK §1），不代表裸机。掉电持久性未验证，见 DESIGN §6.6。 计划与验收门槛见 [ROADMAP.md](ROADMAP.md)。
 
@@ -233,6 +235,19 @@ gzip -dc data/itch/01302019.NASDAQ_ITCH50.gz | build/gcc-release/apps/lob_itch -
 ```
 
 `--mode single` 为单线程回放；两种模式输出的 `event_hash` / `book_hash` 应相同。选项见 `apps/lob_itch.cpp` 头部。
+
+也可以完全不落盘，边下载边回放（2026-11-04 在云端实测：AAPL 全天 195.7 s，峰值 RSS 约 99 MiB，结果见 MODULE_NOTES/L3.md "真实数据验证"）：
+
+```bash
+curl -sS --fail "https://emi.nasdaq.com/ITCH/Nasdaq%20ITCH/01302019.NASDAQ_ITCH50.gz" | gzip -dc | build/gcc-release/apps/lob_itch --input - --symbol AAPL --stride 400
+```
+
+复现真实数据验证（一次下载经 `tee` 同时送入统计工具 `lob_itch_survey`、`lob_itch` 流水线模式与单线程模式，不落盘；
+输出各类消息计数、交易阶段、锁定 / 交叉、每个 Stale 告警及前后消息、全市场日内停牌列表，并比较两种模式的哈希）：
+
+```bash
+scripts/itch_real_survey.sh AAPL /tmp/itch_aapl
+```
 延迟瀑布与策略 / 风控测量见上方"关键数字"的复测命令；CI 指令数门槛：
 
 ```bash
