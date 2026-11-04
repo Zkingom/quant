@@ -554,4 +554,37 @@ TEST(TradingStage, MarketCloseCancelsQuotes) {
   EXPECT_FALSE(t.risk().tripped());
 }
 
+TEST(TradingStage, ResumeGraceKeepsQuotesOffUntilTheCrossExecutionsArrive) {
+  // SXTC-like reopening (D-055): pause, the book crosses, Cross Trade and
+  // Trading Action 'T' together, the cross executions only afterwards.
+  tk::Buf s = trading_open();
+  const std::string sym = tk::symbol_of(1);
+  tk::append_frame(s, tk::add_order(1, 1, 'B', 500, sym, 999'000, 2));          // seq 4
+  tk::append_frame(s, tk::add_order(1, 2, 'S', 500, sym, 1'001'000, 3));        // seq 5: MM quotes
+  tk::append_frame(s, tk::trading_action(1, sym, 'P', 4, "LUDP"));              // seq 6: pause
+  tk::append_frame(s, tk::add_order(1, 3, 'B', 300, sym, 1'002'000, 5));        // seq 7: crosses
+  tk::append_frame(s, tk::cross_trade(1, sym, 300, 1'001'000, 'H', 6));         // seq 8
+  tk::append_frame(s, tk::trading_action(1, sym, 'T', 6));                      // seq 9: grace
+  tk::append_frame(s, tk::order_executed_price(1, 3, 300, 0, 'N', 1'001'000, 7));  // seq 10: clean -> resolved
+  st::MarketMaker mm{};
+  sim::TradingStage<st::MarketMaker> t{trading_cfg(sim::FillModel::Optimistic), mm};
+  struct Probe {
+    sim::TradingStage<st::MarketMaker>& t;
+    std::uint64_t accepted_in_grace = 99;
+    void on_feed(const md::FeedInput& in, std::span<const md::FeedEvent> ev, const md::FeedHandler& f,
+                 std::uint64_t ts, pl::LatencyRecorder* r, bool smp) {
+      t.on_feed(in, ev, f, ts, r, smp);
+      if (in.seq == 9) accepted_in_grace = t.digest().n_accepted;
+    }
+  } probe{t};
+  pl::BookStage<Probe> stage{feed_cfg(), probe};
+  pl::MemorySource src{s};
+  pl::run_single(src, stage, pl::RunConfig{});
+  EXPECT_EQ(stage.feed().state(), md::FeedState::Live) << "no false Stale at the resumption";
+  EXPECT_EQ(stage.feed().counters().graces_resolved, 1U);
+  EXPECT_EQ(probe.accepted_in_grace, 2U) << "no new quotes while the grace runs";
+  EXPECT_EQ(t.digest().n_accepted, 4U) << "requoted once the grace resolved";
+  EXPECT_FALSE(t.risk().tripped());
+}
+
 }  // namespace

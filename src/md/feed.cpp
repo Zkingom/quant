@@ -20,6 +20,7 @@ std::string_view kind_name(FeedEvent::Kind k) noexcept {
     case FeedEvent::Kind::Alert: return "ALERT";
     case FeedEvent::Kind::System: return "SYSTEM";
     case FeedEvent::Kind::Trading: return "TRADING";
+    case FeedEvent::Kind::Cross: return "CROSS";
   }
   return "?";
 }
@@ -57,6 +58,8 @@ std::string_view to_string(AlertReason r) noexcept {
     case AlertReason::SnapshotLoaded: return "SNAPSHOT_LOADED";
     case AlertReason::SnapshotRejected: return "SNAPSHOT_REJECTED";
     case AlertReason::CrossedAtResume: return "CROSSED_AT_RESUME";
+    case AlertReason::ResumeGrace: return "RESUME_GRACE";
+    case AlertReason::GraceResolved: return "GRACE_RESOLVED";
   }
   return "?";
 }
@@ -115,6 +118,10 @@ void append_text(const FeedEvent& e, std::string& out) {
   out += e.trading == 0 ? '-' : e.trading;
   out += " cross=";
   out += e.cross;
+  if (e.grace != '-') {
+    out += " grace=";
+    out += e.grace;
+  }
   if (e.reason == AlertReason::SequenceGap) {
     out += " gap=";
     out += std::to_string(e.gap_first);
@@ -148,6 +155,9 @@ std::uint64_t hash_event(const FeedEvent& e, std::uint64_t h) noexcept {
   mix(h, static_cast<std::uint8_t>(e.session), 1);
   mix(h, static_cast<std::uint8_t>(e.trading), 1);
   mix(h, static_cast<std::uint8_t>(e.cross), 1);
+  if (e.grace != '-') {  // optional field, like its text
+    mix(h, static_cast<std::uint8_t>(e.grace), 1);
+  }
   return h;
 }
 
@@ -159,6 +169,7 @@ FeedHandler::FeedHandler(const FeedConfig& config, RecoverySource* recovery)
 void FeedHandler::fill_bbo(FeedEvent& e) const noexcept {
   e.session = session_;
   e.trading = trading_;
+  e.grace = in_grace_ ? 'G' : '-';
   switch (book_.cross_state()) {
     case CrossState::None: e.cross = '-'; break;
     case CrossState::Locked: e.cross = 'L'; break;
@@ -176,6 +187,9 @@ void FeedHandler::fill_bbo(FeedEvent& e) const noexcept {
 
 void FeedHandler::go(FeedState s, const FeedInput* in, AlertReason why, std::uint8_t detail,
                      std::vector<FeedEvent>& out) {
+  if (s == FeedState::Stale) {
+    in_grace_ = false;  // a Stale book has no grace left to run
+  }
   FeedEvent e{};
   e.kind = (s != state_) ? FeedEvent::Kind::StateChange : FeedEvent::Kind::Alert;
   state_ = s;
@@ -275,6 +289,9 @@ void FeedHandler::process(const FeedInput& in, std::vector<FeedEvent>& out) {
     return;
   }
   last_ts_ = h.timestamp;
+  if (in_grace_) [[unlikely]] {
+    check_grace_timeout(in, out);  // cold, out of line: keeps this hot path a leaf with a tail call
+  }
   if (state_ == FeedState::Stale) {
     // The book is unusable, but the trading phase is still followed so that
     // a later snapshot resync knows which rules apply.
@@ -301,33 +318,93 @@ bool FeedHandler::track_phase(const FeedInput& in) {
       return true;
     }
   }
+  if (const auto* ct = std::get_if<itch::CrossTrade>(&in.msg)) {
+    if (ct->stock == config_.symbol) {
+      cross_seen_ = true;
+      ++counters_.cross_trades;
+      return true;
+    }
+  }
   return false;
 }
 
 void FeedHandler::update_strictness(const FeedInput& in, std::vector<FeedEvent>& out) {
-  const bool strict = session_ == 'Q' && trading_ == 'T';
-  if (strict == book_.strict()) {
+  const bool wanted = session_ == 'Q' && trading_ == 'T';
+  if (!wanted) {
+    if (book_.strict() || in_grace_) {
+      book_.set_strict(false);
+      in_grace_ = false;     // a new halt / pause / close cancels the grace
+      cross_seen_ = false;   // the next resumption needs its own cross
+    }
     return;
   }
-  book_.set_strict(strict);
-  const CrossState cs = book_.cross_state();
-  if (strict && cs != CrossState::None) {
-    // Regular trading cannot begin on a locked or crossed book: the auction
-    // or halt cross should have resolved it. The book (or the feed) is wrong.
-    go(FeedState::Stale, &in, AlertReason::CrossedAtResume,
-       static_cast<std::uint8_t>(cs == CrossState::Locked ? 'L' : 'X'), out);
+  if (book_.strict()) {
+    return;
   }
+  if (in_grace_) {
+    try_resolve_grace(in, out);
+    return;
+  }
+  const CrossState cs = book_.cross_state();
+  if (cs == CrossState::None) {
+    book_.set_strict(true);
+    return;
+  }
+  const auto detail = static_cast<std::uint8_t>(cs == CrossState::Locked ? 'L' : 'X');
+  if (grace_enabled()) {
+    // The cross's executions may still be on their way (D-055).
+    in_grace_ = true;
+    grace_start_ts_ = itch::header_of(in.msg).timestamp;
+    grace_msgs_ = 0;
+    ++counters_.graces;
+    go(state_, &in, AlertReason::ResumeGrace, detail, out);
+    return;
+  }
+  // Regular trading cannot begin on a locked or crossed book: the auction or
+  // halt cross should have resolved it. The book (or the feed) is wrong.
+  book_.set_strict(true);
+  go(FeedState::Stale, &in, AlertReason::CrossedAtResume, detail, out);
+}
+
+void FeedHandler::try_resolve_grace(const FeedInput& in, std::vector<FeedEvent>& out) {
+  if (!in_grace_ || !cross_seen_ || book_.cross_state() != CrossState::None) {
+    return;
+  }
+  in_grace_ = false;
+  book_.set_strict(true);
+  ++counters_.graces_resolved;
+  go(state_, &in, AlertReason::GraceResolved, 0, out);
+}
+
+void FeedHandler::check_grace_timeout(const FeedInput& in, std::vector<FeedEvent>& out) {
+  if (state_ != FeedState::Stale && itch::header_of(in.msg).timestamp - grace_start_ts_ > config_.resume_grace_ns) {
+    expire_grace(in, out);  // the book did not clear in time
+  }
+}
+
+void FeedHandler::expire_grace(const FeedInput& in, std::vector<FeedEvent>& out) {
+  const CrossState cs = book_.cross_state();
+  in_grace_ = false;
+  book_.set_strict(true);
+  go(FeedState::Stale, &in, AlertReason::CrossedAtResume,
+     static_cast<std::uint8_t>(cs == CrossState::Locked ? 'L' : cs == CrossState::Crossed ? 'X' : '-'), out);
 }
 
 void FeedHandler::apply(const FeedInput& in, std::vector<FeedEvent>& out) {
   const itch::Header& h = itch::header_of(in.msg);
   if (track_phase(in)) {
-    const auto* se = std::get_if<itch::SystemEvent>(&in.msg);
     FeedEvent e{};
-    e.kind = se != nullptr ? FeedEvent::Kind::System : FeedEvent::Kind::Trading;
+    if (const auto* se = std::get_if<itch::SystemEvent>(&in.msg)) {
+      e.kind = FeedEvent::Kind::System;
+      e.detail = static_cast<std::uint8_t>(se->event_code);
+    } else if (const auto* ta = std::get_if<itch::TradingAction>(&in.msg)) {
+      e.kind = FeedEvent::Kind::Trading;
+      e.detail = static_cast<std::uint8_t>(ta->trading_state);
+    } else {
+      e.kind = FeedEvent::Kind::Cross;
+      e.detail = static_cast<std::uint8_t>(std::get<itch::CrossTrade>(in.msg).cross_type);
+    }
     e.state = state_;
-    e.detail = static_cast<std::uint8_t>(se != nullptr ? se->event_code
-                                                        : std::get<itch::TradingAction>(in.msg).trading_state);
     e.msg_type = h.type;
     e.seq = in.seq;
     e.timestamp = h.timestamp;
@@ -336,8 +413,8 @@ void FeedHandler::apply(const FeedInput& in, std::vector<FeedEvent>& out) {
     update_strictness(in, out);
     return;
   }
-  if (std::holds_alternative<itch::TradingAction>(in.msg)) {
-    ++counters_.other_stock;  // another instrument's trading state
+  if (std::holds_alternative<itch::TradingAction>(in.msg) || std::holds_alternative<itch::CrossTrade>(in.msg)) {
+    ++counters_.other_stock;  // another instrument's trading state or cross
     return;
   }
   if (const auto* dir = std::get_if<itch::StockDirectory>(&in.msg)) {
@@ -413,6 +490,7 @@ void FeedHandler::apply(const FeedInput& in, std::vector<FeedEvent>& out) {
                  [](const itch::SystemEvent&) {},
                  [](const itch::StockDirectory&) {},
                  [](const itch::TradingAction&) {},
+                 [](const itch::CrossTrade&) {},
              },
              in.msg);
   if (symbol_mismatch) {
@@ -431,6 +509,13 @@ void FeedHandler::apply(const FeedInput& in, std::vector<FeedEvent>& out) {
   }
   if (state_ == FeedState::Live) {
     publish(in, h.type, h.timestamp, ref, what, out);
+  }
+  if (in_grace_) {
+    ++grace_msgs_;
+    try_resolve_grace(in, out);
+    if (in_grace_ && grace_msgs_ > config_.resume_grace_messages) {
+      expire_grace(in, out);
+    }
   }
 }
 

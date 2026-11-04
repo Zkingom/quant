@@ -15,7 +15,7 @@
 //   S System Event 12 · R Stock Directory 39 · A Add Order 36 ·
 //   F Add Order with MPID 40 · E Order Executed 31 ·
 //   C Order Executed with Price 36 · X Order Cancel 23 · D Order Delete 19 ·
-//   U Order Replace 35 · H Stock Trading Action 25
+//   U Order Replace 35 · H Stock Trading Action 25 · Q Cross Trade 40
 // Every other message type defined by the 5.0 specification is recognised
 // by its exact length and reported as Skipped (real files contain them);
 // any other type byte is rejected.
@@ -134,9 +134,23 @@ struct TradingAction {
   std::array<char, 4> reason{};
 };
 
+/// 'Q' Cross Trade: the summary print of a Nasdaq cross. Cross Type: 'O'
+/// opening, 'C' closing, 'H' IPO / halted or paused security (reopening),
+/// 'I' intraday / post-close. The executions of the individual orders that
+/// took part follow as separate E / C messages (printable 'N'), possibly
+/// AFTER the Trading Action that resumes trading (D-055).
+struct CrossTrade {
+  Header header;
+  std::uint64_t shares{};
+  Symbol stock{};
+  std::uint32_t cross_price{};
+  std::uint64_t match_number{};
+  char cross_type{};
+};
+
 using Message = std::variant<SystemEvent, StockDirectory, AddOrder, OrderExecuted,
                              OrderExecutedWithPrice, OrderCancel, OrderDelete, OrderReplace,
-                             TradingAction>;
+                             TradingAction, CrossTrade>;
 static_assert(std::is_trivially_copyable_v<Message>, "decoded messages cross the SPSC queue");
 
 [[nodiscard]] inline const Header& header_of(const Message& m) noexcept {

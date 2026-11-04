@@ -545,7 +545,8 @@ recover(快照?, 日志字节)
 消费者侧（`head` + 缓存的 `tail`）、只读区各占一个 64 字节缓存行。发布用 release、观察用 acquire、读自己的索引用 relaxed，不用 seq_cst（理由见代码与 D-047）。
 
 ### 7.2 ITCH 5.0 子集解码
-2 字节大端长度前缀分帧；S/R/A/F/E/C/X/D/U/H 按规范长度解码（12/39/36/40/31/36/23/19/35/25；H 的交易状态 ∈ {H,P,Q,T}），其余 5.0 类型按规范长度跳过；
+2 字节大端长度前缀分帧；S/R/A/F/E/C/X/D/U/H/Q 按规范长度解码（12/39/36/40/31/36/23/19/35/25/40；H 的交易状态 ∈ {H,P,Q,T}，
+Q 的 Cross Type ∈ {O,C,H,I}），其余 5.0 类型按规范长度跳过；
 未定义类型、长度不符、枚举越界、时间戳 ≥ 24 h 返回错误码。字段在原缓冲区上按偏移读取（零拷贝），失败时输出不变。
 
 ### 7.3 `md::Book`
@@ -560,8 +561,9 @@ replace：未知原 ref → 新 ref 重复 → 数量 0 → 价格 0 → 锁定 
 时间戳倒退、订单簿拒绝、符号不符、解码 / 分帧失败 → Stale；Stale 只能由快照恢复；非 Live 不发布 BookUpdate；重复序号丢弃并计数。
 BookUpdate 事件携带应用**之前**查得的方向 / 价格 / 数量（replace 另带原单），供成交模拟使用。
 交易阶段（D-054）：跟踪最后的 System Event 码与本股票最后的 Trading Action 状态；严格模式 = 会话 'Q' 且状态 'T'，其余时段允许锁定 / 交叉
-（计数、每个事件带 `sess / trd / cross`）；进入严格模式时订单簿锁定 / 交叉 → Stale（CROSSED_AT_RESUME）；Stale 期间仍跟踪阶段消息。
-`md::tradable(e)` = Live ∧ 'Q' ∧ 'T' ∧ 未锁定 / 交叉。
+（计数、每个事件带 `sess / trd / cross`）；进入严格时段时订单簿锁定 / 交叉 → 恢复宽限（D-055）：订单簿保持宽松、事件带 `grace=G`，
+订单簿干净且已见到本股票的 Cross Trade 时进入严格模式（GRACE_RESOLVED），超过 1 s ITCH 时间或 10 000 条本股票消息 → Stale（CROSSED_AT_RESUME）；
+Stale 期间仍跟踪阶段消息（S、H、Q）。`md::tradable(e)` = Live ∧ 'Q' ∧ 'T' ∧ 未锁定 / 交叉 ∧ 不在宽限中。
 
 ### 7.5 流水线
 `run_single` 与 `run_pipelined` 共用生产函数与 `BookStage`；队列满时生产者自旋（无损，D-048）；固定大小读缓冲（≥ 128 KiB），

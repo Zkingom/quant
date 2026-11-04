@@ -2,5 +2,5 @@
 # compiler: g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
 # valgrind: valgrind-3.22.0 / ldd (Ubuntu GLIBC 2.39-0ubuntu8.9) 2.39
 decode 33494621 0x000000000003249a
-book 118826882 0xc51993905fb40f16
-trading 264163217 0xf36833ca345f0c34
+book 120136961 0xc51993905fb40f16
+trading 265133535 0xf36833ca345f0c34

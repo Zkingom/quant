@@ -47,6 +47,7 @@ C++20 实现的单线程、确定性、正确性优先的单标的限价订单�
 | L3' 阶段 4 工程化：CI（六预设 + TSan + cachegrind 指令数门槛）、文档 | ✅ 2026-11-04（[docs/INTERVIEW_QA.md](docs/INTERVIEW_QA.md)） |
 | L3' 追加：交易状态感知（Trading Action / System Event，D-054） | ✅ 2026-11-04 |
 | L3' 真实数据验证：Nasdaq 2019-01-30 全天，AAPL，流式不落盘 | ✅ 2026-11-04：0 次 Stale、0 次锁定 / 交叉，开盘未误判；停牌恢复路径未覆盖（AAPL 当天无停牌），见 [MODULE_NOTES/L3.md](MODULE_NOTES/L3.md) |
+| L3' 恢复交易宽限（D-055，真实数据驱动） | ✅ 2026-11-04：SXTC 两次 LULD 暂停恢复时原规则误判 Stale；加宽限后全天 Live，流水线 / 单线程哈希一致 |
 
 撮合引擎、回放与恢复已可用；性能数据只适用于 WSL2 上的测量环境（BENCHMARK §1），不代表裸机。掉电持久性未验证，见 DESIGN §6.6。 计划与验收门槛见 [ROADMAP.md](ROADMAP.md)。
 
