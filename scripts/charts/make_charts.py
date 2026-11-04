@@ -125,19 +125,20 @@ def sxtc():
         t_resume = next(int(r["ts_ns"]) for r in ep if r["event"].startswith("H T"))
         t_clean = next((int(r["ts_ns"]) for r in ep if int(r["ts_ns"]) >= t_resume and r["cross"] == "-"
                         and r["event"] not in ("H T",)), t_resume)
-        first_cross = next((int(r["ts_ns"]) for r in ep if r["cross"] != "-"), None)
         for col, (lo, hi, scale, unit) in enumerate([(t_pause - 20e9, t_resume + 20e9, 60e9, "min"),
                                                      (t_resume - 400e3, t_resume + 400e3, 1e3, "µs")]):
             ax = axes[k][col]
-            sel = [r for r in ep if lo <= int(r["ts_ns"]) <= hi]
             ref = t_pause if col == 0 else t_resume
+            before = [r for r in ep if int(r["ts_ns"]) < lo]
+            sel = ([dict(before[-1], ts_ns=str(int(lo)))] if before else []) + \
+                  [r for r in ep if lo <= int(r["ts_ns"]) <= hi]
+            sel.append(dict(sel[-1], ts_ns=str(int(hi))))  # hold the last state to the window's edge
             xs = [(int(r["ts_ns"]) - ref) / scale for r in sel]
             bid = [int(r["bid"]) / 1e4 if int(r["bid"]) else None for r in sel]
             ask = [int(r["ask"]) / 1e4 if int(r["ask"]) else None for r in sel]
             ax.step(xs, bid, where="post", color=S1, lw=2, label="best bid", zorder=3)
             ax.step(xs, ask, where="post", color=S2, lw=2, label="best ask", zorder=3)
-            # Crossed / locked stretches, shaded neutral.
-            start = None
+            start = None  # crossed / locked stretches, shaded neutral
             for x, r in zip(xs, sel):
                 if r["cross"] != "-" and start is None:
                     start = x
@@ -146,17 +147,21 @@ def sxtc():
                     start = None
             if start is not None:
                 ax.axvspan(start, xs[-1], color=NEUTRAL, alpha=0.35, lw=0, zorder=1)
+            ax.set_xlim(xs[0], xs[-1])
             ymin, ymax = ax.get_ylim()
-            for t, label in [(t_pause, "H 'P' pause"), (t_resume, "Q cross + H 'T'"),
-                             (t_clean, "cross cleared\n(grace resolved)")]:
+            marks = [(t_pause, "H 'P' pause", "left"), (t_resume, "Q cross + H 'T'", "right")] if col == 0 else \
+                    [(t_resume, "Q cross + H 'T'", "right"), (t_clean, "cross cleared", "left")]
+            for t, label, side in marks:
                 x = (t - ref) / scale
-                if xs and xs[0] - 1e-9 <= x <= (hi - ref) / scale:
-                    ax.axvline(x, color=INK2, lw=0.8, ls="--", zorder=2)
-                    ax.text(x, ymax, " " + label, fontsize=7, color=INK, va="top", ha="left")
+                ax.axvline(x, color=INK2, lw=0.8, ls="--", zorder=2)
+                ax.text(x, ymax, (" " + label) if side == "left" else (label + " "), fontsize=7, color=INK,
+                        va="top", ha=side)
             if col == 1:
-                ax.axvspan(0, (t_clean - ref) / scale, facecolor="none", edgecolor=INK2, hatch="////", lw=0, zorder=1)
-                ax.text((t_clean - ref) / scale / 2, ymin, f"grace\n{(t_clean - t_resume) / 1e3:.0f} µs",
-                        fontsize=7, ha="center", va="bottom", color=INK)
+                grace_us = (t_clean - t_resume) // 1000
+                ax.axvspan(0, (t_clean - ref) / scale, facecolor="none", edgecolor=NEUTRAL, hatch="///", lw=0, zorder=1)
+                ax.text((t_clean - ref) / scale / 2, ymin + (ymax - ymin) * 0.12, f"resume grace\n{grace_us} µs",
+                        fontsize=7.5, ha="center", va="bottom", color=INK,
+                        bbox={"facecolor": SURFACE, "edgecolor": "none", "pad": 1.5})
             ax.set_xlabel(f"time from {'the pause' if col == 0 else 'the resumption'} ({unit})")
             ax.set_ylabel("price ($)")
             hh = int(t_resume // 3_600_000_000_000)
@@ -166,9 +171,7 @@ def sxtc():
                          + (" — whole pause" if col == 0 else " — zoom ±400 µs"), loc="left", fontsize=9)
             if k == 0 and col == 0:
                 ax.legend(loc="lower left", frameon=False, fontsize=8)
-            if first_cross is not None and col == 0 and k == 0:
-                pass
-    fig.suptitle("SXTC, 2019-01-30: LULD pause, book crosses (shaded), resumption with a crossed book, resume grace",
+    fig.suptitle("SXTC, 2019-01-30: LULD pause -> book crosses (gray) -> resumes crossed -> resume grace (hatched) -> clean",
                  x=0.01, ha="left", fontsize=10)
     fig.subplots_adjust(left=0.07, right=0.99, top=0.90, bottom=0.12, hspace=0.55, wspace=0.18)
     caption(fig, notes)

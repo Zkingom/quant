@@ -129,7 +129,7 @@ class Survey {
     std::FILE* f = std::fopen(o_.series.c_str(), "w");
     if (f == nullptr) return;
     std::fprintf(f, "# lob_itch_survey --series: %s book after every update from each strict-mode exit until 1 ms after "
-                    "the next clean strict entry\n# ts_ns,event,bid,ask,cross,seq\n", o_.symbol.c_str());
+                    "the next clean strict entry\nts_ns,event,bid,ask,cross,seq\n", o_.symbol.c_str());
     for (const auto& l : series_) std::fprintf(f, "%s\n", l.c_str());
     std::fclose(f);
   }
