@@ -13,9 +13,23 @@ void mix(std::uint64_t& h, std::uint64_t v, int bytes) noexcept {
 }
 }  // namespace
 
-Shard::Shard(const MarketConfig& cfg, std::size_t index)
+Shard::Shard(const MarketConfig& cfg, std::size_t index, std::size_t shards)
     : cfg_(cfg), index_(index), pool_(std::make_unique<OrderPool>(cfg.max_orders_per_shard)), slots_(kMaxLocates) {
   events_.reserve(64);
+  broadcasts_.reserve(kMaxRemembered);
+  const std::size_t n = shards == 0 ? 1 : shards;
+  for (const InstrumentSpec& spec : cfg_.instruments) {
+    if (spec.locate % n != index_ || slots_[spec.locate].h) continue;
+    FeedConfig fc;
+    fc.symbol = spec.symbol;
+    const std::size_t lv = std::max<std::size_t>(spec.levels, 1);
+    fc.book = BookConfig{0, lv, lv};  // reserved = capped: no growth, no allocation
+    fc.check_sequence = false;
+    fc.resume_grace_ns = cfg_.resume_grace_ns;
+    fc.resume_grace_messages = cfg_.resume_grace_messages;
+    slots_[spec.locate].h = std::make_unique<FeedHandler>(fc, *pool_, spec.locate);
+    order_.push_back(spec.locate);
+  }
 }
 
 void Shard::digest(Slot& s, std::uint16_t locate) {
@@ -67,6 +81,7 @@ void Shard::apply(const Routed& r) {
     fc.resume_grace_messages = cfg_.resume_grace_messages;
     s.h = std::make_unique<FeedHandler>(fc, *pool_, loc);
     order_.push_back(loc);
+    ++late_;
     for (const Routed& b : broadcasts_) {  // replay what it missed, in stream order
       events_.clear();
       if (b.kind == Routed::Kind::Fault) {
@@ -112,6 +127,7 @@ MarketSummary summarize(const std::vector<std::unique_ptr<Shard>>& shards) {
     m.stocks.insert(m.stocks.end(), r.begin(), r.end());
     m.pool_peak_sum += sh->pool().peak();
     m.unknown_locate += sh->unknown_locate();
+    m.late_instruments += sh->late_instruments();
   }
   std::sort(m.stocks.begin(), m.stocks.end(), [](const StockResult& a, const StockResult& b) { return a.locate < b.locate; });
   for (const StockResult& s : m.stocks) {

@@ -37,10 +37,24 @@ namespace lob::md {
 inline constexpr std::size_t kMaxLocates = 65536;
 inline constexpr std::size_t kMaxRemembered = 256;  ///< broadcasts replayed to late instruments
 
+/// An instrument created before the replay (zero-allocation mode): its
+/// handler exists from the start, and its level arrays are reserved for
+/// `levels` per side and capped there (no growth; more levels ->
+/// LevelCapacity -> that instrument goes Stale, never an allocation).
+struct InstrumentSpec {
+  std::uint16_t locate{0};
+  itch::Symbol symbol{};
+  std::size_t levels{16};
+};
+
 struct MarketConfig {
   std::size_t max_orders_per_shard{1U << 22};  ///< OrderPool capacity of each shard
-  std::size_t max_levels_per_side{1U << 14};
-  std::size_t initial_levels_per_side{16};
+  std::size_t max_levels_per_side{1U << 14};   ///< instruments created on the fly
+  std::size_t initial_levels_per_side{16};     ///< ... start here and grow (allocates)
+  /// Pre-created instruments (e.g. from a measured profile, see
+  /// lob_itch_market --profile). Empty: every handler is created at its
+  /// Stock Directory (allocates).
+  std::vector<InstrumentSpec> instruments;
   std::uint64_t resume_grace_ns{1'000'000'000ULL};
   std::uint64_t resume_grace_messages{10'000};
 };
@@ -141,7 +155,7 @@ struct StockResult {
 /// One shard: the handlers of its instruments and their digests.
 class Shard {
  public:
-  Shard(const MarketConfig& cfg, std::size_t index);
+  Shard(const MarketConfig& cfg, std::size_t index, std::size_t shards = 1);
 
   void apply(const Routed& r);
 
@@ -149,6 +163,8 @@ class Shard {
   [[nodiscard]] std::size_t index() const noexcept { return index_; }
   [[nodiscard]] std::uint64_t unknown_locate() const noexcept { return unknown_locate_; }
   [[nodiscard]] std::size_t instruments() const noexcept { return order_.size(); }
+  /// Instruments created during the replay (not pre-created): each allocated.
+  [[nodiscard]] std::size_t late_instruments() const noexcept { return late_; }
   /// Results of this shard's instruments, ascending locate.
   [[nodiscard]] std::vector<StockResult> results() const;
 
@@ -169,6 +185,7 @@ class Shard {
   std::vector<FeedEvent> events_;
   std::vector<Routed> broadcasts_;     // replayed to instruments created later (bounded, see .cpp)
   std::uint64_t unknown_locate_{0};
+  std::size_t late_{0};
 };
 
 struct MarketSummary {
@@ -177,6 +194,7 @@ struct MarketSummary {
   std::size_t live{0}, stale{0}, uninitialized{0}, other{0};
   std::map<std::string, std::size_t> stale_reasons;
   std::size_t pool_peak_sum{0};     ///< sum of the shards' peaks (= exact peak with one shard)
+  std::size_t late_instruments{0};  ///< created during the replay (not pre-created)
   std::uint64_t unknown_locate{0};
 };
 

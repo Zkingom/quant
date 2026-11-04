@@ -29,7 +29,7 @@ struct MarketRun {
 inline MarketRun run_market(ChunkSource& src, const md::MarketConfig& mc, std::size_t shards, const RunConfig& rc) {
   const std::size_t n = shards == 0 ? 1 : shards;
   std::vector<std::unique_ptr<md::Shard>> sh;
-  for (std::size_t k = 0; k < n; ++k) sh.push_back(std::make_unique<md::Shard>(mc, k));
+  for (std::size_t k = 0; k < n; ++k) sh.push_back(std::make_unique<md::Shard>(mc, k, n));
   md::Router router{n};
   MarketRun out;
   if (shards == 0) {
