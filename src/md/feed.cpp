@@ -166,6 +166,17 @@ FeedHandler::FeedHandler(const FeedConfig& config, RecoverySource* recovery)
   book_.set_strict(false);  // no phase known yet: not regular trading
 }
 
+FeedHandler::FeedHandler(const FeedConfig& config, OrderPool& shared, std::uint16_t owner)
+    : config_(config), recovery_(nullptr), book_(config.book, shared, owner), expected_(config.first_seq) {
+  book_.set_strict(false);
+}
+
+void FeedHandler::force_stale(const FeedInput& in, AlertReason why, std::vector<FeedEvent>& out) {
+  if (state_ != FeedState::Stale) {
+    go(FeedState::Stale, &in, why, 0, out);
+  }
+}
+
 void FeedHandler::fill_bbo(FeedEvent& e) const noexcept {
   e.session = session_;
   e.trading = trading_;
@@ -223,6 +234,10 @@ void FeedHandler::publish(const FeedInput& in, char type, std::uint64_t ts, std:
 
 void FeedHandler::on_input(const FeedInput& in, std::vector<FeedEvent>& out) {
   ++counters_.inputs;
+  if (!config_.check_sequence) {
+    process(in, out);
+    return;
+  }
   if (in.seq < expected_) {
     ++counters_.duplicates;
     return;
