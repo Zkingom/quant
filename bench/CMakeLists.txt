@@ -19,3 +19,8 @@ add_test(NAME itch_bench.smoke COMMAND lob_itch_bench --quick)
 # L3' stage 4: fixed workloads for the cachegrind instruction-count gate.
 add_executable(lob_itch_icount itch_icount.cpp)
 target_link_libraries(lob_itch_icount PRIVATE lob::sim lob::testkit lob_project_options)
+
+# Real-data validation (D-054): one-pass survey of an ITCH stream on stdin
+# (scripts/itch_real_survey.sh; results in MODULE_NOTES/L3.md).
+add_executable(lob_itch_survey itch_survey.cpp)
+target_link_libraries(lob_itch_survey PRIVATE lob::md lob_project_options)

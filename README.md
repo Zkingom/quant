@@ -241,6 +241,13 @@ gzip -dc data/itch/01302019.NASDAQ_ITCH50.gz | build/gcc-release/apps/lob_itch -
 ```bash
 curl -sS --fail "https://emi.nasdaq.com/ITCH/Nasdaq%20ITCH/01302019.NASDAQ_ITCH50.gz" | gzip -dc | build/gcc-release/apps/lob_itch --input - --symbol AAPL --stride 400
 ```
+
+复现真实数据验证（一次下载经 `tee` 同时送入统计工具 `lob_itch_survey`、`lob_itch` 流水线模式与单线程模式，不落盘；
+输出各类消息计数、交易阶段、锁定 / 交叉、每个 Stale 告警及前后消息、全市场日内停牌列表，并比较两种模式的哈希）：
+
+```bash
+scripts/itch_real_survey.sh AAPL /tmp/itch_aapl
+```
 延迟瀑布与策略 / 风控测量见上方"关键数字"的复测命令；CI 指令数门槛：
 
 ```bash
