@@ -12,8 +12,8 @@
 //     the instrument-relevant messages before and after it;
 //   - a SHADOW analysis that keeps going after the first problem: an
 //     md::Book kept in non-strict mode with its own phase tracking records
-//     every point where the production rules (D-054) would go Stale --
-//     strict mode entered on a locked/crossed book, a locking/crossing add
+//     every point where the D-054 rules WITHOUT the D-055 resume grace would
+//     go Stale -- strict mode entered on a locked/crossed book, a locking/crossing add
 //     or replace in strict mode, any other book rejection -- with context,
 //     and how long a crossed book at a strict transition took to clear;
 //   - book updates per trading phase, locked/crossed counts per phase;
@@ -164,9 +164,11 @@ class Survey {
                 std::string(md::to_string(feed_->state())).c_str(), feed_->session() ? feed_->session() : '-',
                 feed_->trading_state() ? feed_->trading_state() : '-', feed_->strict() ? 1 : 0);
     std::printf("applied %llu, other_stock %llu, skipped %llu, duplicates %llu, gaps %llu, ignored_not_live %llu, "
-                "locked_updates %llu, crossed_updates %llu, session_events %llu, trading_actions %llu\n",
+                "locked_updates %llu, crossed_updates %llu, session_events %llu, trading_actions %llu, "
+                "cross_trades %llu, resume_graces %llu, graces_resolved %llu\n",
                 u(c.applied), u(c.other_stock), u(c.skipped), u(c.duplicates), u(c.gaps), u(c.ignored_not_live),
-                u(c.locked_updates), u(c.crossed_updates), u(c.session_events), u(c.trading_actions));
+                u(c.locked_updates), u(c.crossed_updates), u(c.session_events), u(c.trading_actions),
+                u(c.cross_trades), u(c.graces), u(c.graces_resolved));
     std::printf("book: orders %zu, bid levels %zu, ask levels %zu, hash 0x%016llx\n", feed_->book().order_count(),
                 feed_->book().level_count(md::Side::Buy), feed_->book().level_count(md::Side::Sell),
                 static_cast<unsigned long long>(feed_->book().state_hash()));
@@ -419,7 +421,8 @@ class Survey {
       const md::CrossState cs = shadow_.cross_state();
       if (cs != md::CrossState::None) {
         point(seq, ts, "strict mode entered by " + what + " on a " +
-                           (cs == md::CrossState::Locked ? "LOCKED" : "CROSSED") + " book (production: CROSSED_AT_RESUME)");
+                           (cs == md::CrossState::Locked ? "LOCKED" : "CROSSED") +
+                           " book (D-054 alone: CROSSED_AT_RESUME; with the D-055 grace: RESUME_GRACE)");
         resolving_ = true;
         resolve_seq_ = seq;
         resolve_ts_ = ts;

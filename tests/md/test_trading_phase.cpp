@@ -23,8 +23,15 @@ using md::FeedEvent;
 using md::FeedState;
 constexpr std::uint16_t kLoc = lob::testkit::itch_samples::kLocate;
 
+md::FeedConfig no_grace() {
+  md::FeedConfig c = lob::testkit::itch_samples::config();
+  c.resume_grace_ns = 0;  // D-054 behaviour: no resume grace (D-055)
+  return c;
+}
+
 struct Script {
-  md::FeedHandler h{lob::testkit::itch_samples::config()};
+  explicit Script(const md::FeedConfig& c = lob::testkit::itch_samples::config()) : h{c} {}
+  md::FeedHandler h;
   std::vector<FeedEvent> events;
   std::string text;
   std::uint64_t seq{1};
@@ -98,8 +105,8 @@ TEST(TradingPhase, MarketOpenWithACleanBookBecomesStrict) {
   EXPECT_EQ(r.last().detail, static_cast<std::uint8_t>(md::BookStatus::WouldCross));
 }
 
-TEST(TradingPhase, MarketOpenOnACrossedBookGoesStale) {
-  Script r;
+TEST(TradingPhase, MarketOpenOnACrossedBookWithoutGraceGoesStale) {
+  Script r{no_grace()};
   r << tk::system_event('S', r.t()) << tk::stock_directory(kLoc, "ACME", r.t()) << halt('T', r.t())
     << add(1, 'B', 100, 10000, r.t()) << add(2, 'S', 10, 9990, r.t()) << tk::system_event('Q', r.t());
   EXPECT_EQ(r.h.state(), FeedState::Stale);
@@ -107,8 +114,8 @@ TEST(TradingPhase, MarketOpenOnACrossedBookGoesStale) {
   EXPECT_EQ(r.last().detail, 'X');
 }
 
-TEST(TradingPhase, MarketOpenOnALockedBookGoesStale) {
-  Script r;
+TEST(TradingPhase, MarketOpenOnALockedBookWithoutGraceGoesStale) {
+  Script r{no_grace()};
   r << tk::system_event('S', r.t()) << tk::stock_directory(kLoc, "ACME", r.t()) << halt('T', r.t())
     << add(1, 'B', 100, 10000, r.t()) << add(2, 'S', 10, 10000, r.t()) << tk::system_event('Q', r.t());
   EXPECT_EQ(r.h.state(), FeedState::Stale);
@@ -192,8 +199,8 @@ TEST(TradingPhase, CrossedDuringAHaltThenCleanWhenTradingResumes) {
   EXPECT_EQ(r.h.state(), FeedState::Stale) << "strict mode really is back on after the resume";
 }
 
-TEST(TradingPhase, ResumingWhileStillCrossedGoesStale) {
-  Script r;
+TEST(TradingPhase, ResumingWhileStillCrossedWithoutGraceGoesStale) {
+  Script r{no_grace()};
   open_market(r);
   r << halt('H', r.t()) << add(3, 'S', 60, 9950, r.t()) << halt('T', r.t());
   EXPECT_EQ(r.h.state(), FeedState::Stale);

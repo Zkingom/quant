@@ -25,9 +25,20 @@
 // instrument is trading ('T'). Elsewhere (pre-market, opening/closing
 // auction, halt 'H', pause 'P', quotation only 'Q', after hours, or before
 // any Trading Action arrived) a locked or crossed book is legitimate: the
-// feed stays Live, counts it, and marks every event with `cross`. Entering
-// strict mode with a locked or crossed book is a contradiction -> Stale
-// (CrossedAtResume). Phase messages are tracked even while Stale.
+// feed stays Live, counts it, and marks every event with `cross`.
+//
+// Resume grace (D-055): when the phase becomes strict-eligible while the
+// book is still locked or crossed, the feed does not go Stale at once. Real
+// data (2019-01-30, SXTC) shows why: the reopening Cross Trade (Q) and the
+// Trading Action 'T' arrive together, but the executions of the orders that
+// took part in the cross follow AFTER the 'T'. During the grace the book
+// stays non-strict, events carry grace='G' and nothing is tradable. Strict
+// mode begins when the book is clean AND a Cross Trade for the instrument
+// has been seen since strict mode was last left. If that does not happen
+// within resume_grace_ns of ITCH time or resume_grace_messages of the
+// instrument's messages -> Stale (CrossedAtResume). A new halt / pause
+// cancels the grace. Grace disabled (either limit 0) = D-054 behaviour.
+// Phase messages (S, H, Q) are tracked even while Stale.
 // While not Live the handler publishes no BookUpdate: downstream sees only
 // the StateChange / Alert events and must treat the book as unusable. A book
 // that rejected a message is never used again until a snapshot replaces it.
@@ -77,7 +88,9 @@ enum class AlertReason : std::uint8_t {
   FrameError,
   SnapshotLoaded,
   SnapshotRejected,  ///< `detail` holds the BookStatus of the first bad order
-  CrossedAtResume,   ///< strict mode began with a locked ('L') / crossed ('X') book; `detail` = that char
+  CrossedAtResume,   ///< strict mode began with a locked ('L') / crossed ('X') book (grace expired or disabled); `detail` = that char
+  ResumeGrace,       ///< strict-eligible on a locked / crossed book: grace started (D-055); `detail` = 'L' / 'X'
+  GraceResolved,     ///< grace ended: book clean and cross trade seen; strict mode on
 };
 
 [[nodiscard]] std::string_view to_string(FeedState s) noexcept;
@@ -86,7 +99,7 @@ enum class AlertReason : std::uint8_t {
 /// Output event. Trivially copyable (crosses SPSC queues downstream); hash or
 /// print it with the helpers below, never by raw bytes (padding).
 struct FeedEvent {
-  enum class Kind : std::uint8_t { BookUpdate, StateChange, Alert, System, Trading };
+  enum class Kind : std::uint8_t { BookUpdate, StateChange, Alert, System, Trading, Cross };
   Kind kind{Kind::BookUpdate};
   FeedState state{FeedState::Uninitialized};  ///< state after this event
   AlertReason reason{AlertReason::None};
@@ -116,13 +129,14 @@ struct FeedEvent {
   char session{0};  ///< last System Event code: O S Q M E C
   char trading{0};  ///< last Trading Action state for our symbol: H P Q T
   char cross{'-'};  ///< book after the event: '-' normal, 'L' locked, 'X' crossed
+  char grace{'-'};  ///< 'G' while a resume grace is running (D-055); optional in text and hash
 };
 static_assert(std::is_trivially_copyable_v<FeedEvent>);
 
 /// True when strategies may trade on this event: Live, regular hours,
 /// instrument trading, book neither locked nor crossed.
 [[nodiscard]] constexpr bool tradable(const FeedEvent& e) noexcept {
-  return e.state == FeedState::Live && e.session == 'Q' && e.trading == 'T' && e.cross == '-';
+  return e.state == FeedState::Live && e.session == 'Q' && e.trading == 'T' && e.cross == '-' && e.grace == '-';
 }
 
 /// Canonical single-line text of an event (tests, golden files, logs).
@@ -150,6 +164,9 @@ struct FeedConfig {
   itch::Symbol symbol{};  ///< space-padded, e.g. make_symbol("AAPL")
   BookConfig book{};
   std::uint64_t first_seq{1};
+  /// Resume grace limits (D-055); either 0 disables the grace.
+  std::uint64_t resume_grace_ns{1'000'000'000ULL};  ///< ITCH time, from the transition
+  std::uint64_t resume_grace_messages{10'000};       ///< messages of the instrument
 };
 
 [[nodiscard]] itch::Symbol make_symbol(std::string_view s) noexcept;
@@ -166,6 +183,9 @@ struct FeedCounters {
   std::uint64_t crossed_updates{0};  ///< book updates published while crossed (non-strict phase)
   std::uint64_t session_events{0};
   std::uint64_t trading_actions{0};  ///< Trading Actions for our symbol
+  std::uint64_t cross_trades{0};     ///< Cross Trades (Q) for our symbol
+  std::uint64_t graces{0};           ///< resume graces started
+  std::uint64_t graces_resolved{0};  ///< ... and resolved (the rest expired -> Stale, or were cancelled)
 };
 
 class FeedHandler {
@@ -191,6 +211,7 @@ class FeedHandler {
   [[nodiscard]] char session() const noexcept { return session_; }
   [[nodiscard]] char trading_state() const noexcept { return trading_; }
   [[nodiscard]] bool strict() const noexcept { return book_.strict(); }
+  [[nodiscard]] bool in_grace() const noexcept { return in_grace_; }
 
  private:
   void process(const FeedInput& in, std::vector<FeedEvent>& out);
@@ -203,6 +224,12 @@ class FeedHandler {
   /// Updates session_ / trading_ from a phase message; true if `in` was one.
   bool track_phase(const FeedInput& in);
   void update_strictness(const FeedInput& in, std::vector<FeedEvent>& out);
+  void try_resolve_grace(const FeedInput& in, std::vector<FeedEvent>& out);
+  void expire_grace(const FeedInput& in, std::vector<FeedEvent>& out);
+  [[gnu::noinline]] void check_grace_timeout(const FeedInput& in, std::vector<FeedEvent>& out);
+  [[nodiscard]] bool grace_enabled() const noexcept {
+    return config_.resume_grace_ns != 0 && config_.resume_grace_messages != 0;
+  }
 
   FeedConfig config_;
   RecoverySource* recovery_;
@@ -214,6 +241,10 @@ class FeedHandler {
   std::uint64_t last_ts_{0};
   char session_{0};
   char trading_{0};
+  bool cross_seen_{false};  ///< Cross Trade for our symbol since strict mode was last left
+  bool in_grace_{false};
+  std::uint64_t grace_start_ts_{0};
+  std::uint64_t grace_msgs_{0};
   FeedCounters counters_{};
   std::vector<FeedInput> retransmit_buf_;
 };

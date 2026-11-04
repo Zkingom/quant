@@ -171,6 +171,14 @@ DecodeStatus decode(Bytes payload, Message& out) noexcept {
     case 'U':
       out = OrderReplace{h, r.u64(11), r.u64(19), r.u32(27), r.u32(31)};
       return DecodeStatus::Decoded;
+    case 'Q': {
+      const char ct = r.alpha(39);
+      if (ct != 'O' && ct != 'C' && ct != 'H' && ct != 'I') {
+        return DecodeStatus::InvalidField;
+      }
+      out = CrossTrade{h, r.u64(11), r.chars<8>(19), r.u32(27), r.u64(31), ct};
+      return DecodeStatus::Decoded;
+    }
     case 'H': {
       const char state = r.alpha(19);
       if (!valid_trading_state(state)) {

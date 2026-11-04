@@ -119,6 +119,11 @@ inline Buf trading_action(std::uint16_t locate, std::string_view stock, char sta
   return MsgWriter('H', locate, 0, ts).alpha(stock, 8).c(state).c(' ').alpha(reason, 4).take();
 }
 
+inline Buf cross_trade(std::uint16_t locate, std::string_view stock, std::uint64_t shares, std::uint32_t price,
+                       char cross_type, std::uint64_t ts = 0, std::uint64_t match = 0) {
+  return MsgWriter('Q', locate, 0, ts).u64(shares).alpha(stock, 8).u32(price).u64(match).c(cross_type).take();
+}
+
 /// A spec-valid message outside the subset: Trade (non-cross), 44 bytes.
 inline Buf trade_message(std::uint16_t locate, std::uint64_t ts = 0) {
   return MsgWriter('P', locate, 0, ts)

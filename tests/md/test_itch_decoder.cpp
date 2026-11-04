@@ -192,6 +192,28 @@ TEST(ItchDecode, TradingActionLiteral) {
   EXPECT_EQ(bytes, tk::trading_action(1, "AAPL", 'H', 105, "T1"));
 }
 
+// Q: 'Q' | locate 1 | 0 | ts 106 | shares 11813 | "SXTC    " | price 58200 | match 7 | 'H'
+const char* const kCrossTrade =
+    "51 0001 0000 00000000006A 0000000000002E25 5358544320202020 0000E358 0000000000000007 48";
+
+TEST(ItchDecode, CrossTradeLiteral) {
+  const auto bytes = hex(kCrossTrade);
+  ASSERT_EQ(bytes.size(), 40U);
+  const auto m = std::get<itch::CrossTrade>(decode_ok(bytes));
+  EXPECT_EQ(m.header.timestamp, 106U);
+  EXPECT_EQ(m.shares, 11813U);
+  EXPECT_EQ(sym(m.stock), "SXTC    ");
+  EXPECT_EQ(m.cross_price, 58200U);
+  EXPECT_EQ(m.match_number, 7U);
+  EXPECT_EQ(m.cross_type, 'H');
+  EXPECT_EQ(bytes, tk::cross_trade(1, "SXTC", 11813, 58200, 'H', 106, 7));
+  itch::Message x;
+  for (const char ct : std::string("OCHI")) {
+    EXPECT_EQ(itch::decode(tk::cross_trade(1, "A", 1, 1, ct), x), itch::DecodeStatus::Decoded) << ct;
+  }
+  EXPECT_EQ(itch::decode(tk::cross_trade(1, "A", 1, 1, 'X'), x), itch::DecodeStatus::InvalidField);
+}
+
 TEST(ItchDecode, TradingStatesOutsideHPQTAreInvalid) {
   itch::Message m;
   for (const char st : std::string("HPQT")) {
@@ -216,7 +238,7 @@ TEST(ItchDecode, LargestFieldValuesDecodeWithoutSignIssues) {
 
 TEST(ItchDecode, EverySubsetTypeRejectsLengthOffByOne) {
   for (const char* lit : {kSystemEvent, kStockDirectory, kAddOrder, kAddOrderMpid, kExecuted,
-                          kExecutedPrice, kCancel, kDelete, kReplace, kTradingAction}) {
+                          kExecutedPrice, kCancel, kDelete, kReplace, kTradingAction, kCrossTrade}) {
     auto bytes = hex(lit);
     itch::Message m = itch::OrderDelete{};
     auto shorter = bytes;
@@ -230,7 +252,7 @@ TEST(ItchDecode, EverySubsetTypeRejectsLengthOffByOne) {
 }
 
 TEST(ItchDecode, NonSubsetSpecTypesAreSkippedOnlyAtTheirExactLength) {
-  const std::string non_subset = "YLVWKJhPQBINO";
+  const std::string non_subset = "YLVWKJhPBINO";
   for (const char t : non_subset) {
     const std::size_t len = itch::spec_length(t);
     ASSERT_GT(len, itch::kHeaderSize) << t;
