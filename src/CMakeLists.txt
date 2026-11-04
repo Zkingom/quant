@@ -51,3 +51,10 @@ target_link_libraries(lob_io PUBLIC lob::engine PRIVATE lob_project_options)
 # which implementation they run against.
 target_compile_definitions(lob_io PUBLIC LOB_BASELINE=$<BOOL:${LOB_BASELINE}>)
 
+# L3' md: ITCH 5.0 subset decoder and framing (later: book, feed state).
+add_library(lob_md
+  md/itch.cpp)
+add_library(lob::md ALIAS lob_md)
+target_include_directories(lob_md PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_compile_features(lob_md PUBLIC cxx_std_20)
+target_link_libraries(lob_md PRIVATE lob_project_options)

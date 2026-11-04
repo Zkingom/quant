@@ -66,6 +66,12 @@ lob_add_test_suite(lob_concurrent_tests
   LIBS lob::concurrent lob::testkit
   LABELS concurrency)
 
+# L3' md: ITCH decoder, framing, book reconstruction, feed state.
+lob_add_test_suite(lob_md_tests
+  SOURCES
+    md/test_itch_decoder.cpp
+  LIBS lob::md lob::testkit)
+
 if(LOB_REPLACE_OPERATOR_NEW)
 # Separate executables: lob_testkit_alloc_fault replaces the global
 # operator new/delete of the binary it is linked into.
