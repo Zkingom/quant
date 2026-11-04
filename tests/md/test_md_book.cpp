@@ -6,6 +6,7 @@
 #include <gtest/gtest.h>
 
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 #include "lob/testkit/md_reference_book.hpp"
@@ -225,6 +226,97 @@ TEST(MdBook, IndexSurvivesHeavyChurnWithCollidingRefs) {
   for (const auto r : live) {
     EXPECT_TRUE(b.find(r).has_value());
   }
+}
+
+// ---------------------------------------------------------------- shared pool (D-056)
+
+TEST(MdBookSharedPool, BooksOnOnePoolAreIndependent) {
+  lob::md::OrderPool pool{16};
+  Book a{BookConfig{0, 8}, pool, 1};
+  Book b{BookConfig{0, 8}, pool, 2};
+  ASSERT_EQ(a.add(1, B, 100, 10000), BookStatus::Applied);
+  ASSERT_EQ(b.add(2, S, 50, 20000), BookStatus::Applied);
+  EXPECT_EQ(a.execute(2, 10), BookStatus::UnknownOrderRef) << "another stock's order is unknown here";
+  EXPECT_EQ(a.remove(2), BookStatus::UnknownOrderRef);
+  EXPECT_FALSE(a.find(2).has_value());
+  EXPECT_EQ(a.add(2, B, 1, 9000), BookStatus::DuplicateOrderRef) << "refs are unique market-wide";
+  EXPECT_EQ(pool.live(), 2U);
+  EXPECT_EQ(a.order_count(), 1U);
+  EXPECT_EQ(b.order_count(), 1U);
+  ASSERT_EQ(b.execute(2, 50), BookStatus::Applied);
+  EXPECT_EQ(pool.live(), 1U);
+  EXPECT_EQ(pool.peak(), 2U);
+  EXPECT_CONSISTENT(a);
+  EXPECT_CONSISTENT(b);
+  EXPECT_EQ(pool.find_violation(), std::nullopt);
+}
+
+TEST(MdBookSharedPool, ClearReleasesOnlyThisBooksOrders) {
+  lob::md::OrderPool pool{16};
+  Book a{BookConfig{0, 8}, pool, 1};
+  Book b{BookConfig{0, 8}, pool, 2};
+  for (std::uint64_t r = 1; r <= 3; ++r) ASSERT_EQ(a.add(r, B, 1, static_cast<std::uint32_t>(100 + r)), BookStatus::Applied);
+  for (std::uint64_t r = 11; r <= 14; ++r) ASSERT_EQ(b.add(r, S, 1, static_cast<std::uint32_t>(200 + r)), BookStatus::Applied);
+  a.clear();
+  EXPECT_EQ(a.order_count(), 0U);
+  EXPECT_EQ(b.order_count(), 4U);
+  EXPECT_EQ(pool.live(), 4U);
+  EXPECT_TRUE(b.find(12).has_value());
+  EXPECT_EQ(a.add(1, B, 1, 100), BookStatus::Applied) << "a's refs are free again";
+  EXPECT_EQ(pool.find_violation(), std::nullopt);
+  EXPECT_CONSISTENT(b);
+}
+
+TEST(MdBookSharedPool, CapacityIsTheWholePools) {
+  lob::md::OrderPool pool{3};
+  Book a{BookConfig{0, 8}, pool, 1};
+  Book b{BookConfig{0, 8}, pool, 2};
+  ASSERT_EQ(a.add(1, B, 1, 100), BookStatus::Applied);
+  ASSERT_EQ(b.add(2, B, 1, 100), BookStatus::Applied);
+  ASSERT_EQ(b.add(3, B, 1, 101), BookStatus::Applied);
+  EXPECT_EQ(a.add(4, B, 1, 102), BookStatus::OrderCapacity);
+}
+
+TEST(MdBook, LevelArraysGrowFromASmallReserveUpToTheMaximum) {
+  BookConfig c{64, 8};
+  c.initial_levels_per_side = 2;
+  Book b{c};
+  for (std::uint32_t i = 0; i < 8; ++i) ASSERT_EQ(b.add(i + 1, B, 1, 100 + i), BookStatus::Applied) << i;
+  EXPECT_EQ(b.add(99, B, 1, 50), BookStatus::LevelCapacity);
+  EXPECT_CONSISTENT(b);
+}
+
+TEST(MdBookSharedPool, DifferentialAgainstOwnedPools) {
+  // Three books on one shared pool vs three books with their own pools,
+  // the same per-book operations (refs disjoint between books): every
+  // status and every state hash must agree.
+  lob::md::OrderPool pool{3 * 64};
+  BookConfig c{64, 16};
+  c.initial_levels_per_side = 1;
+  std::vector<std::unique_ptr<Book>> shared, owned;
+  for (std::uint16_t k = 0; k < 3; ++k) {
+    shared.push_back(std::make_unique<Book>(c, pool, static_cast<std::uint16_t>(k + 1)));
+    owned.push_back(std::make_unique<Book>(c));
+  }
+  lob::testkit::Rng rng{99};
+  for (int step = 0; step < 30000; ++step) {
+    const auto k = static_cast<std::size_t>(rng.uniform(0, 2));
+    const std::uint64_t ref = static_cast<std::uint64_t>(rng.uniform(1, 80)) * 3 + k;  // disjoint per book
+    const Side sd = rng.percent(50) ? B : S;
+    const auto px = static_cast<std::uint32_t>(sd == B ? rng.uniform(90, 99) : rng.uniform(101, 110));
+    const auto q = static_cast<std::uint32_t>(rng.uniform(0, 5));
+    BookStatus x{}, y{};
+    switch (rng.uniform(0, 3)) {
+      case 0: x = shared[k]->add(ref, sd, q, px); y = owned[k]->add(ref, sd, q, px); break;
+      case 1: x = shared[k]->execute(ref, q); y = owned[k]->execute(ref, q); break;
+      case 2: x = shared[k]->remove(ref); y = owned[k]->remove(ref); break;
+      default: x = shared[k]->replace(ref, ref, q + 1, px); y = owned[k]->replace(ref, ref, q + 1, px); break;
+    }
+    ASSERT_EQ(x, y) << "step " << step;
+    ASSERT_EQ(shared[k]->state_hash(), owned[k]->state_hash()) << "step " << step;
+  }
+  for (std::size_t k = 0; k < 3; ++k) ASSERT_EQ(shared[k]->find_invariant_violation(), std::nullopt);
+  EXPECT_EQ(pool.find_violation(), std::nullopt);
 }
 
 // ---------------------------------------------------------------- differential
