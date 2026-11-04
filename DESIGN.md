@@ -538,7 +538,7 @@ recover(快照?, 日志字节)
 
 ## 7. L3' 行情、流水线、策略与风控 ✅（2026-11-04）
 
-> 门槛：ROADMAP §2.3；决策：D-046–D-053；实现细节、测试清单与证据：MODULE_NOTES/L3.md。本节只记录规格（代码注释引用这些小节号）。
+> 门槛：ROADMAP §2.3；决策：D-046–D-058；实现细节、测试清单与证据：MODULE_NOTES/L3.md。本节只记录规格（代码注释引用这些小节号）。
 
 ### 7.1 SPSC 环形队列
 单生产者 / 单消费者、容量为 2 的幂、元素 trivially copyable、构造后不分配。索引为不回绕的 64 位计数器；生产者侧（`tail` + 缓存的 `head`）、
@@ -590,3 +590,4 @@ L1 `MatchingEngine` 只承载我们的订单；ITCH 成交转为反方向合成�
 `Router` 做流级检查并按 stock locate 路由（System Event 与流级故障广播），`Shard` 持有按 locate 索引的逐股票 `FeedHandler`
 （目录到达时创建、关闭自身序号检查、订单簿挂在分片共享的 `OrderPool` 上、补放创建前的广播）。单线程 = Router + 1 个 Shard；
 分片 = N 个 SPSC 队列与工作线程（locate % N）。每只股票的事件流与快照与独立的单股票 handler 相同；汇总哈希为逐股票摘要之和（与顺序无关）。
+零分配（D-058）：`MarketConfig::instruments` 按实测画像预创建股票、价位数组预留并封顶（超出 → `LevelCapacity` → 该股票 Stale），广播记录预留。
