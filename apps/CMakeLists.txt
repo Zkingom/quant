@@ -4,3 +4,7 @@ target_link_libraries(lob_replay PRIVATE lob::io lob_project_options)
 # L3': ITCH file replay for one instrument (streams; bounded memory).
 add_executable(lob_itch lob_itch.cpp)
 target_link_libraries(lob_itch PRIVATE lob::pipeline lob_project_options)
+
+# L3' market-wide replay (D-056): every instrument, single-threaded or sharded.
+add_executable(lob_itch_market lob_itch_market.cpp)
+target_link_libraries(lob_itch_market PRIVATE lob::pipeline lob_project_options)
