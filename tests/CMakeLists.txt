@@ -71,6 +71,7 @@ lob_add_test_suite(lob_md_tests
   SOURCES
     md/test_itch_decoder.cpp
     md/test_md_book.cpp
+    md/test_feed.cpp
   LIBS lob::md lob::testkit)
 
 if(LOB_REPLACE_OPERATOR_NEW)
