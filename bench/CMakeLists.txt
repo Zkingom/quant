@@ -13,5 +13,9 @@ add_test(NAME bench.smoke COMMAND lob_bench --quick)
 
 # L3' stage 2/3: pipeline latency waterfall on a synthetic ITCH stream.
 add_executable(lob_itch_bench itch_bench.cpp)
-target_link_libraries(lob_itch_bench PRIVATE lob::pipeline lob::testkit lob_project_options)
+target_link_libraries(lob_itch_bench PRIVATE lob::sim lob::testkit lob_project_options)
 add_test(NAME itch_bench.smoke COMMAND lob_itch_bench --quick)
+
+# L3' stage 4: fixed workloads for the cachegrind instruction-count gate.
+add_executable(lob_itch_icount itch_icount.cpp)
+target_link_libraries(lob_itch_icount PRIVATE lob::sim lob::testkit lob_project_options)

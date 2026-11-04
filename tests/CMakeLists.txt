@@ -84,6 +84,15 @@ lob_add_test_suite(lob_pipeline_tests
   LABELS concurrency)
 target_compile_definitions(lob_pipeline_tests PRIVATE LOB_GOLDEN_DIR="${CMAKE_CURRENT_SOURCE_DIR}/golden")
 
+# L3' stage 3: risk (one named test per check), strategy, fill models,
+# replay == pipeline for orders / fills / positions.
+lob_add_test_suite(lob_trading_tests
+  SOURCES
+    trading/test_risk.cpp
+    trading/test_trading.cpp
+  LIBS lob::sim lob::testkit
+  LABELS concurrency)
+
 # libFuzzer entry (L3' 1e): opt-in, Clang only, not part of CTest. The md
 # sources are compiled into the fuzzer directly so that they carry coverage
 # instrumentation. Run with scripts/fuzz_itch.sh.
@@ -127,6 +136,12 @@ lob_add_test_suite(lob_pipeline_alloc_tests
   SOURCES
     pipeline/test_pipeline_alloc.cpp
   LIBS lob::pipeline lob::testkit lob_testkit_alloc_guard)
+
+# L3' stage 3: strategy and risk must not allocate.
+lob_add_test_suite(lob_trading_alloc_tests
+  SOURCES
+    trading/test_trading_alloc.cpp
+  LIBS lob::strategy lob::risk lob::testkit lob_testkit_alloc_guard)
 endif()
 
 # CLI-level tests (Linux shell; they run the real binaries).

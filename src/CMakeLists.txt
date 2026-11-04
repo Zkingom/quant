@@ -69,3 +69,22 @@ add_library(lob_pipeline
   pipeline/async_logger.cpp)
 add_library(lob::pipeline ALIAS lob_pipeline)
 target_link_libraries(lob_pipeline PUBLIC lob::md lob::concurrent PRIVATE lob_project_options)
+
+# L3' stage 3: strategy interface + market-maker example, pre-trade risk,
+# simulated exchange on the (unchanged) L1 matching engine.
+add_library(lob_strategy
+  strategy/market_maker.cpp
+  strategy/virtual_market_maker.cpp)
+add_library(lob::strategy ALIAS lob_strategy)
+target_link_libraries(lob_strategy PUBLIC lob::md PRIVATE lob_project_options)
+
+add_library(lob_risk
+  risk/risk.cpp)
+add_library(lob::risk ALIAS lob_risk)
+target_link_libraries(lob_risk PUBLIC lob::md PRIVATE lob_project_options)
+
+add_library(lob_sim
+  sim/sim_exchange.cpp)
+add_library(lob::sim ALIAS lob_sim)
+target_link_libraries(lob_sim PUBLIC lob::engine lob::md lob::strategy lob::risk lob::pipeline
+                      PRIVATE lob_project_options)

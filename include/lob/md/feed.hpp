@@ -89,6 +89,17 @@ struct FeedEvent {
   std::uint64_t ask_shares{0};
   std::uint64_t gap_first{0};  ///< SequenceGap: first missing seq
   std::uint64_t gap_last{0};   ///< SequenceGap: last missing seq
+  // BookUpdate only (stage 3: the fill simulator needs what happened, not
+  // just the resulting BBO). Looked up BEFORE the message is applied.
+  //   A/F: the new order          E/C: the resting order executed (its book
+  //   price; `shares` = executed)  X: cancelled shares   D: shares removed
+  //   U: the new order, and prev_* = the replaced order
+  char side{0};                ///< 'B' / 'S'
+  std::uint32_t price{0};
+  std::uint32_t shares{0};
+  std::uint64_t prev_ref{0};
+  std::uint32_t prev_price{0};
+  std::uint32_t prev_shares{0};
 };
 static_assert(std::is_trivially_copyable_v<FeedEvent>);
 
@@ -157,7 +168,7 @@ class FeedHandler {
   void apply(const FeedInput& in, std::vector<FeedEvent>& out);
   void go(FeedState s, const FeedInput* in, AlertReason why, std::uint8_t detail,
           std::vector<FeedEvent>& out);
-  void publish(const FeedInput& in, char type, std::uint64_t ts, std::uint64_t ref,
+  void publish(const FeedInput& in, char type, std::uint64_t ts, std::uint64_t ref, const FeedEvent& what,
                std::vector<FeedEvent>& out);
   void fill_bbo(FeedEvent& e) const noexcept;
 

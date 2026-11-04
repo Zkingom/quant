@@ -92,6 +92,21 @@ void append_text(const FeedEvent& e, std::string& out) {
   out += std::to_string(e.ask_price);
   out += 'x';
   out += std::to_string(e.ask_shares);
+  if (e.kind == FeedEvent::Kind::BookUpdate) {
+    out += " msg=";
+    out += e.side == 0 ? '-' : e.side;
+    out += std::to_string(e.price);
+    out += 'x';
+    out += std::to_string(e.shares);
+    if (e.prev_ref != 0) {
+      out += " prev=";
+      out += std::to_string(e.prev_ref);
+      out += '@';
+      out += std::to_string(e.prev_price);
+      out += 'x';
+      out += std::to_string(e.prev_shares);
+    }
+  }
   if (e.reason == AlertReason::SequenceGap) {
     out += " gap=";
     out += std::to_string(e.gap_first);
@@ -116,6 +131,12 @@ std::uint64_t hash_event(const FeedEvent& e, std::uint64_t h) noexcept {
   mix(h, e.ask_shares, 8);
   mix(h, e.gap_first, 8);
   mix(h, e.gap_last, 8);
+  mix(h, static_cast<std::uint8_t>(e.side), 1);
+  mix(h, e.price, 4);
+  mix(h, e.shares, 4);
+  mix(h, e.prev_ref, 8);
+  mix(h, e.prev_price, 4);
+  mix(h, e.prev_shares, 4);
   return h;
 }
 
@@ -154,8 +175,8 @@ void FeedHandler::go(FeedState s, const FeedInput* in, AlertReason why, std::uin
 }
 
 void FeedHandler::publish(const FeedInput& in, char type, std::uint64_t ts, std::uint64_t ref,
-                          std::vector<FeedEvent>& out) {
-  FeedEvent e{};
+                          const FeedEvent& what, std::vector<FeedEvent>& out) {
+  FeedEvent e = what;
   e.kind = FeedEvent::Kind::BookUpdate;
   e.state = state_;
   e.msg_type = type;
@@ -273,6 +294,14 @@ void FeedHandler::apply(const FeedInput& in, std::vector<FeedEvent>& out) {
   BookStatus st = BookStatus::Applied;
   std::uint64_t ref = 0;
   bool symbol_mismatch = false;
+  FeedEvent what{};
+  auto describe = [&](std::uint64_t r, std::uint32_t qty) {
+    if (const auto o = book_.find(r)) {
+      what.side = static_cast<char>(o->side);
+      what.price = o->price;
+      what.shares = qty == 0 ? o->shares : qty;
+    }
+  };
   std::visit(Overloaded{
                  [&](const itch::AddOrder& m) {
                    ref = m.order_ref;
@@ -280,26 +309,41 @@ void FeedHandler::apply(const FeedInput& in, std::vector<FeedEvent>& out) {
                      symbol_mismatch = true;
                      return;
                    }
+                   what.side = static_cast<char>(m.side);
+                   what.price = m.price;
+                   what.shares = m.shares;
                    st = book_.add(m.order_ref, m.side, m.shares, m.price);
                  },
                  [&](const itch::OrderExecuted& m) {
                    ref = m.order_ref;
+                   describe(m.order_ref, m.executed_shares);
                    st = book_.execute(m.order_ref, m.executed_shares);
                  },
                  [&](const itch::OrderExecutedWithPrice& m) {
                    ref = m.order_ref;
+                   describe(m.order_ref, m.executed_shares);
                    st = book_.execute(m.order_ref, m.executed_shares);
                  },
                  [&](const itch::OrderCancel& m) {
                    ref = m.order_ref;
+                   describe(m.order_ref, m.cancelled_shares);
                    st = book_.cancel(m.order_ref, m.cancelled_shares);
                  },
                  [&](const itch::OrderDelete& m) {
                    ref = m.order_ref;
+                   describe(m.order_ref, 0);
                    st = book_.remove(m.order_ref);
                  },
                  [&](const itch::OrderReplace& m) {
                    ref = m.new_order_ref;
+                   if (const auto o = book_.find(m.original_order_ref)) {
+                     what.side = static_cast<char>(o->side);
+                     what.prev_ref = o->ref;
+                     what.prev_price = o->price;
+                     what.prev_shares = o->shares;
+                   }
+                   what.price = m.price;
+                   what.shares = m.shares;
                    st = book_.replace(m.original_order_ref, m.new_order_ref, m.shares, m.price);
                  },
                  [](const itch::SystemEvent&) {},
@@ -316,7 +360,7 @@ void FeedHandler::apply(const FeedInput& in, std::vector<FeedEvent>& out) {
   }
   ++counters_.applied;
   if (state_ == FeedState::Live) {
-    publish(in, h.type, h.timestamp, ref, out);
+    publish(in, h.type, h.timestamp, ref, what, out);
   }
 }
 

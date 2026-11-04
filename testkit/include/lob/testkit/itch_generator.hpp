@@ -106,24 +106,31 @@ class StreamGenerator {
       }
       return add_order(loc, ref, side, shares, symbol_of(inst), price, ts);
     }
-    // Pick a live order deterministically (std::map iteration order).
-    auto it = b.live.begin();
-    std::advance(it, rng_.uniform(0, static_cast<std::int64_t>(b.live.size()) - 1));
-    const std::uint64_t ref = it->first;
-    Order& o = it->second;
-    auto& levels = o.side == 'B' ? b.bids : b.asks;
-    if (op < 65) {  // execute (partial or full)
+    if (op < 65) {  // execute: like a real market, only the front of the best level trades
+      const bool buy_side = b.asks.empty() || (!b.bids.empty() && rng_.percent(50));
+      const std::uint32_t best = buy_side ? b.bids.rbegin()->first : b.asks.begin()->first;
+      const char side = buy_side ? 'B' : 'S';
+      auto front = b.live.begin();  // refs increase with arrival: the first match is the queue head
+      while (front->second.side != side || front->second.price != best) ++front;
+      Order& o = front->second;
+      const std::uint64_t ref = front->first;
       const auto qty = static_cast<std::uint32_t>(rng_.uniform(1, o.shares));
       const std::uint64_t match = next_match_++;
       Buf m = rng_.percent(25) ? order_executed_price(loc, ref, qty, match, 'Y', o.price, ts)
                                : order_executed(loc, ref, qty, match, ts);
       o.shares -= qty;
       if (o.shares == 0) {
-        del_level(levels, o.price);
-        b.live.erase(it);
+        del_level(buy_side ? b.bids : b.asks, o.price);
+        b.live.erase(front);
       }
       return m;
     }
+    // Cancels, deletes and replaces hit any live order (std::map order: deterministic).
+    auto it = b.live.begin();
+    std::advance(it, rng_.uniform(0, static_cast<std::int64_t>(b.live.size()) - 1));
+    const std::uint64_t ref = it->first;
+    Order& o = it->second;
+    auto& levels = o.side == 'B' ? b.bids : b.asks;
     if (op < 78 && o.shares > 1) {  // partial cancel
       const auto qty = static_cast<std::uint32_t>(rng_.uniform(1, o.shares - 1));
       o.shares -= qty;

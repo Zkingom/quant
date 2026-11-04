@@ -55,14 +55,14 @@ TEST(Feed, GoldenEventStreamOfTheSampleSession) {
   const std::string expected =
       "seq=1 ts=1 SYSTEM state=UNINITIALIZED reason=- detail=79 type=S ref=0 bid=0x0 ask=0x0\n"
       "seq=3 ts=3 STATE state=LIVE reason=- detail=0 type=R ref=0 bid=0x0 ask=0x0\n"
-      "seq=4 ts=10 BOOK state=LIVE reason=- detail=0 type=A ref=1 bid=10000x100 ask=0x0\n"
-      "seq=6 ts=12 BOOK state=LIVE reason=- detail=0 type=A ref=3 bid=10000x100 ask=10100x200\n"
-      "seq=7 ts=13 BOOK state=LIVE reason=- detail=0 type=F ref=4 bid=10000x150 ask=10100x200\n"
-      "seq=9 ts=15 BOOK state=LIVE reason=- detail=0 type=E ref=1 bid=10000x110 ask=10100x200\n"
-      "seq=10 ts=16 BOOK state=LIVE reason=- detail=0 type=C ref=3 bid=10000x110 ask=10100x180\n"
-      "seq=11 ts=17 BOOK state=LIVE reason=- detail=0 type=X ref=4 bid=10000x100 ask=10100x180\n"
-      "seq=12 ts=18 BOOK state=LIVE reason=- detail=0 type=U ref=5 bid=10000x100 ask=10050x150\n"
-      "seq=14 ts=20 BOOK state=LIVE reason=- detail=0 type=D ref=1 bid=10000x40 ask=10050x150\n"
+      "seq=4 ts=10 BOOK state=LIVE reason=- detail=0 type=A ref=1 bid=10000x100 ask=0x0 msg=B10000x100\n"
+      "seq=6 ts=12 BOOK state=LIVE reason=- detail=0 type=A ref=3 bid=10000x100 ask=10100x200 msg=S10100x200\n"
+      "seq=7 ts=13 BOOK state=LIVE reason=- detail=0 type=F ref=4 bid=10000x150 ask=10100x200 msg=B10000x50\n"
+      "seq=9 ts=15 BOOK state=LIVE reason=- detail=0 type=E ref=1 bid=10000x110 ask=10100x200 msg=B10000x40\n"
+      "seq=10 ts=16 BOOK state=LIVE reason=- detail=0 type=C ref=3 bid=10000x110 ask=10100x180 msg=S10100x20\n"
+      "seq=11 ts=17 BOOK state=LIVE reason=- detail=0 type=X ref=4 bid=10000x100 ask=10100x180 msg=B10000x10\n"
+      "seq=12 ts=18 BOOK state=LIVE reason=- detail=0 type=U ref=5 bid=10000x100 ask=10050x150 msg=S10050x150 prev=3@10100x180\n"
+      "seq=14 ts=20 BOOK state=LIVE reason=- detail=0 type=D ref=1 bid=10000x40 ask=10050x150 msg=B10000x60\n"
       "seq=15 ts=21 SYSTEM state=LIVE reason=- detail=67 type=S ref=0 bid=10000x40 ask=10050x150\n";
   EXPECT_EQ(text, expected);
   EXPECT_EQ(h.state(), FeedState::Live);
