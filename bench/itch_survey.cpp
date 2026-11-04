@@ -19,6 +19,8 @@
 //   - book updates per trading phase, locked/crossed counts per phase;
 //   - every intraday Trading Action of EVERY instrument (state changes after
 //     its first 'T', or any non-'T' state), to find halted instruments;
+//   - optionally (--series CSV) the instrument's best bid / ask / cross state
+//     after every update around each regular-hours pause or halt (charts);
 //   - peak RSS and elapsed time.
 // Not on any hot path; not part of CTest. scripts/itch_real_survey.sh runs it
 // together with lob_itch (pipeline and single-threaded) on one download.
@@ -64,6 +66,7 @@ std::string px(std::uint32_t p) {
 }
 
 struct Options {
+  std::string series;  ///< CSV of the book around every pause / halt (see --series)
   std::string symbol;
   std::size_t context{12};
   std::size_t max_points{60};
@@ -121,7 +124,18 @@ class Survey {
     pending_after();
   }
 
+  void write_series() const {
+    if (o_.series.empty()) return;
+    std::FILE* f = std::fopen(o_.series.c_str(), "w");
+    if (f == nullptr) return;
+    std::fprintf(f, "# lob_itch_survey --series: %s book after every update from each strict-mode exit until 1 ms after "
+                    "the next clean strict entry\n# ts_ns,event,bid,ask,cross,seq\n", o_.symbol.c_str());
+    for (const auto& l : series_) std::fprintf(f, "%s\n", l.c_str());
+    std::fclose(f);
+  }
+
   void finish(double secs, std::uint64_t bytes, bool truncated) {
+    write_series();
     rusage ru{};
     getrusage(RUSAGE_SELF, &ru);
     std::printf("\n# Survey of %s\n\n", o_.symbol.c_str());
@@ -402,6 +416,11 @@ class Survey {
       return;
     }
     const md::CrossState cs = shadow_.cross_state();
+    if (sampling_) {
+      sample(seq, h.timestamp, std::string(1, h.type));
+      if (sample_until_ == 0 && strict_phase() && cs == md::CrossState::None) sample_until_ = h.timestamp + 1'000'000;
+      if (sample_until_ != 0 && h.timestamp > sample_until_) sampling_ = false;
+    }
     auto& v = phase_[{session_, trading_}];
     ++v[0];
     if (cs == md::CrossState::Locked) ++v[1];
@@ -415,8 +434,23 @@ class Survey {
     }
   }
 
+  void sample(std::uint64_t seq, std::uint64_t ts, const std::string& event) {
+    const auto bb = shadow_.best(md::Side::Buy);
+    const auto aa = shadow_.best(md::Side::Sell);
+    const md::CrossState cs = shadow_.cross_state();
+    char b[160];
+    std::snprintf(b, sizeof b, "%llu,%s,%u,%u,%c,%llu", u(ts), event.c_str(), bb ? bb->price : 0U, aa ? aa->price : 0U,
+                  cs == md::CrossState::None ? '-' : (cs == md::CrossState::Locked ? 'L' : 'X'), u(seq));
+    series_.push_back(b);
+  }
+
   void transition(std::uint64_t seq, std::uint64_t ts, bool was_strict, const std::string& what) {
     const bool now = strict_phase();
+    if (!now && was_strict && session_ == 'Q') {
+      sampling_ = true;  // a pause / halt in regular hours: record until the book is clean in strict mode again
+      sample_until_ = 0;
+    }
+    if (sampling_) sample(seq, ts, what);
     if (now && !was_strict) {
       const md::CrossState cs = shadow_.cross_state();
       if (cs != md::CrossState::None) {
@@ -464,6 +498,9 @@ class Survey {
   std::deque<Line> ring_;
   std::deque<Wait> waiting_;
   bool resolving_{false};
+  bool sampling_{false};
+  std::uint64_t sample_until_{0};
+  std::vector<std::string> series_;
   std::uint64_t resolve_seq_{0}, resolve_ts_{0};
 };
 
@@ -476,8 +513,9 @@ int main(int argc, char** argv) {
     if (k == "--symbol" && i + 1 < argc) o.symbol = argv[++i];
     else if (k == "--context" && i + 1 < argc) o.context = std::stoul(argv[++i]);
     else if (k == "--max-points" && i + 1 < argc) o.max_points = std::stoul(argv[++i]);
+    else if (k == "--series" && i + 1 < argc) o.series = argv[++i];
     else {
-      std::fprintf(stderr, "usage: lob_itch_survey --symbol SYM [--context N] [--max-points N] < itch_stream\n");
+      std::fprintf(stderr, "usage: lob_itch_survey --symbol SYM [--context N] [--max-points N] [--series CSV] < itch_stream\n");
       return 2;
     }
   }
