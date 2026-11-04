@@ -1,0 +1,8 @@
+# Source: scripts/itch_market_survey.sh run 2 (lob_itch_market --bench-bytes 3000000000), Nasdaq 2019-01-30 sample,
+# first 3 GB of the decompressed stream held in memory; commit 2adaa3b (lob_itch_market); gcc 13.3 -O3;
+# cloud container 4 vCPU Linux 6.18 (NOT the author's WSL2; to be re-measured locally). Summary hashes identical in all modes.
+mode,frames_per_s,elapsed_s
+single-threaded,1350461,72.446
+N=1 shard,1187204,82.408
+N=2 shards,2415738,40.499
+N=4 shards,3114640,31.411

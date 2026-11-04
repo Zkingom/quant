@@ -39,33 +39,109 @@ std::string_view to_string(BookStatus s) noexcept {
   return "?";
 }
 
+OrderPool::OrderPool(std::size_t max_orders) {
+  if (max_orders == 0 || max_orders >= kNil / 2) {
+    throw std::invalid_argument("md::OrderPool: max_orders out of range");
+  }
+  nodes.resize(max_orders);
+  const std::size_t slots = std::bit_ceil(max_orders * 2);
+  index.assign(slots, 0);
+  mask = slots - 1;
+  reset();
+}
+
+void OrderPool::reset() noexcept {
+  for (std::size_t i = 0; i < nodes.size(); ++i) {
+    nodes[i] = Node{};
+    nodes[i].next = (i + 1 < nodes.size()) ? static_cast<std::uint32_t>(i + 1) : kNil;
+  }
+  free_head = 0;
+  live_ = 0;
+  std::fill(index.begin(), index.end(), 0U);
+}
+
+std::optional<std::string> OrderPool::find_violation() const {
+  std::size_t occupied = 0;
+  for (const std::uint32_t v : index) {
+    occupied += v != 0 ? 1U : 0U;
+  }
+  if (occupied != live_) {
+    return "index occupancy " + std::to_string(occupied) + " != live " + std::to_string(live_);
+  }
+  std::size_t free_count = 0;
+  for (std::uint32_t n = free_head; n != kNil; n = nodes[n].next) {
+    if (++free_count > nodes.size()) {
+      return "cycle in free list";
+    }
+  }
+  if (free_count + live_ != nodes.size()) {
+    return "free list size mismatch";
+  }
+  return std::nullopt;
+}
+
+namespace {
+std::size_t reserve_of(const BookConfig& c) {
+  return c.initial_levels_per_side == 0 ? c.max_levels_per_side
+                                        : std::min(c.initial_levels_per_side, c.max_levels_per_side);
+}
+}  // namespace
+
 Book::Book(const BookConfig& config) : config_(config) {
   if (config_.max_orders == 0 || config_.max_orders >= kNil / 2 || config_.max_levels_per_side == 0) {
     throw std::invalid_argument("md::BookConfig: max_orders and max_levels_per_side must be in range");
   }
-  nodes_.resize(config_.max_orders);
-  for (std::size_t i = 0; i < nodes_.size(); ++i) {
-    nodes_[i].next = (i + 1 < nodes_.size()) ? static_cast<std::uint32_t>(i + 1) : kNil;
+  own_ = std::make_unique<OrderPool>(config_.max_orders);
+  pool_ = own_.get();
+  bids_.reserve(reserve_of(config_));
+  asks_.reserve(reserve_of(config_));
+}
+
+Book::Book(const BookConfig& config, OrderPool& shared, std::uint16_t owner)
+    : config_(config), pool_(&shared), owner_(owner) {
+  if (config_.max_levels_per_side == 0) {
+    throw std::invalid_argument("md::BookConfig: max_levels_per_side must be > 0");
   }
-  free_head_ = 0;
-  const std::size_t slots = std::bit_ceil(config_.max_orders * 2);
-  index_.assign(slots, 0);
-  index_mask_ = slots - 1;
-  bids_.reserve(config_.max_levels_per_side);
-  asks_.reserve(config_.max_levels_per_side);
+  bids_.reserve(reserve_of(config_));
+  asks_.reserve(reserve_of(config_));
 }
 
 void Book::clear() noexcept {
-  for (std::size_t i = 0; i < nodes_.size(); ++i) {
-    nodes_[i] = Node{};
-    nodes_[i].next = (i + 1 < nodes_.size()) ? static_cast<std::uint32_t>(i + 1) : kNil;
+  if (own_) {
+    pool_->reset();
+  } else {
+    // Shared pool: release only this book's nodes.
+    for (Levels* lv : {&bids_, &asks_}) {
+      for (const Level& l : *lv) {
+        for (std::uint32_t n = l.head; n != kNil;) {
+          const std::uint32_t next = pool_->nodes[n].next;
+          index_erase(pool_->nodes[n].ref);
+          pool_->nodes[n] = Node{};
+          pool_->nodes[n].next = pool_->free_head;
+          pool_->free_head = n;
+          --pool_->live_;
+          n = next;
+        }
+      }
+    }
   }
-  free_head_ = 0;
   live_orders_ = 0;
-  std::fill(index_.begin(), index_.end(), 0U);
   bids_.clear();
   asks_.clear();
   last_change_ = Change{};
+}
+
+std::uint32_t Book::allocate(std::uint64_t ref, Side side, std::uint32_t shares, std::uint32_t price) noexcept {
+  // Precondition: free_head != kNil.
+  const std::uint32_t n = pool_->free_head;
+  pool_->free_head = pool_->nodes[n].next;
+  pool_->nodes[n] = Node{ref, price, shares, kNil, kNil, owner_, side};
+  index_insert(ref, n);
+  ++live_orders_;
+  if (++pool_->live_ > pool_->peak_) {
+    pool_->peak_ = pool_->live_;
+  }
+  return n;
 }
 
 // ---------------------------------------------------------------- index
@@ -73,16 +149,16 @@ void Book::clear() noexcept {
 std::size_t Book::slot_of(std::uint64_t ref) const noexcept {
   // Fibonacci hashing: order refs are often dense and sequential; the
   // multiply spreads them over the table.
-  return static_cast<std::size_t>((ref * 0x9E3779B97F4A7C15ULL) >> 20U) & index_mask_;
+  return static_cast<std::size_t>((ref * 0x9E3779B97F4A7C15ULL) >> 20U) & pool_->mask;
 }
 
 std::uint32_t Book::index_find(std::uint64_t ref) const noexcept {
-  for (std::size_t i = slot_of(ref);; i = (i + 1) & index_mask_) {
-    const std::uint32_t v = index_[i];
+  for (std::size_t i = slot_of(ref);; i = (i + 1) & pool_->mask) {
+    const std::uint32_t v = pool_->index[i];
     if (v == 0) {
       return kNil;
     }
-    if (nodes_[v - 1].ref == ref) {
+    if (pool_->nodes[v - 1].ref == ref) {
       return v - 1;
     }
   }
@@ -90,31 +166,31 @@ std::uint32_t Book::index_find(std::uint64_t ref) const noexcept {
 
 void Book::index_insert(std::uint64_t ref, std::uint32_t node) noexcept {
   std::size_t i = slot_of(ref);
-  while (index_[i] != 0) {
-    i = (i + 1) & index_mask_;
+  while (pool_->index[i] != 0) {
+    i = (i + 1) & pool_->mask;
   }
-  index_[i] = node + 1;
+  pool_->index[i] = node + 1;
 }
 
 void Book::index_erase(std::uint64_t ref) noexcept {
   std::size_t i = slot_of(ref);
-  while (nodes_[index_[i] - 1].ref != ref) {  // precondition: present
-    i = (i + 1) & index_mask_;
+  while (pool_->nodes[pool_->index[i] - 1].ref != ref) {  // precondition: present
+    i = (i + 1) & pool_->mask;
   }
-  index_[i] = 0;
+  pool_->index[i] = 0;
   // Backward-shift deletion: move later members of the probe run into the
   // hole when their home slot is not cyclically in (hole, j].
   std::size_t j = i;
   for (;;) {
-    j = (j + 1) & index_mask_;
-    if (index_[j] == 0) {
+    j = (j + 1) & pool_->mask;
+    if (pool_->index[j] == 0) {
       return;
     }
-    const std::size_t home = slot_of(nodes_[index_[j] - 1].ref);
+    const std::size_t home = slot_of(pool_->nodes[pool_->index[j] - 1].ref);
     const bool home_in_range = (i <= j) ? (home > i && home <= j) : (home > i || home <= j);
     if (!home_in_range) {
-      index_[i] = index_[j];
-      index_[j] = 0;
+      pool_->index[i] = pool_->index[j];
+      pool_->index[j] = 0;
       i = j;
     }
   }
@@ -175,22 +251,22 @@ std::optional<LevelView> Book::level(Side side, std::uint32_t price) const noexc
 }
 
 std::optional<OrderView> Book::find(std::uint64_t ref) const noexcept {
-  const std::uint32_t n = index_find(ref);
+  const std::uint32_t n = owned_find(ref);
   if (n == kNil) {
     return std::nullopt;
   }
-  const Node& node = nodes_[n];
+  const Node& node = pool_->nodes[n];
   return OrderView{node.ref, node.side, node.price, node.shares};
 }
 
 std::uint64_t Book::shares_ahead(std::uint64_t ref) const noexcept {
-  const std::uint32_t n = index_find(ref);
+  const std::uint32_t n = owned_find(ref);
   if (n == kNil) {
     return 0;
   }
   std::uint64_t ahead = 0;
-  for (std::uint32_t p = nodes_[n].prev; p != kNil; p = nodes_[p].prev) {
-    ahead += nodes_[p].shares;
+  for (std::uint32_t p = pool_->nodes[n].prev; p != kNil; p = pool_->nodes[p].prev) {
+    ahead += pool_->nodes[p].shares;
   }
   return ahead;
 }
@@ -203,11 +279,11 @@ void Book::link(std::uint32_t n, Side side, std::uint32_t price) noexcept {
     lv.insert(lv.begin() + static_cast<std::ptrdiff_t>(i), Level{price, 0, 0, kNil, kNil});
   }
   Level& l = lv[i];
-  Node& node = nodes_[n];
+  Node& node = pool_->nodes[n];
   node.prev = l.tail;
   node.next = kNil;
   if (l.tail != kNil) {
-    nodes_[l.tail].next = n;
+    pool_->nodes[l.tail].next = n;
   } else {
     l.head = n;
   }
@@ -217,17 +293,17 @@ void Book::link(std::uint32_t n, Side side, std::uint32_t price) noexcept {
 }
 
 void Book::unlink(std::uint32_t n) noexcept {
-  Node& node = nodes_[n];
+  Node& node = pool_->nodes[n];
   Levels& lv = levels(node.side);
   const std::size_t i = lower_index(node.side, node.price);
   Level& l = lv[i];  // precondition: present
   if (node.prev != kNil) {
-    nodes_[node.prev].next = node.next;
+    pool_->nodes[node.prev].next = node.next;
   } else {
     l.head = node.next;
   }
   if (node.next != kNil) {
-    nodes_[node.next].prev = node.prev;
+    pool_->nodes[node.next].prev = node.prev;
   } else {
     l.tail = node.prev;
   }
@@ -240,14 +316,15 @@ void Book::unlink(std::uint32_t n) noexcept {
   const Side side = node.side;
   const std::uint32_t price = node.price;
   node = Node{};
-  node.next = free_head_;
-  free_head_ = n;
+  node.next = pool_->free_head;
+  pool_->free_head = n;
   --live_orders_;
+  --pool_->live_;
   record_change(side, price);
 }
 
 void Book::reduce(std::uint32_t n, std::uint32_t shares) noexcept {
-  Node& node = nodes_[n];
+  Node& node = pool_->nodes[n];
   if (shares == node.shares) {
     unlink(n);
     return;
@@ -296,28 +373,24 @@ BookStatus Book::add(std::uint64_t ref, Side side, std::uint32_t shares, std::ui
   if (const BookStatus s = check_new(side, shares, price, false); s != BookStatus::Applied) {
     return s;
   }
-  if (free_head_ == kNil) {
+  if (pool_->free_head == kNil) {
     return BookStatus::OrderCapacity;
   }
-  const std::uint32_t n = free_head_;
-  free_head_ = nodes_[n].next;
-  nodes_[n] = Node{ref, price, shares, kNil, kNil, side};
-  index_insert(ref, n);
-  ++live_orders_;
+  const std::uint32_t n = allocate(ref, side, shares, price);
   link(n, side, price);
   record_change(side, price);
   return BookStatus::Applied;
 }
 
 BookStatus Book::execute(std::uint64_t ref, std::uint32_t shares) {
-  const std::uint32_t n = index_find(ref);
+  const std::uint32_t n = owned_find(ref);
   if (n == kNil) {
     return BookStatus::UnknownOrderRef;
   }
   if (shares == 0) {
     return BookStatus::ZeroShares;
   }
-  if (shares > nodes_[n].shares) {
+  if (shares > pool_->nodes[n].shares) {
     return BookStatus::Overfill;
   }
   reduce(n, shares);
@@ -327,7 +400,7 @@ BookStatus Book::execute(std::uint64_t ref, std::uint32_t shares) {
 BookStatus Book::cancel(std::uint64_t ref, std::uint32_t shares) { return execute(ref, shares); }
 
 BookStatus Book::remove(std::uint64_t ref) {
-  const std::uint32_t n = index_find(ref);
+  const std::uint32_t n = owned_find(ref);
   if (n == kNil) {
     return BookStatus::UnknownOrderRef;
   }
@@ -337,14 +410,14 @@ BookStatus Book::remove(std::uint64_t ref) {
 
 BookStatus Book::replace(std::uint64_t old_ref, std::uint64_t new_ref, std::uint32_t shares,
                          std::uint32_t price) {
-  const std::uint32_t old_n = index_find(old_ref);
+  const std::uint32_t old_n = owned_find(old_ref);
   if (old_n == kNil) {
     return BookStatus::UnknownOrderRef;
   }
   if (new_ref != old_ref && index_find(new_ref) != kNil) {
     return BookStatus::DuplicateOrderRef;
   }
-  const Node& old = nodes_[old_n];
+  const Node& old = pool_->nodes[old_n];
   const Side side = old.side;
   // The old order's level disappears if it is the only order there and the
   // replacement moves to another price: that frees one level slot.
@@ -354,11 +427,7 @@ BookStatus Book::replace(std::uint64_t old_ref, std::uint64_t new_ref, std::uint
     return s;
   }
   unlink(old_n);  // frees a node, so the allocation below cannot fail
-  const std::uint32_t n = free_head_;
-  free_head_ = nodes_[n].next;
-  nodes_[n] = Node{new_ref, price, shares, kNil, kNil, side};
-  index_insert(new_ref, n);
-  ++live_orders_;
+  const std::uint32_t n = allocate(new_ref, side, shares, price);
   link(n, side, price);
   record_change(side, price);
   return BookStatus::Applied;
@@ -384,9 +453,9 @@ std::uint64_t Book::state_hash() const noexcept {
       mix(h, it->price, 4);
       mix(h, it->shares, 8);
       mix(h, it->orders, 4);
-      for (std::uint32_t n = it->head; n != kNil; n = nodes_[n].next) {
-        mix(h, nodes_[n].ref, 8);
-        mix(h, nodes_[n].shares, 4);
+      for (std::uint32_t n = it->head; n != kNil; n = pool_->nodes[n].next) {
+        mix(h, pool_->nodes[n].ref, 8);
+        mix(h, pool_->nodes[n].shares, 4);
       }
     }
   }
@@ -415,8 +484,8 @@ std::optional<std::string> Book::find_invariant_violation() const {
       std::uint64_t sum = 0;
       std::uint32_t count = 0;
       std::uint32_t prev = kNil;
-      for (std::uint32_t n = l.head; n != kNil; n = nodes_[n].next) {
-        const Node& node = nodes_[n];
+      for (std::uint32_t n = l.head; n != kNil; n = pool_->nodes[n].next) {
+        const Node& node = pool_->nodes[n];
         if (node.prev != prev) {
           return "broken prev link at ref " + std::to_string(node.ref);
         }
@@ -448,21 +517,10 @@ std::optional<std::string> Book::find_invariant_violation() const {
   if (linked != live_orders_) {
     return "linked orders " + std::to_string(linked) + " != live " + std::to_string(live_orders_);
   }
-  std::size_t occupied = 0;
-  for (const std::uint32_t v : index_) {
-    occupied += v != 0 ? 1U : 0U;
-  }
-  if (occupied != live_orders_) {
-    return "index occupancy " + std::to_string(occupied) + " != live " + std::to_string(live_orders_);
-  }
-  std::size_t free_count = 0;
-  for (std::uint32_t n = free_head_; n != kNil; n = nodes_[n].next) {
-    if (++free_count > nodes_.size()) {
-      return "cycle in free list";
+  if (own_) {
+    if (auto v = pool_->find_violation()) {  // shared pools are checked by their owner
+      return v;
     }
-  }
-  if (free_count + live_orders_ != nodes_.size()) {
-    return "free list size mismatch";
   }
   if (strict_ && cross_state() != CrossState::None) {
     return "book locked or crossed: bid " + std::to_string(bids_.back().price) + " ask " +

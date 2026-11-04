@@ -33,6 +33,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -45,8 +46,13 @@ namespace lob::md {
 using itch::Side;
 
 struct BookConfig {
-  std::size_t max_orders{1U << 20};        ///< live orders
+  std::size_t max_orders{1U << 20};        ///< live orders (ignored by a Book on a shared OrderPool)
   std::size_t max_levels_per_side{1U << 14};
+  /// Level arrays reserved at construction; 0 = max_levels_per_side (no
+  /// allocation after construction). Smaller values let the arrays grow on
+  /// demand up to the maximum -- used by the market-wide mode, where
+  /// thousands of books each reserving the maximum would not fit (D-056).
+  std::size_t initial_levels_per_side{0};
 };
 
 enum class CrossState : std::uint8_t { None, Locked, Crossed };
@@ -87,9 +93,55 @@ struct Change {
   std::uint32_t level_orders;
 };
 
+class Book;
+
+/// Order storage: node pool + open-addressing ref -> node index. A Book owns
+/// one by default; in the market-wide mode (D-056) many Books share one, and
+/// every node records the Book (owner) it belongs to. Order refs are unique
+/// across the whole market for the day, so one index serves all books.
+class OrderPool {
+ public:
+  explicit OrderPool(std::size_t max_orders);
+  OrderPool(const OrderPool&) = delete;
+  OrderPool& operator=(const OrderPool&) = delete;
+  OrderPool(OrderPool&&) = delete;
+  OrderPool& operator=(OrderPool&&) = delete;
+  ~OrderPool() = default;
+
+  [[nodiscard]] std::size_t capacity() const noexcept { return nodes.size(); }
+  [[nodiscard]] std::size_t live() const noexcept { return live_; }
+  [[nodiscard]] std::size_t peak() const noexcept { return peak_; }
+  /// Pool-level consistency: index occupancy and free list match `live`.
+  [[nodiscard]] std::optional<std::string> find_violation() const;
+
+ private:
+  friend class Book;
+  static constexpr std::uint32_t kNil = 0xffffffffU;
+  struct Node {
+    std::uint64_t ref{0};
+    std::uint32_t price{0};
+    std::uint32_t shares{0};
+    std::uint32_t prev{kNil};
+    std::uint32_t next{kNil};  // also the free-list link
+    std::uint16_t owner{0};    // Book id (stock locate in the market-wide mode)
+    Side side{Side::Buy};
+  };
+  void reset() noexcept;
+
+  std::vector<Node> nodes;
+  std::uint32_t free_head{kNil};
+  std::vector<std::uint32_t> index;  // node + 1; 0 = empty slot
+  std::size_t mask{0};
+  std::size_t live_{0};
+  std::size_t peak_{0};
+};
+
 class Book {
  public:
   explicit Book(const BookConfig& config = {});
+  /// A Book whose orders live in a shared pool (market-wide mode); `owner`
+  /// identifies its nodes. The pool must outlive the Book.
+  Book(const BookConfig& config, OrderPool& shared, std::uint16_t owner);
 
   Book(const Book&) = delete;
   Book& operator=(const Book&) = delete;
@@ -106,8 +158,9 @@ class Book {
   [[nodiscard]] BookStatus replace(std::uint64_t old_ref, std::uint64_t new_ref, std::uint32_t shares,
                                    std::uint32_t price);
 
-  /// Clears all orders (used by recovery). Does not allocate.
+  /// Clears all orders of this book (used by recovery). Does not allocate.
   void clear() noexcept;
+  [[nodiscard]] const OrderPool& pool() const noexcept { return *pool_; }
 
   /// Strict mode enforces best bid < best ask on adds / replaces and in
   /// find_invariant_violation(). Switching it on does not check the book:
@@ -141,16 +194,9 @@ class Book {
   [[nodiscard]] std::optional<std::string> find_invariant_violation() const;
 
  private:
-  static constexpr std::uint32_t kNil = 0xffffffffU;
+  static constexpr std::uint32_t kNil = OrderPool::kNil;
+  using Node = OrderPool::Node;
 
-  struct Node {
-    std::uint64_t ref{0};
-    std::uint32_t price{0};
-    std::uint32_t shares{0};
-    std::uint32_t prev{kNil};
-    std::uint32_t next{kNil};  // also the free-list link
-    Side side{Side::Buy};
-  };
   struct Level {
     std::uint32_t price{0};
     std::uint32_t orders{0};
@@ -178,16 +224,22 @@ class Book {
 
   // Open-addressing index ref -> node (linear probing, backward-shift delete).
   [[nodiscard]] std::size_t slot_of(std::uint64_t ref) const noexcept;
+  /// Any owner (duplicate detection: refs are unique market-wide).
   [[nodiscard]] std::uint32_t index_find(std::uint64_t ref) const noexcept;
+  /// Only this book's orders: another book's ref is unknown here.
+  [[nodiscard]] std::uint32_t owned_find(std::uint64_t ref) const noexcept {
+    const std::uint32_t n = index_find(ref);
+    return (n != kNil && pool_->nodes[n].owner == owner_) ? n : kNil;
+  }
+  [[nodiscard]] std::uint32_t allocate(std::uint64_t ref, Side side, std::uint32_t shares, std::uint32_t price) noexcept;
   void index_insert(std::uint64_t ref, std::uint32_t node) noexcept;
   void index_erase(std::uint64_t ref) noexcept;
 
   BookConfig config_;
-  std::vector<Node> nodes_;
-  std::uint32_t free_head_{kNil};
-  std::size_t live_orders_{0};
-  std::vector<std::uint32_t> index_;  // node + 1; 0 = empty slot
-  std::size_t index_mask_{0};
+  std::unique_ptr<OrderPool> own_;  // null when the pool is shared
+  OrderPool* pool_{nullptr};
+  std::uint16_t owner_{0};
+  std::size_t live_orders_{0};      // this book's orders
   Levels bids_;
   Levels asks_;
   Change last_change_{};
@@ -200,8 +252,8 @@ void Book::for_each_order_at(Side side, std::uint32_t price, F&& f) const {
   if (lvl == nullptr) {
     return;
   }
-  for (std::uint32_t n = lvl->head; n != kNil; n = nodes_[n].next) {
-    const Node& node = nodes_[n];
+  for (std::uint32_t n = lvl->head; n != kNil; n = pool_->nodes[n].next) {
+    const Node& node = pool_->nodes[n];
     f(OrderView{node.ref, node.side, node.price, node.shares});
   }
 }

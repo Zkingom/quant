@@ -1,0 +1,11 @@
+# Source: BENCHMARK §13 (lob_itch_bench --messages 1000000 --reps 5, medians of 5 reps), commit 8135f4c,
+# gcc 13.3 -O3, cloud container 4 vCPU Linux 6.18 (NOT the author's WSL2; to be re-measured locally). ns, timer overhead subtracted.
+mode,hop,p50,p99,p999
+single,decode,21,80,332
+single,book,13,265,396
+pipeline (saturated),decode,27,115,183
+pipeline (saturated),queue,1707860,2125479,2199527
+pipeline (saturated),book,55,317,480
+paced 1 msg/us,decode,17,38,116
+paced 1 msg/us,queue,349,37459,601489
+paced 1 msg/us,book,153,489,746

@@ -82,6 +82,7 @@ target_compile_definitions(lob_md_tests PRIVATE LOB_GOLDEN_DIR="${CMAKE_CURRENT_
 lob_add_test_suite(lob_pipeline_tests
   SOURCES
     pipeline/test_pipeline.cpp
+    pipeline/test_market.cpp
   LIBS lob::pipeline lob::testkit
   LABELS concurrency)
 target_compile_definitions(lob_pipeline_tests PRIVATE LOB_GOLDEN_DIR="${CMAKE_CURRENT_SOURCE_DIR}/golden")

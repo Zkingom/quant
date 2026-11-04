@@ -164,6 +164,9 @@ struct FeedConfig {
   itch::Symbol symbol{};  ///< space-padded, e.g. make_symbol("AAPL")
   BookConfig book{};
   std::uint64_t first_seq{1};
+  /// false in the market-wide mode (D-056): a per-stock handler sees only
+  /// part of the stream; sequence checks are done once, by the router.
+  bool check_sequence{true};
   /// Resume grace limits (D-055); either 0 disables the grace.
   std::uint64_t resume_grace_ns{1'000'000'000ULL};  ///< ITCH time, from the transition
   std::uint64_t resume_grace_messages{10'000};       ///< messages of the instrument
@@ -191,6 +194,12 @@ struct FeedCounters {
 class FeedHandler {
  public:
   explicit FeedHandler(const FeedConfig& config, RecoverySource* recovery = nullptr);
+  /// Market-wide mode (D-056): the book lives in a shared pool, owned by `owner`.
+  FeedHandler(const FeedConfig& config, OrderPool& shared, std::uint16_t owner);
+
+  /// A fault the handler cannot see itself (a market-wide sequence gap,
+  /// timestamp regression, undecodable or unframeable input): go Stale.
+  void force_stale(const FeedInput& in, AlertReason why, std::vector<FeedEvent>& out);
 
   /// Processes one input; appends 0..n events to `out`. On the hot path
   /// (Live, no gap) this does not allocate as long as `out` has capacity.
@@ -212,6 +221,7 @@ class FeedHandler {
   [[nodiscard]] char trading_state() const noexcept { return trading_; }
   [[nodiscard]] bool strict() const noexcept { return book_.strict(); }
   [[nodiscard]] bool in_grace() const noexcept { return in_grace_; }
+  [[nodiscard]] const itch::Symbol& symbol() const noexcept { return config_.symbol; }
 
  private:
   void process(const FeedInput& in, std::vector<FeedEvent>& out);

@@ -23,6 +23,7 @@ C++20 实现的单线程、确定性、正确性优先的单标的限价订单�
 | CRTP vs 虚函数（做市策略一次 `on_book_update`） | 13.3 vs 13.1 ns（待本机复测） | 分辨不出差别，见 BENCHMARK §14 |
 | 回放峰值内存 | ≈ 47 MB，与输入大小无关（待本机复测） | 33 MB / 328 MB / 984 MB（管道）输入相同 |
 | 真实数据回放（Nasdaq 2019-01-30 全天，AAPL） | 11.2 GB / 3.68 亿帧，195.7 s，峰值 RSS 98.7 MiB；0 次 Stale、0 次锁定 / 交叉 | 云端流式（`curl \| gzip -dc \| lob_itch`），耗时受下载速度限制（24 MB/s） |
+| 全市场回放（同一天，8 713 只股票） | 单线程 1.35 M 帧/s，N = 2 / 4 分片 2.42 / 3.11 M 帧/s（待本机复测）；峰值在途 1 742 866 单 | 内存中 3 GB 前缀；单线程与分片哈希一致 |
 | 多线程 == 单线程回放 | 事件流、订单簿、订单 / 成交 / 持仓哈希逐字节一致 | GCC 与 Clang 固定为同一常量 |
 | 热路径分配 | 0 次 | 解码 → SPSC → 订单簿 → 策略 → 风控（L1 撮合引擎除外，D-046） |
 | CI 性能门槛（cachegrind Ir，200 k 条） | decode 33.5 M / book 118.8 M / trading 264.2 M 条指令 | 容差 +2%，`scripts/icount_gate.sh` |
@@ -48,8 +49,29 @@ C++20 实现的单线程、确定性、正确性优先的单标的限价订单�
 | L3' 追加：交易状态感知（Trading Action / System Event，D-054） | ✅ 2026-11-04 |
 | L3' 真实数据验证：Nasdaq 2019-01-30 全天，AAPL，流式不落盘 | ✅ 2026-11-04：0 次 Stale、0 次锁定 / 交叉，开盘未误判；停牌恢复路径未覆盖（AAPL 当天无停牌），见 [MODULE_NOTES/L3.md](MODULE_NOTES/L3.md) |
 | L3' 恢复交易宽限（D-055，真实数据驱动） | ✅ 2026-11-04：SXTC 两次 LULD 暂停恢复时原规则误判 Stale；加宽限后全天 Live，流水线 / 单线程哈希一致 |
+| L3' 全市场订单簿（D-056）：共享订单池、按 locate 分片多线程 | ✅ 2026-11-04：真实全天 8 713 只股票全部 Live，峰值在途 1 742 866 单，单线程与 4 分片逐股票哈希一致 |
 
 撮合引擎、回放与恢复已可用；性能数据只适用于 WSL2 上的测量环境（BENCHMARK §1），不代表裸机。掉电持久性未验证，见 DESIGN §6.6。 计划与验收门槛见 [ROADMAP.md](ROADMAP.md)。
+
+## 图表
+
+图由 `scripts/charts/make_charts.py` 从 `docs/charts/data/*.csv` 生成；每个 CSV 头部写明数据来源、代码版本与测量环境，并印在图下。
+
+![SXTC 停牌恢复时间线](docs/charts/sxtc_resume.svg)
+
+**SXTC 停牌恢复时间线**（Nasdaq 2019-01-30 真实数据，提交 `a5402b3` 的 `lob_itch_survey --series`）：LULD 暂停期间订单簿交叉（灰色），
+恢复交易（Cross Trade + H 'T'）时仍交叉；参与撮合的订单的成交回报在之后 233 µs / 264 µs 内到达并消除交叉——这段时间是恢复宽限（斜线，D-055）。
+订单簿状态由确定性回放得出，与测量环境无关。
+
+![延迟瀑布](docs/charts/latency_waterfall.svg)
+
+**延迟瀑布**（合成 ITCH 100 万条，`lob_itch_bench`，提交 `8135f4c`，云端 4 vCPU，**待本机复测**）：饱和流水线的 queue 一跳是排队时间，
+限速模式才接近跨核交接成本（BENCHMARK §13）。
+
+![全市场吞吐](docs/charts/market_throughput.svg)
+
+**全市场吞吐**（真实数据前 3 GB 放在内存，8 713 只股票，`lob_itch_market --bench-bytes`，提交 `2adaa3b`，云端 4 vCPU，**待本机复测**）：
+四种模式汇总哈希一致（D-056）。
 
 ## 构建与测试
 
@@ -248,6 +270,12 @@ curl -sS --fail "https://emi.nasdaq.com/ITCH/Nasdaq%20ITCH/01302019.NASDAQ_ITCH5
 
 ```bash
 scripts/itch_real_survey.sh AAPL /tmp/itch_aapl
+```
+
+全市场模式（每只股票的订单簿；单线程与 4 分片逐股票哈希比对，再测 N = 1/2/4 的吞吐）：
+
+```bash
+scripts/itch_market_survey.sh /tmp/itch_market
 ```
 延迟瀑布与策略 / 风控测量见上方"关键数字"的复测命令；CI 指令数门槛：
 
