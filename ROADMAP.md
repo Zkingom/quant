@@ -125,7 +125,7 @@ Golden Test 依赖文本格式，格式稳定后再固化。
 > 不改动 L1 冻结语义；真实数据不入仓库（只给下载 / 导出脚本）；墙钟数字一律标注测量环境。
 > 每阶段更新 DECISIONS、对应 MODULE_NOTES、ARCHITECTURE、README、docs/INTERVIEW_QA.md（新增 6–8 题）、AI_USAGE。
 >
-> **当前位置**：L4 设计已确认（2026-11-05，§6 全部按推荐）。L4.1–L4.6 完成，PR 待 CI 与合并；之后写 L5 设计文档（docs/design/L5_DESIGN.md），确认后再实现。
+> **当前位置**：L4 设计已确认（2026-11-05，§6 全部按推荐）。L4.1–L4.6 完成，PR #6 待 CI 与合并；L5 设计文档已写（docs/design/L5_DESIGN.md），**等待作者确认**（§9），确认前不写 L5 实现代码。
 
 **L4 下单链路与 tick-to-trade**（设计：docs/design/L4_DESIGN.md）
 - [x] L4.0 设计文档与实现计划（2026-11-05 确认）
@@ -137,7 +137,7 @@ Golden Test 依赖文本格式，格式稳定后再固化。
 - [x] L4.6 tick-to-trade（进程内 / 回环分开，p50/p99/p99.9，扣计时开销，标环境）；文档（`lob_t2t`，BENCHMARK §15；D-059–D-064、MODULE_NOTES/L4、ARCHITECTURE §4.2、INTERVIEW_QA §8、AI_USAGE、README）；PR → CI → 合并
 
 **L5 UDP 组播与 A/B 双路仲裁**（设计：docs/design/L5_DESIGN.md，L4 合并后编写）
-- [ ] L5.0 设计文档（待确认）
+- [x] L5.0 设计文档（待确认）
 - [ ] 回放发送器：MoldUDP64 A/B 组播，可注入丢包 / 乱序 / 重复 / 延迟
 - [ ] 接收端仲裁：去重、补洞；两路都缺时向最小 MoldUDP64 重传服务请求
 - [ ] 接入流水线取代文件输入；任意可补齐故障组合下事件流与快照哈希与直接读文件一致，补不齐走恢复 / Stale
