@@ -68,6 +68,9 @@ struct ExchangeConfig {
   std::size_t log_messages{1U << 20};  ///< per account
   std::size_t log_bytes{1U << 26};     ///< per account
   std::size_t max_orders{1U << 16};    ///< tokens per day, all accounts
+  /// Verification (L4.5): recompute each account's exposure whenever it can
+  /// grow (accept / replace) -- O(orders) per order, off by default.
+  bool track_exposure{false};
 };
 
 struct ExchangeCounters {
@@ -96,6 +99,9 @@ struct AccountPosition {
   std::uint64_t open_buy{0};
   std::uint64_t open_sell{0};
   std::uint64_t live_orders{0};
+  /// Largest max(position + open buy, open sell - position) seen after any
+  /// change (the pre-trade risk bound, checked from the exchange's side).
+  std::int64_t peak_exposure{0};
 };
 
 class OuchExchange {
@@ -172,6 +178,7 @@ class OuchExchange {
   /// Translates SimExchange reports (fills, cancels, rejects) into OUCH.
   void deliver(const sim::Reports& r, char cancel_reason);
   void cancel_order(std::uint32_t idx, char reason);
+  void track_exposure(std::size_t a);
 
   // token table: (account, token) -> order index + 1, open addressing, never erased
   [[nodiscard]] std::size_t slot_of(std::size_t a, const ouch::Token& t) const noexcept;

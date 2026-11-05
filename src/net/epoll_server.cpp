@@ -232,12 +232,22 @@ void EpollServer::feed(Conn& c, soup::Bytes in, std::uint64_t now) {
   c.session->on_bytes(in, now, [&](soup::Bytes p) {
     ++st_.inbound;
     if (hook_ != nullptr) hook_(hook_ctx_, c.account, p);
+    if (journal_ != nullptr) {
+      JournalEntry e;
+      e.kind = JournalEntry::Kind::Message;
+      e.account = static_cast<std::uint32_t>(c.account);
+      e.now = now;
+      e.len = static_cast<std::uint16_t>(std::min(p.size(), e.bytes.size()));
+      std::copy_n(p.begin(), e.len, e.bytes.begin());
+      journal_->entries.push_back(e);
+    }
     ex_.on_message(c.account, p, now);
     ++processed_[c.account];
   });
   if (before == soup::ServerState::AwaitLogin) {
     if (c.session->state() == soup::ServerState::LoggedIn) {
       ++st_.logins;
+      processed_[c.account] = 0;  // barriers count inbound messages per connection
       // Takeover: a successful login closes the account's older connection
       // (the client reconnected before the server saw the old one drop).
       // Its cancel-on-disconnect messages go to the log, so the new
@@ -259,6 +269,12 @@ void EpollServer::drain_control() {
   while (control_.try_pop(c)) {
     switch (c.kind) {
       case Control::Kind::Input: {
+        if (journal_ != nullptr) {
+          JournalEntry e;
+          e.kind = JournalEntry::Kind::Input;
+          e.in = c.in;
+          journal_->entries.push_back(e);
+        }
         const std::size_t n = ex_.apply_input(c.in);
         if (opt_.auto_market_events) {
           for (std::size_t k = 0; k < n; ++k) ex_.market_event(k);
@@ -266,6 +282,12 @@ void EpollServer::drain_control() {
         break;
       }
       case Control::Kind::Event:
+        if (journal_ != nullptr) {
+          JournalEntry e;
+          e.kind = JournalEntry::Kind::Event;
+          e.event = c.event;
+          journal_->entries.push_back(e);
+        }
         ex_.market_event(c.event);
         break;
       case Control::Kind::Barrier:
@@ -273,6 +295,11 @@ void EpollServer::drain_control() {
         barriers_.push_back(c);
         break;
       case Control::Kind::EndOfDay:
+        if (journal_ != nullptr) {
+          JournalEntry e;
+          e.kind = JournalEntry::Kind::EndOfDay;
+          journal_->entries.push_back(e);
+        }
         ex_.end_of_day();
         break;
       case Control::Kind::Stop:
@@ -355,7 +382,41 @@ void EpollServer::close_conn(Conn& c) {
   ::close(c.fd);
   c.fd = -1;
   ++st_.closed;
-  if (was_logged_in) ex_.on_disconnect(c.account);  // cancel-on-disconnect (if configured)
+  if (was_logged_in) {
+    if (journal_ != nullptr) {
+      JournalEntry e;
+      e.kind = JournalEntry::Kind::Disconnect;
+      e.account = static_cast<std::uint32_t>(c.account);
+      journal_->entries.push_back(e);
+    }
+    ex_.on_disconnect(c.account);  // cancel-on-disconnect (if configured)
+  }
+}
+
+void replay(const ServerJournal& j, OuchExchange& ex, bool auto_market_events) {
+  for (const JournalEntry& e : j.entries) {
+    switch (e.kind) {
+      case JournalEntry::Kind::Input: {
+        const std::size_t n = ex.apply_input(e.in);
+        if (auto_market_events) {
+          for (std::size_t k = 0; k < n; ++k) ex.market_event(k);
+        }
+        break;
+      }
+      case JournalEntry::Kind::Event:
+        ex.market_event(e.event);
+        break;
+      case JournalEntry::Kind::Message:
+        ex.on_message(e.account, {e.bytes.data(), e.len}, e.now);
+        break;
+      case JournalEntry::Kind::Disconnect:
+        ex.on_disconnect(e.account);
+        break;
+      case JournalEntry::Kind::EndOfDay:
+        ex.end_of_day();
+        break;
+    }
+  }
 }
 
 void EpollServer::sweep_closed() {

@@ -264,6 +264,7 @@ void OuchExchange::on_enter(std::size_t a, const ouch::EnterOrder& m, std::uint6
   acc.bbo_weight = ' ';
   emit(a, acc);
   deliver(r, ouch::reason::kUserCancel);  // immediate executions
+  if (cfg_.track_exposure) track_exposure(a);
   if (o.tif == ouch::kTifImmediateOrCancel && orders_[idx - 1].live) cancel_order(idx, ouch::reason::kImmediateOrCancel);
 }
 
@@ -353,6 +354,7 @@ void OuchExchange::on_replace(std::size_t a, const ouch::ReplaceOrder& m, std::u
   rep.bbo_weight = ' ';
   emit(a, rep);
   deliver(r, ouch::reason::kUserCancel);
+  if (cfg_.track_exposure) track_exposure(a);
   if (o.tif == ouch::kTifImmediateOrCancel && orders_[idx - 1].live) cancel_order(idx, ouch::reason::kImmediateOrCancel);
 }
 
@@ -374,6 +376,13 @@ void OuchExchange::end_of_day() {
 }
 
 // --- verification ------------------------------------------------------------------
+
+void OuchExchange::track_exposure(std::size_t a) {
+  const AccountPosition p = position(a);
+  const std::int64_t e = std::max(p.position + static_cast<std::int64_t>(p.open_buy),
+                                  static_cast<std::int64_t>(p.open_sell) - p.position);
+  accounts_[a].pos.peak_exposure = std::max(accounts_[a].pos.peak_exposure, e);
+}
 
 AccountPosition OuchExchange::position(std::size_t a) const {
   AccountPosition p = accounts_.at(a).pos;

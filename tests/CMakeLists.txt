@@ -126,6 +126,13 @@ lob_add_test_suite(lob_gateway_tests
     gateway/test_gateway.cpp
   LIBS lob::gateway lob::net lob::testkit)
 
+# L4.5: lockstep == in-process (bit for bit); free-run invariants + replay.
+lob_add_test_suite(lob_lockstep_tests
+  SOURCES
+    net/test_lockstep.cpp
+  LIBS lob::netstage lob::strategy lob::testkit
+  LABELS concurrency)
+
 # libFuzzer entry (L3' 1e): opt-in, Clang only, not part of CTest. The md
 # sources are compiled into the fuzzer directly so that they carry coverage
 # instrumentation. Run with scripts/fuzz_itch.sh.

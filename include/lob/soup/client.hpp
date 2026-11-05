@@ -88,6 +88,9 @@ class ClientSession {
   [[nodiscard]] std::uint64_t next_deadline() const noexcept;
   [[nodiscard]] OutBuffer& out() noexcept { return out_; }
   [[nodiscard]] std::uint64_t logins() const noexcept { return logins_; }
+  /// Server Heartbeats received (all connections). The first one after a
+  /// login means the server had nothing left to send: the replay is over.
+  [[nodiscard]] std::uint64_t heartbeats_received() const noexcept { return heartbeats_; }
 
  private:
   /// Returns true when the payload is a Sequenced Data message to deliver.
@@ -106,6 +109,7 @@ class ClientSession {
   std::uint64_t last_send_{0};
   std::uint64_t last_recv_{0};
   std::uint64_t logins_{0};
+  std::uint64_t heartbeats_{0};
 };
 
 template <class F>

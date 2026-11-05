@@ -121,3 +121,10 @@ add_library(lob_gateway
   gateway/gateway.cpp)
 add_library(lob::gateway ALIAS lob_gateway)
 target_link_libraries(lob_gateway PUBLIC lob::sim lob::ouch PRIVATE lob_project_options)
+
+# L4.5: network order entry behind TradingStage -- lockstep (hash-equal to
+# in-process), free-run (recorded, replayable), offline replay.
+add_library(lob_netstage
+  net/lockstep.cpp)
+add_library(lob::netstage ALIAS lob_netstage)
+target_link_libraries(lob_netstage PUBLIC lob::net lob::gateway lob::pipeline PRIVATE lob_project_options)

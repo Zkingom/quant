@@ -109,7 +109,10 @@ bool ClientSession::handle(char t, Bytes payload, std::uint64_t now) {
         ++next_seq_;
         return true;
       case type::kServerHeartbeat:
-        if (payload.empty()) return false;
+        if (payload.empty()) {
+          ++heartbeats_;
+          return false;
+        }
         break;
       case type::kEndOfSession:
         if (payload.empty()) {

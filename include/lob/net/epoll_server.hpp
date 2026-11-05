@@ -19,7 +19,9 @@
 //   timers          epoll_wait's timeout is the earliest connection deadline
 //
 // Barrier {account, n}: answered (reply queue + reply eventfd) once the
-// exchange has processed n inbound OUCH messages of that account, with the
+// exchange has processed n inbound OUCH messages of that account's CURRENT
+// connection (the count restarts at each login: messages in flight on a
+// dropped connection may never arrive), with the
 // account's next outbound sequence number at that moment -- the lockstep
 // "quiescence" watermark (L4 design §4.1). The control queue and TCP are
 // different channels; counting inbound messages is what orders them.
@@ -28,6 +30,7 @@
 // at once (free-run); false waits for one Event control per event (lockstep,
 // same granularity as the in-process TradingStage).
 
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -77,6 +80,27 @@ struct ServerStats {
   std::uint64_t barriers{0};
 };
 
+/// What the server actually did, in order (L4.5 free-run verification): the
+/// exchange core is a pure function of this sequence, so replay() into a
+/// fresh OuchExchange must reproduce every outbound message bit for bit.
+struct JournalEntry {
+  enum class Kind : std::uint8_t { Input, Event, Message, Disconnect, EndOfDay };
+  Kind kind{Kind::Input};
+  std::uint32_t account{0};
+  std::uint32_t event{0};
+  std::uint64_t now{0};  ///< Message: the time the exchange saw (throttle)
+  md::FeedInput in{};
+  std::uint16_t len{0};
+  std::array<std::uint8_t, soup::kMaxPacket> bytes{};
+};
+
+struct ServerJournal {
+  std::vector<JournalEntry> entries;
+};
+
+/// Applies a journal to an exchange built with the same configuration.
+void replay(const ServerJournal& j, OuchExchange& ex, bool auto_market_events);
+
 /// Called for every inbound OUCH payload before the exchange processes it
 /// (tick-to-trade measurement, L4.6). Plain function pointer: no allocation.
 using InboundHook = void (*)(void* ctx, std::size_t account, soup::Bytes payload);
@@ -107,6 +131,8 @@ class EpollServer {
     hook_ctx_ = ctx;
   }
   [[nodiscard]] const ServerStats& stats() const noexcept { return st_; }
+  /// Records every processed step (read it only after the server thread stopped).
+  void set_journal(ServerJournal* j) noexcept { journal_ = j; }
   /// Logged-in connections right now.
   [[nodiscard]] std::size_t logged_in() const noexcept;
 
@@ -147,6 +173,7 @@ class EpollServer {
   std::vector<std::uint64_t> processed_;     // inbound messages processed, per account
   std::vector<std::uint8_t> rbuf_;
   soup::SessionLog reject_log_;              // for connections of unknown users (always rejected)
+  ServerJournal* journal_{nullptr};
   InboundHook hook_{nullptr};
   void* hook_ctx_{nullptr};
   ServerStats st_{};

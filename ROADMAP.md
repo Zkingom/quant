@@ -125,15 +125,15 @@ Golden Test 依赖文本格式，格式稳定后再固化。
 > 不改动 L1 冻结语义；真实数据不入仓库（只给下载 / 导出脚本）；墙钟数字一律标注测量环境。
 > 每阶段更新 DECISIONS、对应 MODULE_NOTES、ARCHITECTURE、README、docs/INTERVIEW_QA.md（新增 6–8 题）、AI_USAGE。
 >
-> **当前位置**：L4 设计已确认（2026-11-05，§6 全部按推荐）。L4.1–L4.4 完成；下一步 L4.5（锁步模式哈希与进程内一致；自由运行不变量 + 记录 / 重放；故障注入）。
+> **当前位置**：L4 设计已确认（2026-11-05，§6 全部按推荐）。L4.1–L4.5 完成；下一步 L4.6（`lob_t2t` tick-to-trade 测量；文档；开 PR → CI → 合并）。
 
 **L4 下单链路与 tick-to-trade**（设计：docs/design/L4_DESIGN.md）
 - [x] L4.0 设计文档与实现计划（2026-11-05 确认）
 - [x] L4.1 OUCH 4.2 子集编解码：手写字节样本、往返、逐字节截断、非法字段、fuzz（`lob_ouch_tests` 22 项；libFuzzer 60 s 约 1 440 万次无崩溃）
 - [x] L4.2 SoupBinTCP 分帧与 sans-IO 客户端 / 服务端会话状态机，每个转换具名测试（`lob_soup_tests` 48 项：任意字节边界拆分、随机字节、断线重连端到端）
-- [x] L4.3 模拟交易所服务端：会话层 + OUCH + `SimExchange`（L1 撮合引擎），断线撤单、限流，单线程 epoll（`lob_net_tests` 26 项 + `lob_net_loopback_tests` 7 项（回环 TCP，进 TSan）；独立进程版 `lob_ouch_server` 随 L4.5 自由运行模式一起提供）
+- [x] L4.3 模拟交易所服务端：会话层 + OUCH + `SimExchange`（L1 撮合引擎），断线撤单、限流，单线程 epoll（`lob_net_tests` 26 项 + `lob_net_loopback_tests` 7 项（回环 TCP，进 TSan）；独立进程版 `lob_ouch_server` 推迟到 L5：两个进程需要行情分发，D-064）
 - [x] L4.4 客户端订单网关：令牌映射、每单状态机、防重复报单、断线重连；`TradingStage<S, Ex>`（`lob_gateway_tests` 27 项；撤全部按 `client_id` 升序 D-059，已记录哈希均未改变）
-- [ ] L4.5 锁步模式哈希与进程内一致；自由运行不变量 + 记录 / 重放；TSan
+- [x] L4.5 锁步模式哈希与进程内一致；自由运行不变量 + 记录 / 重放；TSan（`lob_lockstep_tests` 5 项：锁步两种模型 × 单线程 / 流水线逐位相同；自由运行不变量、两端重放、断线 ×3、交易所限流）
 - [ ] L4.6 tick-to-trade（进程内 / 回环分开，p50/p99/p99.9，扣计时开销，标环境）；文档；PR → CI → 合并
 
 **L5 UDP 组播与 A/B 双路仲裁**（设计：docs/design/L5_DESIGN.md，L4 合并后编写）
