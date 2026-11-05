@@ -118,36 +118,29 @@ Golden Test 依赖文本格式，格式稳定后再固化。
 - [x] CI：六预设 + TSan；固定编译器版本的 cachegrind 指令数回归门槛，基线更新流程写明；墙钟基准只在本地。
 - [x] DECISIONS、MODULE_NOTES/L3.md、ARCHITECTURE、README（数字标注"待本机复测"）、AI_USAGE、docs/INTERVIEW_QA.md。
 
-### 2.4–2.6 L4 → L5 → L6（2026-11-04 起）
+### 2.4 Level 4（下单链路与 tick-to-trade）
 
-> **断点续作说明**：严格按 L4 → L5 → L6 顺序。每个阶段先写设计文档，作者确认后才实现；每个子阶段完成即提交推送并在此勾选；
-> 阶段完成、`scripts/check.sh --tsan` 全绿、CI 通过后开 PR 并合并，再开始下一阶段；CI 失败就停下来报告。
-> 不改动 L1 冻结语义；真实数据不入仓库（只给下载 / 导出脚本）；墙钟数字一律标注测量环境。
-> 每阶段更新 DECISIONS、对应 MODULE_NOTES、ARCHITECTURE、README、docs/INTERVIEW_QA.md（新增 6–8 题）、AI_USAGE。
->
-> **当前位置**：L4 设计已确认（2026-11-05，§6 全部按推荐）。L4.1–L4.6 完成，PR #6 待 CI 与合并；L5 设计文档已写（docs/design/L5_DESIGN.md），**等待作者确认**（§9），确认前不写 L5 实现代码。
+> 状态（2026-11-05）：**已完成**，PR #6 合并到 main。项目范围到 L4 为止（作者 2026-11-05 决定）；L5、L6 见 §2.5 未来计划。
+> 规则沿用：不改动 L1 冻结语义；真实数据不入仓库；墙钟数字标注测量环境；每个子阶段提交推送，阶段末 `scripts/check.sh --tsan` 全绿、CI 通过后合并。
 
 **L4 下单链路与 tick-to-trade**（设计：docs/design/L4_DESIGN.md）
-- [x] L4.0 设计文档与实现计划（2026-11-05 确认）
+- [x] L4.0 设计文档与实现计划（2026-11-05 作者确认）
 - [x] L4.1 OUCH 4.2 子集编解码：手写字节样本、往返、逐字节截断、非法字段、fuzz（`lob_ouch_tests` 22 项；libFuzzer 60 s 约 1 440 万次无崩溃）
 - [x] L4.2 SoupBinTCP 分帧与 sans-IO 客户端 / 服务端会话状态机，每个转换具名测试（`lob_soup_tests` 48 项：任意字节边界拆分、随机字节、断线重连端到端）
-- [x] L4.3 模拟交易所服务端：会话层 + OUCH + `SimExchange`（L1 撮合引擎），断线撤单、限流，单线程 epoll（`lob_net_tests` 26 项 + `lob_net_loopback_tests` 7 项（回环 TCP，进 TSan）；独立进程版 `lob_ouch_server` 推迟到 L5：两个进程需要行情分发，D-064）
+- [x] L4.3 模拟交易所服务端：会话层 + OUCH + `SimExchange`（L1 撮合引擎），断线撤单、限流，单线程 epoll（`lob_net_tests` 26 项 + `lob_net_loopback_tests` 7 项（回环 TCP，进 TSan）；独立进程版 `lob_ouch_server` 未实现：两个进程需要行情分发，列入未来计划 L5，D-064）
 - [x] L4.4 客户端订单网关：令牌映射、每单状态机、防重复报单、断线重连；`TradingStage<S, Ex>`（`lob_gateway_tests` 27 项；撤全部按 `client_id` 升序 D-059，已记录哈希均未改变）
 - [x] L4.5 锁步模式哈希与进程内一致；自由运行不变量 + 记录 / 重放；TSan（`lob_lockstep_tests` 5 项：锁步两种模型 × 单线程 / 流水线逐位相同；自由运行不变量、两端重放、断线 ×3、交易所限流）
-- [x] L4.6 tick-to-trade（进程内 / 回环分开，p50/p99/p99.9，扣计时开销，标环境）；文档（`lob_t2t`，BENCHMARK §15；D-059–D-064、MODULE_NOTES/L4、ARCHITECTURE §4.2、INTERVIEW_QA §8、AI_USAGE、README）；PR → CI → 合并
+- [x] L4.6 tick-to-trade（进程内 / 回环分开，p50/p99/p99.9，扣计时开销，标环境）；文档（`lob_t2t`，BENCHMARK §15；D-059–D-064、MODULE_NOTES/L4、ARCHITECTURE §4.2、INTERVIEW_QA §8、AI_USAGE、README）；PR #6 → CI → 合并（2026-11-05）
 
-**L5 UDP 组播与 A/B 双路仲裁**（设计：docs/design/L5_DESIGN.md，L4 合并后编写）
-- [x] L5.0 设计文档（待确认）
-- [ ] 回放发送器：MoldUDP64 A/B 组播，可注入丢包 / 乱序 / 重复 / 延迟
-- [ ] 接收端仲裁：去重、补洞；两路都缺时向最小 MoldUDP64 重传服务请求
-- [ ] 接入流水线取代文件输入；任意可补齐故障组合下事件流与快照哈希与直接读文件一致，补不齐走恢复 / Stale
-- [ ] 仲裁器状态机具名测试、按种子的故障注入矩阵、TSan；tick-to-trade 扩展为"收到 UDP 包 → 发出订单"
+### 2.5 未来计划（未实施）
 
-**L6 微观结构信号研究**（研究计划：docs/research/L6_PLAN.md，L5 合并后编写）
-- [ ] L6.0 研究计划（待确认）
-- [ ] C++ 特征导出工具（列式文件、内存有上限、与订单簿哈希绑定）；手工小样本精确期望、无未来函数测试
-- [ ] Python 分析管线（SVG）；三天样本内外、Newey-West / 分块自助
-- [ ] docs/research/L6_REPORT.md（不宣称交易收益）
+项目范围到 L4 为止。以下两项只作为未来的扩展方向记录，**没有实现，也没有排期**：
+
+- **L5 UDP 组播与 A/B 双路仲裁**：MoldUDP64 A/B 组播回放发送器（可注入丢包、乱序、重复、延迟）；接收端仲裁（去重、补洞），两路都缺时向
+  MoldUDP64 重传服务请求；接入流水线取代文件输入，门槛为任意可补齐故障组合下事件流与快照哈希与直接读文件一致；tick-to-trade 前移到收到 UDP 包。
+  设计草案（未实现）：[docs/design/L5_DESIGN.md](docs/design/L5_DESIGN.md)。独立进程的 `lob_ouch_server`（需要行情分发）也归入此项。
+- **L6 微观结构信号研究**：从重建的订单簿导出特征（列式文件、内存有上限、与订单簿哈希绑定），Python 分析管线，样本内外检验
+  （Newey-West / 分块自助），报告不宣称交易收益。没有设计文档。
 
 ## 3. 已知风险
 

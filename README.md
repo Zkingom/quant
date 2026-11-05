@@ -56,6 +56,9 @@ L4：OUCH 4.2 / SoupBinTCP 3.00 下单链路（订单网关、单线程 epoll �
 | L3' 多日验证（2019-01-30 / 08-30 / 12-30，全市场） | ✅ 2026-11-04：三天共 26 040 只股票·日全部 Live、0 Stale；28 次恢复宽限全部解除；每天单线程与 4 分片逐股票哈希一致（见 MODULE_NOTES/L3.md） |
 | L4 下单链路：OUCH 4.2 编解码、SoupBinTCP 会话、epoll 模拟交易所、订单网关、锁步 / 自由运行、tick-to-trade | ✅ 2026-11-05（[docs/design/L4_DESIGN.md](docs/design/L4_DESIGN.md)、[MODULE_NOTES/L4.md](MODULE_NOTES/L4.md)、BENCHMARK §15） |
 
+项目范围到 L4 为止。**未来计划（未实施）**：L5 UDP 组播与 A/B 双路仲裁（仅有设计草案 [docs/design/L5_DESIGN.md](docs/design/L5_DESIGN.md)）、
+L6 微观结构信号研究（无设计），见 [ROADMAP.md](ROADMAP.md) §2.5。
+
 撮合引擎、回放与恢复已可用；性能数据只适用于 WSL2 上的测量环境（BENCHMARK §1），不代表裸机。掉电持久性未验证，见 DESIGN §6.6。 计划与验收门槛见 [ROADMAP.md](ROADMAP.md)。
 
 ## 图表
@@ -310,12 +313,13 @@ scripts/fuzz_ouch.sh 60   # OUCH 编解码的 libFuzzer（需要 clang）
 - [ARCHITECTURE.md](ARCHITECTURE.md) — 模块划分、依赖与数据流
 - [DESIGN.md](DESIGN.md) — 数据结构、撮合语义、复杂度
 - [DECISIONS.md](DECISIONS.md) — 工程决策与权衡
-- [ROADMAP.md](ROADMAP.md) — 实施顺序与 L1/L2/L3 验收门槛
+- [ROADMAP.md](ROADMAP.md) — 实施顺序、L1–L4 验收门槛与未来计划（L5、L6，未实施）
 - [BENCHMARK.md](BENCHMARK.md) — 基准方法与实测结果
 - [MODULE_NOTES/](MODULE_NOTES/) — 各模块技术说明与修改任务
 - [AI_USAGE.md](AI_USAGE.md) — AI 参与情况披露
 - [docs/INTERVIEW_QA.md](docs/INTERVIEW_QA.md) — L3' 设计问答（memory order、确定性、延迟测量、缺口恢复、风控、指令数门槛）与追问；§8 L4 下单链路（Q13–Q20）
 - [docs/design/L4_DESIGN.md](docs/design/L4_DESIGN.md) — L4 设计：OUCH / SoupBinTCP 的分工、订单号映射与防重复、断线撤单与限流、tick-to-trade 的定义、网络模式的可验证性
+- [docs/design/L5_DESIGN.md](docs/design/L5_DESIGN.md) — L5 设计草案（**未实现**，未来计划）：MoldUDP64 A/B 组播仲裁
 
 ## 目录结构
 
