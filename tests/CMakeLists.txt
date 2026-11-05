@@ -96,6 +96,13 @@ lob_add_test_suite(lob_trading_tests
   LIBS lob::sim lob::testkit
   LABELS concurrency)
 
+# L4.1: OUCH 4.2 subset codec (literals, truncation, fields, mutation fuzz).
+lob_add_test_suite(lob_ouch_tests
+  SOURCES
+    ouch/test_ouch_codec.cpp
+  LIBS lob::ouch lob::testkit)
+target_compile_definitions(lob_ouch_tests PRIVATE LOB_GOLDEN_DIR="${CMAKE_CURRENT_SOURCE_DIR}/golden")
+
 # libFuzzer entry (L3' 1e): opt-in, Clang only, not part of CTest. The md
 # sources are compiled into the fuzzer directly so that they carry coverage
 # instrumentation. Run with scripts/fuzz_itch.sh.
@@ -113,6 +120,15 @@ if(LOB_FUZZ)
   target_compile_options(lob_fuzz_itch_feed PRIVATE -fsanitize=fuzzer,address,undefined)
   target_link_options(lob_fuzz_itch_feed PRIVATE -fsanitize=fuzzer,address,undefined)
   target_link_libraries(lob_fuzz_itch_feed PRIVATE lob_project_options)
+
+  # L4.1: OUCH codec (both directions; Decoded must re-encode identically).
+  add_executable(lob_fuzz_ouch
+    fuzz/fuzz_ouch.cpp
+    ${PROJECT_SOURCE_DIR}/src/ouch/ouch.cpp)
+  target_include_directories(lob_fuzz_ouch PRIVATE ${PROJECT_SOURCE_DIR}/include)
+  target_compile_options(lob_fuzz_ouch PRIVATE -fsanitize=fuzzer,address,undefined)
+  target_link_options(lob_fuzz_ouch PRIVATE -fsanitize=fuzzer,address,undefined)
+  target_link_libraries(lob_fuzz_ouch PRIVATE lob_project_options)
 endif()
 
 if(LOB_REPLACE_OPERATOR_NEW)

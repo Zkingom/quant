@@ -125,11 +125,11 @@ Golden Test 依赖文本格式，格式稳定后再固化。
 > 不改动 L1 冻结语义；真实数据不入仓库（只给下载 / 导出脚本）；墙钟数字一律标注测量环境。
 > 每阶段更新 DECISIONS、对应 MODULE_NOTES、ARCHITECTURE、README、docs/INTERVIEW_QA.md（新增 6–8 题）、AI_USAGE。
 >
-> **当前位置**：L4.0 设计文档已提交，**等待作者确认**（docs/design/L4_DESIGN.md §6 列出待确认点）。确认前不写 L4 实现代码。
+> **当前位置**：L4 设计已确认（2026-11-05，§6 全部按推荐）。L4.1 完成；下一步 L4.2（SoupBinTCP 分帧与 sans-IO 会话状态机）。
 
 **L4 下单链路与 tick-to-trade**（设计：docs/design/L4_DESIGN.md）
-- [x] L4.0 设计文档与实现计划（待确认）
-- [ ] L4.1 OUCH 4.2 子集编解码：手写字节样本、往返、逐字节截断、非法字段、fuzz
+- [x] L4.0 设计文档与实现计划（2026-11-05 确认）
+- [x] L4.1 OUCH 4.2 子集编解码：手写字节样本、往返、逐字节截断、非法字段、fuzz（`lob_ouch_tests` 22 项；libFuzzer 60 s 约 1 440 万次无崩溃）
 - [ ] L4.2 SoupBinTCP 分帧与 sans-IO 客户端 / 服务端会话状态机，每个转换具名测试
 - [ ] L4.3 模拟交易所服务端：会话层 + OUCH + `SimExchange`（L1 撮合引擎），断线撤单、限流，单线程 epoll
 - [ ] L4.4 客户端订单网关：令牌映射、每单状态机、防重复报单、断线重连；`TradingStage<S, Ex>`
