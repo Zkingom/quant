@@ -114,6 +114,7 @@ numbers:
   t2t_rtt: {zh: "447 µs", en: "447 µs", source: "BENCHMARK.md §15.1", label_zh: "往返 tick → Accepted", label_en: "round trip tick → Accepted", wallclock: true, measured_on: "local 2026-11-05"}
   t2t_rtt_busy: {zh: "395 µs", en: "395 µs", source: "BENCHMARK.md §15.1", label_zh: "往返，交易所线程忙轮询", label_en: "round trip, busy-polling exchange", wallclock: true, measured_on: "local 2026-11-05"}
   t2t_wire: {zh: "171 µs", en: "171 µs", source: "BENCHMARK.md §15.1 (T4, sleeping)", label_zh: "客户端 send() → 交易所解码", label_en: "client send() → exchange decoded", wallclock: true, measured_on: "local 2026-11-05"}
+  loopback_rr_local: {zh: "约 248 µs", en: "about 248 µs", source: "BENCHMARK.md §15.1 (netperf TCP_RR, 1-byte, 4037 trans/s, one run)", label_zh: "平台回环 ping-pong 往返", label_en: "platform loopback ping-pong round trip", wallclock: true, measured_on: "local 2026-11-05"}
   # Cloud-VM tick-to-trade, kept for comparison (the wake-up finding holds
   # there and not on the local WSL2, BENCHMARK §15 vs §15.1). `kept: true`:
   # remeasure.py never overwrites these and the footer ignores them.
