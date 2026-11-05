@@ -15,7 +15,7 @@ The guiding rule was correctness first, then verifiability, then speed. Every la
 1. **L1**: a price-time priority matching engine. Every check happens before anything is modified, and the event stream alone can rebuild the state. I ran {{n:soak_commands}} commands of differential testing against a reference model, and the journal and snapshots survive the process being killed.
 2. **L2**: I wrote the measurement plan before measuring. Profiling showed the session layer copied its whole history on every commit. After switching to geometric growth, same-session alternating runs went from {{n:e1_before}} to {{n:e1_after}}, and I'm careful to call that a complexity bug fix, not "the engine got hundreds of times faster".
 3. **L3′**: ITCH 5.0 decoding, order-by-order book reconstruction, and a lock-free SPSC queue between the decoder and book threads. The multi-threaded output is byte-identical to single-threaded replay. I validated it on full days of real Nasdaq data, and **the real data broke one of my rules** (chapter 5).
-4. **L4**: order entry over OUCH 4.2 with SoupBinTCP sessions, reconnect handling and duplicate-order protection. In lockstep mode the network path matches the in-process simulation bit for bit. Measuring tick-to-trade showed that the loopback cost is mostly waking up the other thread, not my code.
+4. **L4**: order entry over OUCH 4.2 with SoupBinTCP sessions, reconnect handling and duplicate-order protection. In lockstep mode the network path matches the in-process simulation bit for bit. The software path to the first order takes {{n:t2t_inproc_first}}; what loopback adds depends on the machine. On the cloud VM it was mostly waking up the other thread, but when I re-measured on my own machine that didn't hold, so I kept both results.
 </div>
 
 Suggested reading: chapters 0 and 1 first; chapters 5, 9 and 10 the day before an interview. Numbers marked † are wall-clock numbers (throughput, latency, tick-to-trade); the page footer says what † currently means. One command in Appendix B re-measures them on your machine and regenerates this handbook.
@@ -44,7 +44,7 @@ There are two exchanges: the in-process `SimExchange`, which wraps the frozen L1
 
 - **Correctness, then verifiability, then performance.** No optimization is worth it if I can no longer prove the output didn't change, and a performance number only counts if it states its environment and method.
 - **Determinism.** Prices are integer ticks; the risk token bucket refills on market time, not system time; the multi-threaded and networked modes must produce exactly the same bytes as single-threaded, in-process runs. Determinism is what makes cross-checking possible, and cross-checking is what makes correctness provable.
-- **Measure before concluding, and write down what isn't verified.** Cloud-measured wall-clock numbers are labelled "pending local re-measurement"; power-loss durability is "not verified"; the L1 engine still allocates when an order rests, so "zero allocation" is only claimed for the market-data hot path.
+- **Measure before concluding, and write down what isn't verified.** Every wall-clock number says which machine it came from; the cloud finding "loopback is mostly wake-up cost" didn't reproduce on my own machine, so both results are kept; power-loss durability is "not verified"; the L1 engine still allocates when an order rests, so "zero allocation" is only claimed for the market-data hot path.
 
 ## 2 L1 core matching engine
 
@@ -258,11 +258,12 @@ When replies arrive depends on thread scheduling, so the same input can interlea
 
 Definition: from the start of decoding the ITCH frame to the OUCH bytes being handed to the kernel (`send()` returns), counting only frames that produced an order, with the clock-read overhead subtracted. **Send first**: market data is forwarded and replies are read only after the frame's orders are out, so no other system call sits inside the window.
 
-{{fig:t2t|Figure 5. Tick-to-trade p50. White: the exchange thread sleeps in epoll_wait; hatched: it busy-polls.}}
+{{fig:t2t|Figure 5. The same loopback measurement on two machines, p50. White: the exchange thread sleeps in epoll_wait; hatched: it busy-polls. Busy-polling helps a lot on the cloud VM and not at all locally.}}
 
 - In-process, tick → first message of the frame encoded: {{n:t2t_inproc_first}} — the software path itself.
-- Loopback, tick → first message `send()` returned: {{n:t2t_loop_first}}, or {{n:t2t_loop_first_busy}} with a busy-polling exchange thread; round trip {{n:t2t_rtt}} / {{n:t2t_rtt_busy}}.
-- **The finding: on loopback, most of the cost is waking up the other thread.** The method was controlled variables: first move everything that isn't on the order path out of the window (reading replies, the eventfd write that forwards market data), then use "new order vs first message of the frame" to estimate one `send()` at {{n:send_cost}}, and test the remaining gap with the busy-polling experiment.
+- On my machine, over loopback: tick → first message `send()` returned in {{n:t2t_loop_first}}, or {{n:t2t_loop_first_busy}} with a busy-polling exchange thread; one `send()` costs {{n:send_cost}}; client `send()` → exchange decoded takes {{n:t2t_wire}}; round trip {{n:t2t_rtt}} / {{n:t2t_rtt_busy}}.
+- **Same experiment, two machines, two conclusions.** On the cloud VM busy-polling cut the first message from {{n:t2t_loop_first_cloud}} to {{n:t2t_loop_first_busy_cloud}} and the round trip from {{n:t2t_rtt_cloud}} to {{n:t2t_rtt_busy_cloud}}, so I concluded that loopback cost is mostly waking the other thread. On my own machine busy-polling changes nothing, so that conclusion **only holds for the cloud VM**. The method behind it still stands: controlled variables — move everything that isn't on the order path out of the window (reading replies, the eventfd write that forwards market data), use "new order vs first message of the frame" to estimate one `send()`, then test the remaining gap with busy-polling.
+- **Why the local round trip is so slow isn't explained yet.** I know it isn't cross-core clock skew (the round trip is timed on the client's own core), it isn't the exchange thread sleeping (busy-polling doesn't change it), and it isn't the software path. The next step is a minimal loopback TCP ping-pong on the same machine, to separate the platform's own loopback latency from my code.
 - These aren't wire-to-wire numbers: no NIC, no switch, no real gateway, no kernel bypass. I only compare them with my own previous version.
 
 ## 8 Engineering method
@@ -277,7 +278,8 @@ Definition: from the start of decoding the ITCH frame to the OUCH bytes being ha
 
 | Limitation / not verified | How to answer |
 |---|---|
-| wall-clock numbers come from a cloud VM or an earlier WSL2 session | "The method and tools are in the repo and one command re-measures everything. I report medians and ranges, and I never attribute a change using numbers from different sessions." |
+| wall-clock numbers come from two machines (my WSL2 and a cloud VM); some were only measured in the cloud | "Every number says which machine and date it's from, Appendix A has the sources, and one command re-measures. Re-measuring overturned one of my cloud conclusions, so I don't carry a finding from one machine to another, and I never attribute a change using numbers from different sessions." |
+| the slow local loopback round trip is unexplained | "I know it isn't clock skew and it isn't my software path. Next I'd measure the platform's own loopback with a minimal ping-pong; until then I don't make up an explanation." |
 | loopback is not wire-to-wire: no NIC, switch or kernel bypass | "Loopback shows the cost of connecting a user-space program to a kernel socket. Real wire-to-wire needs hardware timestamps on a switch mirror port and PTP on both ends. I only compare against my own previous version." |
 | durability under power loss or an OS crash is not verified | "I tested process kills, truncation at every byte and failed writes. Power loss depends on the file system implementing fsync and rename correctly; I couldn't test that, so I don't claim it." |
 | the L1 engine still allocates when an order rests | "The zero-allocation guarantee covers the market-data hot path. Pooling the engine means changing the frozen L1 code; the risk wasn't worth it, so it's a recorded follow-up." |
@@ -308,7 +310,7 @@ Definition: from the start of decoding the ITCH frame to the OUCH bytes being ha
 
 **Q10 With a network in the middle, timing is nondeterministic — how do you prove correctness?** Lockstep proves the network stack is transparent: bit-identical to in-process, using the outbound sequence watermark as a barrier, because a superfluous cancel gets no reply at all. Free-run checks invariants and records both sides' interleaving, and the recording replays bit for bit — so a failure can be brought back and stepped through.
 
-**Q11 What's your tick-to-trade, and what does it tell you?** Definition first, then numbers: {{n:t2t_inproc_first}} in-process, {{n:t2t_loop_first}} on loopback, {{n:t2t_loop_first_busy}} with a busy-polling exchange thread; most of the loopback cost is waking the other thread. It isn't wire-to-wire, so I only compare it with myself.
+**Q11 What's your tick-to-trade, and what does it tell you?** Definition first, then numbers: on my machine {{n:t2t_inproc_first}} in-process, {{n:t2t_loop_first}} on loopback, {{n:t2t_rtt}} round trip. The interesting part is that it overturned my own conclusion: on the cloud VM busy-polling cut loopback from {{n:t2t_loop_first_cloud}} to {{n:t2t_loop_first_busy_cloud}}, while locally it made no difference — so "it's the wake-up" was a fact about that machine, not a general one. It isn't wire-to-wire, so I only compare it with myself.
 
 **Q12 What would you do differently?** Bring real data in earlier — rules should be tested against data first; set up controlled-variable measurements like "new order vs first message" from the start; and the next steps are pooling the book's nodes and taking over a previous instance's live orders.
 
@@ -327,13 +329,13 @@ These are all numbers marked † in this handbook, where they were measured and 
 
 ## B Re-measure locally and regenerate
 
-From the repository root (WSL2 / Linux; the first time you need `sudo apt install python3-venv fonts-noto-cjk fonts-dejavu-core poppler-utils valgrind`):
+`remeasure.sh` builds Release, runs `lob_bench`, `lob_itch_bench` and `lob_t2t` on pinned cores, writes the medians, date and machine into `numbers.yaml` and rebuilds; the † footer follows (Appendix A). Run from the repository root; the first time, `sudo apt install python3-venv fonts-noto-cjk fonts-dejavu-core poppler-utils valgrind`:
 
 ```
-docs/handbook/remeasure.sh                 # re-measure all synthetic wall-clock numbers, update numbers.yaml, rebuild both PDFs
-docs/handbook/remeasure.sh --itch FILE     # also re-measure market-wide throughput on a real ITCH file
-docs/handbook/remeasure.sh --l2            # also re-run the L2 baseline comparison (about 73 minutes)
-docs/handbook/build.sh                     # only rebuild the PDFs
+docs/handbook/remeasure.sh                 # measure, rebuild
+docs/handbook/remeasure.sh --itch FILE     # + market-wide
+docs/handbook/remeasure.sh --l2            # + L2 (~73 min)
+docs/handbook/remeasure.sh --from-log LOG  # hand-run log
+docs/handbook/build.sh                     # rebuild only
 ```
 
-`remeasure.sh` builds Release, runs `lob_bench`, `lob_itch_bench` and `lob_t2t` on pinned cores (several repetitions, medians), writes the results with the date and environment back into `numbers.yaml`, then calls `build.sh`. Afterwards the † note in the footer automatically changes to "measured locally" with the date.

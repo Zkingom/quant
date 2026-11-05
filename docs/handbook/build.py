@@ -83,7 +83,7 @@ def load_numbers() -> dict:
 
 def wallclock_state(nums: dict) -> tuple[str, str]:
     """('pending' | 'partial' | 'local', date of the latest local measurement)."""
-    origins = [v.get("measured_on", "") for v in nums.values() if v["wallclock"]]
+    origins = [v.get("measured_on", "") for v in nums.values() if v["wallclock"] and not v.get("kept")]
     local = [o for o in origins if o.startswith("local")]
     dates = sorted(re.findall(r"\d{4}-\d{2}-\d{2}", " ".join(local)))
     state = "local" if local and len(local) == len(origins) else ("partial" if local else "pending")
@@ -105,9 +105,9 @@ def t2t_values(nums: dict):
     def us(key):
         label = re.search(r"[\d.]+", nums[key]["en"]).group(0)
         return float(label), label
-    return [(us("t2t_inproc_first"), us("t2t_inproc_first")),
-            (us("t2t_loop_first"), us("t2t_loop_first_busy")),
-            (us("t2t_rtt"), us("t2t_rtt_busy"))]
+    # Figure 5: the same loopback measurement on the two machines it ran on.
+    return [(us("t2t_loop_first_cloud"), us("t2t_loop_first_busy_cloud")),
+            (us("t2t_loop_first"), us("t2t_loop_first_busy"))]
 
 
 def expand(src: str, lang: str, data: dict) -> str:
@@ -147,7 +147,13 @@ def expand(src: str, lang: str, data: dict) -> str:
             src_short = re.sub(r" \([^()]*\)", "", v["source"])
             groups.setdefault(origin, []).append(f"| {v['label_' + lang]} | {v[lang]} | {src_short} |")
         out = []
+        # "12th Gen Intel(R) Core(TM) i7-12700H, 20 CPUs, Linux 6.6...-WSL2" -> "Intel i7-12700H, 20 CPUs, WSL2"
+        env = re.sub(r"\d+th Gen Intel\(R\) Core\(TM\) ", "Intel ", data["meta"].get("wallclock_local_env") or "")
+        env = re.sub(r", Linux \S*WSL2$", ", WSL2", env)
         for origin, rows in groups.items():
+            if origin.startswith("local ") and env:
+                origin = (f"本机（{env.replace(', ', '，')}），{origin[6:]}" if lang == "zh"
+                          else f"local machine ({env}), {origin[6:]}")
             title = (f"**测于：{origin}**" if lang == "zh" else f"**Measured on: {origin}**")
             out += ["", title, "", head, "|---|---|---|"] + rows
         return "\n".join(out) + "\n"

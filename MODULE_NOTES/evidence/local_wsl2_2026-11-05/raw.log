@@ -1,0 +1,1348 @@
+Date: 2026-11-05T17:37:41+08:00
+Commit: ee03bd5a9d8a300a0a33e57a7285f2fbfdb3c2b9 (GitHub main tip at preparation; verified below after clone)
+Measurement environment: local WSL2 / 本机 WSL2; Ubuntu-24.04
+User confirmed: AC connected, high-performance mode, other programs closed.
+Windows powercfg /getactivescheme: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c (高性能)
+Repository/build location: /mnt/f/codex_in_this/2026-11-05/wsl2-github-zkingom-quant-1-2/work/quant (Windows F: mounted through /mnt/f)
+
+$ lscpu
+Architecture:                         x86_64
+CPU op-mode(s):                       32-bit, 64-bit
+Address sizes:                        39 bits physical, 48 bits virtual
+Byte Order:                           Little Endian
+CPU(s):                               20
+On-line CPU(s) list:                  0-19
+Vendor ID:                            GenuineIntel
+Model name:                           12th Gen Intel(R) Core(TM) i7-12700H
+CPU family:                           6
+Model:                                154
+Thread(s) per core:                   2
+Core(s) per socket:                   10
+Socket(s):                            1
+Stepping:                             3
+BogoMIPS:                             5376.00
+Flags:                                fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology tsc_reliable nonstop_tsc cpuid tsc_known_freq pni pclmulqdq vmx ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch ssbd ibrs ibpb stibp ibrs_enhanced tpr_shadow ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves avx_vnni vnmi umip waitpkg gfni vaes vpclmulqdq rdpid movdiri movdir64b fsrm md_clear serialize flush_l1d arch_capabilities
+Virtualization:                       VT-x
+Hypervisor vendor:                    Microsoft
+Virtualization type:                  full
+L1d cache:                            480 KiB (10 instances)
+L1i cache:                            320 KiB (10 instances)
+L2 cache:                             12.5 MiB (10 instances)
+L3 cache:                             24 MiB (1 instance)
+NUMA node(s):                         1
+NUMA node0 CPU(s):                    0-19
+Vulnerability Gather data sampling:   Not affected
+Vulnerability Itlb multihit:          Not affected
+Vulnerability L1tf:                   Not affected
+Vulnerability Mds:                    Not affected
+Vulnerability Meltdown:               Not affected
+Vulnerability Mmio stale data:        Not affected
+Vulnerability Reg file data sampling: Vulnerable: No microcode
+Vulnerability Retbleed:               Mitigation; Enhanced IBRS
+Vulnerability Spec rstack overflow:   Not affected
+Vulnerability Spec store bypass:      Mitigation; Speculative Store Bypass disabled via prctl
+Vulnerability Spectre v1:             Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+Vulnerability Spectre v2:             Mitigation; Enhanced / Automatic IBRS; IBPB conditional; RSB filling; PBRSB-eIBRS SW sequence; BHI BHI_DIS_S
+Vulnerability Srbds:                  Not affected
+Vulnerability Tsx async abort:        Not affected
+[exit_code=0]
+
+$ nproc
+20
+[exit_code=0]
+
+$ free -h
+               total        used        free      shared  buff/cache   available
+Mem:           7.6Gi       773Mi       6.6Gi       3.6Mi       414Mi       6.8Gi
+Swap:          2.0Gi          0B       2.0Gi
+[exit_code=0]
+
+$ uname -r
+6.6.87.2-microsoft-standard-WSL2
+[exit_code=0]
+
+$ gcc --version
+gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+Copyright (C) 2023 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+[exit_code=0]
+
+$ clang --version
+Ubuntu clang version 18.1.3 (1ubuntu1)
+Target: x86_64-pc-linux-gnu
+Thread model: posix
+InstalledDir: /usr/bin
+[exit_code=0]
+
+$ cmake --version
+cmake version 3.28.3
+
+CMake suite maintained and supported by Kitware (kitware.com/cmake).
+[exit_code=0]
+
+$ ninja --version
+1.11.1
+[exit_code=0]
+
+$ taskset -pc 309
+pid 309's current affinity list: 0-19
+[exit_code=0]
+
+$ lscpu -e=CPU\,ONLINE\,CORE\,SOCKET
+CPU ONLINE CORE SOCKET
+  0    yes    0      0
+  1    yes    0      0
+  2    yes    1      0
+  3    yes    1      0
+  4    yes    2      0
+  5    yes    2      0
+  6    yes    3      0
+  7    yes    3      0
+  8    yes    4      0
+  9    yes    4      0
+ 10    yes    5      0
+ 11    yes    5      0
+ 12    yes    6      0
+ 13    yes    6      0
+ 14    yes    7      0
+ 15    yes    7      0
+ 16    yes    8      0
+ 17    yes    8      0
+ 18    yes    9      0
+ 19    yes    9      0
+[exit_code=0]
+
+Selected environment variables (unset means no override):
+CC=<unset>
+CXX=<unset>
+CFLAGS=<unset>
+CXXFLAGS=<unset>
+CPPFLAGS=<unset>
+LDFLAGS=<unset>
+CMAKE_BUILD_PARALLEL_LEVEL=<unset>
+OMP_NUM_THREADS=<unset>
+
+Pre-log setup probes (preserved errors, not benchmark attempts):
+Sandboxed wsl.exe --list --verbose failed: Wsl/E_ACCESSDENIED; escalated local WSL access succeeded.
+Get-CimInstance Win32_Battery failed: 无法从客户端中访问 CIM 资源。 AC status is user-confirmed.
+WSL list: Ubuntu-24.04 (default), docker-desktop, Ubuntu-22.04, Ubuntu; all version 2.
+Existing historical audit checkout is left untouched; creating a fresh single-branch clone.
+
+$ git clone --branch main --single-branch --depth 1 https://github.com/Zkingom/quant.git /mnt/f/codex_in_this/2026-11-05/wsl2-github-zkingom-quant-1-2/work/quant
+Cloning into '/mnt/f/codex_in_this/2026-11-05/wsl2-github-zkingom-quant-1-2/work/quant'...
+Updating files:   8% (56/677)Updating files:   9% (61/677)Updating files:  10% (68/677)Updating files:  11% (75/677)Updating files:  12% (82/677)Updating files:  13% (89/677)Updating files:  14% (95/677)Updating files:  14% (101/677)Updating files:  15% (102/677)Updating files:  16% (109/677)Updating files:  17% (116/677)Updating files:  18% (122/677)Updating files:  19% (129/677)Updating files:  20% (136/677)Updating files:  21% (143/677)Updating files:  22% (149/677)Updating files:  23% (156/677)Updating files:  24% (163/677)Updating files:  25% (170/677)Updating files:  26% (177/677)Updating files:  27% (183/677)Updating files:  28% (190/677)Updating files:  29% (197/677)Updating files:  30% (204/677)Updating files:  31% (210/677)Updating files:  32% (217/677)Updating files:  33% (224/677)Updating files:  34% (231/677)Updating files:  34% (233/677)Updating files:  35% (237/677)Updating files:  36% (244/677)Updating files:  37% (251/677)Updating files:  38% (258/677)Updating files:  39% (265/677)Updating files:  40% (271/677)Updating files:  41% (278/677)Updating files:  41% (283/677)Updating files:  42% (285/677)Updating files:  43% (292/677)Updating files:  44% (298/677)Updating files:  45% (305/677)Updating files:  46% (312/677)Updating files:  47% (319/677)Updating files:  48% (325/677)Updating files:  49% (332/677)Updating files:  49% (334/677)Updating files:  50% (339/677)Updating files:  51% (346/677)Updating files:  52% (353/677)Updating files:  53% (359/677)Updating files:  54% (366/677)Updating files:  55% (373/677)Updating files:  56% (380/677)Updating files:  57% (386/677)Updating files:  58% (393/677)Updating files:  58% (396/677)Updating files:  59% (400/677)Updating files:  60% (407/677)Updating files:  61% (413/677)Updating files:  62% (420/677)Updating files:  63% (427/677)Updating files:  64% (434/677)Updating files:  65% (441/677)Updating files:  66% (447/677)Updating files:  67% (454/677)Updating files:  68% (461/677)Updating files:  69% (468/677)Updating files:  69% (470/677)Updating files:  70% (474/677)Updating files:  71% (481/677)Updating files:  72% (488/677)Updating files:  73% (495/677)Updating files:  74% (501/677)Updating files:  75% (508/677)Updating files:  76% (515/677)Updating files:  77% (522/677)Updating files:  78% (529/677)Updating files:  79% (535/677)Updating files:  79% (539/677)Updating files:  80% (542/677)Updating files:  81% (549/677)Updating files:  82% (556/677)Updating files:  83% (562/677)Updating files:  84% (569/677)Updating files:  85% (576/677)Updating files:  86% (583/677)Updating files:  87% (589/677)Updating files:  88% (596/677)Updating files:  89% (603/677)Updating files:  90% (610/677)Updating files:  91% (617/677)Updating files:  92% (623/677)Updating files:  93% (630/677)Updating files:  94% (637/677)Updating files:  95% (644/677)Updating files:  96% (650/677)Updating files:  97% (657/677)Updating files:  98% (664/677)Updating files:  99% (671/677)Updating files: 100% (677/677)Updating files: 100% (677/677), done.
+[exit_code=0]
+
+$ git rev-parse HEAD
+ee03bd5a9d8a300a0a33e57a7285f2fbfdb3c2b9
+[exit_code=0]
+
+$ git branch --show-current
+main
+[exit_code=0]
+
+$ git status --porcelain=v1 --untracked-files=all
+[exit_code=0]
+
+$ git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+nothing to commit, working tree clean
+[exit_code=0]
+
+$ git ls-remote origin refs/heads/main
+ee03bd5a9d8a300a0a33e57a7285f2fbfdb3c2b9	refs/heads/main
+[exit_code=0]
+
+$ sha256sum README.md CMakePresets.json
+ff84a9c427000f353277dc8773b99edb93124c7eea19f4c7d2194085a2210900  README.md
+868e66fc9b73b54a31c1a2c3ee82b6f04b2cf0614c516a57f20308c27bfe12b4  CMakePresets.json
+[exit_code=0]
+
+$ cat CMakePresets.json
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 25,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}"
+    },
+    {
+      "name": "gcc",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "g++"
+      }
+    },
+    {
+      "name": "clang",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "clang++"
+      }
+    },
+    {
+      "name": "debug",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "release",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "asan",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "LOB_SANITIZERS": "address;undefined"
+      }
+    },
+    {
+      "name": "tsan",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "LOB_SANITIZERS": "thread"
+      }
+    },
+    {
+      "name": "gcc-debug",
+      "displayName": "GCC Debug",
+      "inherits": [
+        "base",
+        "gcc",
+        "debug"
+      ]
+    },
+    {
+      "name": "gcc-release",
+      "displayName": "GCC Release",
+      "inherits": [
+        "base",
+        "gcc",
+        "release"
+      ]
+    },
+    {
+      "name": "gcc-asan",
+      "displayName": "GCC ASan+UBSan",
+      "inherits": [
+        "base",
+        "gcc",
+        "asan"
+      ]
+    },
+    {
+      "name": "clang-debug",
+      "displayName": "Clang Debug",
+      "inherits": [
+        "base",
+        "clang",
+        "debug"
+      ]
+    },
+    {
+      "name": "clang-release",
+      "displayName": "Clang Release",
+      "inherits": [
+        "base",
+        "clang",
+        "release"
+      ]
+    },
+    {
+      "name": "clang-asan",
+      "displayName": "Clang ASan+UBSan",
+      "inherits": [
+        "base",
+        "clang",
+        "asan"
+      ]
+    },
+    {
+      "name": "gcc-tsan",
+      "displayName": "GCC TSan (concurrency tests only)",
+      "inherits": [
+        "base",
+        "gcc",
+        "tsan"
+      ]
+    },
+    {
+      "name": "clang-tsan",
+      "displayName": "Clang TSan (concurrency tests only)",
+      "inherits": [
+        "base",
+        "clang",
+        "tsan"
+      ]
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "gcc-debug",
+      "configurePreset": "gcc-debug"
+    },
+    {
+      "name": "gcc-release",
+      "configurePreset": "gcc-release"
+    },
+    {
+      "name": "gcc-asan",
+      "configurePreset": "gcc-asan"
+    },
+    {
+      "name": "clang-debug",
+      "configurePreset": "clang-debug"
+    },
+    {
+      "name": "clang-release",
+      "configurePreset": "clang-release"
+    },
+    {
+      "name": "clang-asan",
+      "configurePreset": "clang-asan"
+    },
+    {
+      "name": "gcc-tsan",
+      "configurePreset": "gcc-tsan"
+    },
+    {
+      "name": "clang-tsan",
+      "configurePreset": "clang-tsan"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false
+      },
+      "environment": {
+        "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1:strict_string_checks=1",
+        "UBSAN_OPTIONS": "print_stacktrace=1:halt_on_error=1",
+        "TSAN_OPTIONS": "halt_on_error=1:second_deadlock_stack=1"
+      }
+    },
+    {
+      "name": "gcc-debug",
+      "inherits": "base",
+      "configurePreset": "gcc-debug"
+    },
+    {
+      "name": "gcc-release",
+      "inherits": "base",
+      "configurePreset": "gcc-release"
+    },
+    {
+      "name": "gcc-asan",
+      "inherits": "base",
+      "configurePreset": "gcc-asan"
+    },
+    {
+      "name": "clang-debug",
+      "inherits": "base",
+      "configurePreset": "clang-debug"
+    },
+    {
+      "name": "clang-release",
+      "inherits": "base",
+      "configurePreset": "clang-release"
+    },
+    {
+      "name": "clang-asan",
+      "inherits": "base",
+      "configurePreset": "clang-asan"
+    },
+    {
+      "name": "gcc-tsan",
+      "inherits": "base",
+      "configurePreset": "gcc-tsan",
+      "filter": {
+        "include": {
+          "label": "concurrency"
+        }
+      }
+    },
+    {
+      "name": "clang-tsan",
+      "inherits": "base",
+      "configurePreset": "clang-tsan",
+      "filter": {
+        "include": {
+          "label": "concurrency"
+        }
+      }
+    }
+  ]
+}
+[exit_code=0]
+
+$ rg -n gcc-release\|lob_itch_bench\|lob_t2t\|busy-poll\|\^build README.md .gitignore
+/mnt/f/codex_in_this/2026-11-05/wsl2-github-zkingom-quant-1-2/work/prepare.sh: line 20: rg: command not found
+[exit_code=127]
+
+$ find . -name AGENTS.md -not -path ./.git/\*
+[exit_code=0]
+
+PREPARATION COMPLETE 2026-11-05T17:38:15+08:00
+
+Repository guard (before build) 2026-11-05T17:39:41+08:00
+$ git rev-parse HEAD
+ee03bd5a9d8a300a0a33e57a7285f2fbfdb3c2b9
+[exit_code=0]
+$ git branch --show-current
+main
+[exit_code=0]
+$ git status --porcelain=v1 --untracked-files=all
+[exit_code=0]
+
+===== BEGIN configure-gcc-release attempt=1 2026-11-05T17:39:46+08:00 =====
+$ cmake --preset gcc-release
+Preset CMake variables:
+
+  CMAKE_BUILD_TYPE="Release"
+  CMAKE_CXX_COMPILER="g++"
+
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/g++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Configuring done (7.1s)
+-- Generating done (4.0s)
+-- Build files have been written to: /mnt/f/codex_in_this/2026-11-05/wsl2-github-zkingom-quant-1-2/work/quant/build/gcc-release
+
+===== END configure-gcc-release attempt=1 exit_code=0 status=complete 2026-11-05T17:39:58+08:00 =====
+
+===== BEGIN build-gcc-release attempt=1 2026-11-05T17:39:58+08:00 =====
+$ cmake --build --preset gcc-release
+[1/140] Building CXX object src/CMakeFiles/lob_core.dir/core/config.cpp.o
+[2/140] Building CXX object src/CMakeFiles/lob_md.dir/md/itch.cpp.o
+[3/140] Building CXX object src/CMakeFiles/lob_risk.dir/risk/risk.cpp.o
+[4/140] Building CXX object src/CMakeFiles/lob_soup.dir/soup/soup.cpp.o
+[5/140] Building CXX object src/CMakeFiles/lob_strategy.dir/strategy/virtual_market_maker.cpp.o
+[6/140] Building CXX object src/CMakeFiles/lob_strategy.dir/strategy/market_maker.cpp.o
+[7/140] Linking CXX static library src/liblob_core.a
+[8/140] Building CXX object src/CMakeFiles/lob_io.dir/io/verify.cpp.o
+[9/140] Building CXX object src/CMakeFiles/lob_io.dir/io/recovery.cpp.o
+[10/140] Building CXX object src/CMakeFiles/lob_soup.dir/soup/client.cpp.o
+[11/140] Building CXX object src/CMakeFiles/lob_io.dir/io/session.cpp.o
+[12/140] Building CXX object src/CMakeFiles/lob_io.dir/io/file_sink.cpp.o
+[13/140] Building CXX object src/CMakeFiles/lob_ouch.dir/ouch/ouch.cpp.o
+[14/140] Building CXX object src/CMakeFiles/lob_soup.dir/soup/server.cpp.o
+[15/140] Building CXX object src/CMakeFiles/lob_md.dir/md/book.cpp.o
+[16/140] Building CXX object src/CMakeFiles/lob_pipeline.dir/pipeline/async_logger.cpp.o
+[17/140] Building CXX object src/CMakeFiles/lob_engine.dir/engine/snapshot.cpp.o
+[18/140] Building CXX object src/CMakeFiles/lob_io.dir/io/journal.cpp.o
+[19/140] Linking CXX static library src/liblob_ouch.a
+[20/140] Building CXX object src/CMakeFiles/lob_md.dir/md/market.cpp.o
+[21/140] Linking CXX static library src/liblob_soup.a
+[22/140] Building CXX object examples/CMakeFiles/core_validation_demo.dir/core_validation_demo.cpp.o
+[23/140] Building CXX object src/CMakeFiles/lob_engine.dir/engine/matching_engine.cpp.o
+[24/140] Building CXX object src/CMakeFiles/lob_io.dir/io/snapshot_file.cpp.o
+[25/140] Building CXX object src/CMakeFiles/lob_md.dir/md/feed.cpp.o
+[26/140] Building CXX object src/CMakeFiles/lob_pipeline.dir/pipeline/pipeline.cpp.o
+[27/140] Building CXX object src/CMakeFiles/lob_sim.dir/sim/sim_exchange.cpp.o
+[28/140] Building CXX object src/CMakeFiles/lob_book.dir/book/order_book.cpp.o
+[29/140] Building CXX object examples/CMakeFiles/book_demo.dir/book_demo.cpp.o
+[30/140] Building CXX object testkit/CMakeFiles/lob_testkit_alloc_guard.dir/src/alloc_guard.cpp.o
+[31/140] Linking CXX static library src/liblob_md.a
+[32/140] Linking CXX static library src/liblob_book.a
+[33/140] Building CXX object src/CMakeFiles/lob_net.dir/net/ouch_exchange.cpp.o
+[34/140] Building CXX object src/CMakeFiles/lob_io.dir/io/text_format.cpp.o
+[35/140] Linking CXX static library src/liblob_pipeline.a
+[36/140] Linking CXX static library src/liblob_engine.a
+[37/140] Linking CXX static library src/liblob_risk.a
+[38/140] Linking CXX executable examples/core_validation_demo
+[39/140] Linking CXX static library src/liblob_strategy.a
+[40/140] Linking CXX static library src/liblob_sim.a
+[41/140] Building CXX object src/CMakeFiles/lob_net.dir/net/epoll_server.cpp.o
+[42/140] Building CXX object src/CMakeFiles/lob_gateway.dir/gateway/gateway.cpp.o
+[43/140] Building CXX object apps/CMakeFiles/lob_replay.dir/lob_replay.cpp.o
+[44/140] Linking CXX static library src/liblob_io.a
+[45/140] Linking CXX static library src/liblob_net.a
+[46/140] Linking CXX static library src/liblob_gateway.a
+[47/140] Building CXX object testkit/CMakeFiles/lob_testkit_alloc_fault.dir/src/alloc_fault.cpp.o
+[48/140] Building CXX object examples/CMakeFiles/engine_demo.dir/engine_demo.cpp.o
+[49/140] Building CXX object testkit/CMakeFiles/lob_testkit.dir/src/describe.cpp.o
+[50/140] Building CXX object testkit/CMakeFiles/lob_gen_commands.dir/tools/gen_commands.cpp.o
+[51/140] Building CXX object testkit/CMakeFiles/lob_testkit.dir/src/workload.cpp.o
+[52/140] Linking CXX executable examples/book_demo
+[53/140] Building CXX object testkit/CMakeFiles/lob_soak.dir/tools/soak.cpp.o
+[54/140] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_checked.cpp.o
+[55/140] Building CXX object src/CMakeFiles/lob_netstage.dir/net/lockstep.cpp.o
+[56/140] Building CXX object apps/CMakeFiles/lob_itch.dir/lob_itch.cpp.o
+[57/140] Linking CXX static library src/liblob_netstage.a
+[58/140] Linking CXX executable apps/lob_replay
+[59/140] Linking CXX executable examples/engine_demo
+[60/140] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_config.cpp.o
+[61/140] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_validation.cpp.o
+[62/140] Building CXX object testkit/CMakeFiles/lob_testkit.dir/src/event_auditor.cpp.o
+[63/140] Building CXX object apps/CMakeFiles/lob_itch_market.dir/lob_itch_market.cpp.o
+[64/140] Building CXX object tests/CMakeFiles/lob_core_tests.dir/core/test_types.cpp.o
+[65/140] Linking CXX executable apps/lob_itch
+[66/140] Linking CXX executable apps/lob_itch_market
+[67/140] Building CXX object testkit/CMakeFiles/lob_testkit.dir/src/differential.cpp.o
+[68/140] Building CXX object tests/CMakeFiles/lob_engine_tests.dir/engine/test_event_auditor.cpp.o
+[69/140] Building CXX object tests/CMakeFiles/lob_book_tests.dir/book/test_order_book_differential.cpp.o
+[70/140] Building CXX object tests/CMakeFiles/lob_book_tests.dir/book/test_order_book_tamper.cpp.o
+[71/140] Building CXX object tests/CMakeFiles/lob_book_tests.dir/book/test_order_book.cpp.o
+[72/140] Building CXX object tests/CMakeFiles/lob_engine_tests.dir/engine/test_matching_engine.cpp.o
+[73/140] Building CXX object tests/CMakeFiles/lob_io_tests.dir/io/test_file_sink.cpp.o
+[74/140] Building CXX object tests/CMakeFiles/lob_engine_tests.dir/engine/test_engine_differential.cpp.o
+[75/140] Building CXX object tests/CMakeFiles/lob_io_tests.dir/io/test_text_format.cpp.o
+[76/140] Building CXX object tests/CMakeFiles/lob_io_tests.dir/io/test_session.cpp.o
+[77/140] Linking CXX static library testkit/liblob_testkit.a
+[78/140] Building CXX object tests/CMakeFiles/lob_io_tests.dir/io/test_recovery.cpp.o
+[79/140] Building CXX object tests/CMakeFiles/lob_io_tests.dir/io/test_snapshot.cpp.o
+[80/140] Building CXX object tests/CMakeFiles/lob_io_tests.dir/io/test_journal.cpp.o
+[81/140] Building CXX object tests/CMakeFiles/lob_io_tests.dir/io/test_golden.cpp.o
+[82/140] Building CXX object tests/CMakeFiles/lob_md_tests.dir/md/test_itch_decoder.cpp.o
+[83/140] Building CXX object tests/CMakeFiles/lob_concurrent_tests.dir/concurrent/test_spsc_queue.cpp.o
+[84/140] Linking CXX executable tests/lob_core_tests
+[85/140] Building CXX object tests/CMakeFiles/lob_md_tests.dir/md/test_md_robustness.cpp.o
+[86/140] Building CXX object tests/CMakeFiles/lob_md_tests.dir/md/test_feed.cpp.o
+[87/140] Building CXX object tests/CMakeFiles/lob_md_tests.dir/md/test_md_book.cpp.o
+[88/140] Building CXX object tests/CMakeFiles/lob_md_tests.dir/md/test_trading_phase.cpp.o
+[89/140] Linking CXX executable testkit/lob_gen_commands
+[90/140] Linking CXX executable testkit/lob_soak
+[91/140] Building CXX object tests/CMakeFiles/lob_md_tests.dir/md/test_resume_grace.cpp.o
+[92/140] Building CXX object tests/CMakeFiles/lob_trading_tests.dir/trading/test_risk.cpp.o
+[93/140] Linking CXX executable tests/lob_concurrent_tests
+[94/140] Building CXX object tests/CMakeFiles/lob_ouch_tests.dir/ouch/test_ouch_codec.cpp.o
+[95/140] Linking CXX executable tests/lob_book_tests
+[96/140] Building CXX object tests/CMakeFiles/lob_net_loopback_tests.dir/net/test_net_loopback.cpp.o
+[97/140] Building CXX object tests/CMakeFiles/lob_net_tests.dir/net/test_ouch_exchange.cpp.o
+[98/140] Building CXX object bench/CMakeFiles/lob_bench.dir/main.cpp.o
+[99/140] Building CXX object tests/CMakeFiles/lob_soup_tests.dir/soup/test_soup.cpp.o
+[100/140] Building CXX object tests/CMakeFiles/lob_book_alloc_tests.dir/book/test_order_book_alloc_failure.cpp.o
+[101/140] Building CXX object tests/CMakeFiles/lob_gateway_tests.dir/gateway/test_gateway.cpp.o
+[102/140] Building CXX object tests/CMakeFiles/lob_trading_alloc_tests.dir/trading/test_trading_alloc.cpp.o
+[103/140] Linking CXX executable tests/lob_engine_tests
+[104/140] Building CXX object tests/CMakeFiles/lob_engine_alloc_tests.dir/engine/test_engine_alloc_failure.cpp.o
+[105/140] Building CXX object tests/CMakeFiles/lob_engine_alloc_tests.dir/engine/test_replay_contract.cpp.o
+[106/140] Building CXX object tests/CMakeFiles/lob_pipeline_tests.dir/pipeline/test_market.cpp.o
+[107/140] Building CXX object tests/CMakeFiles/lob_io_alloc_tests.dir/io/test_io_faults.cpp.o
+[108/140] Building CXX object tests/CMakeFiles/lob_pipeline_tests.dir/pipeline/test_pipeline.cpp.o
+[109/140] Building CXX object bench/CMakeFiles/lob_bench.dir/bench_book.cpp.o
+[110/140] Building CXX object tests/CMakeFiles/lob_pipeline_alloc_tests.dir/pipeline/test_pipeline_alloc.cpp.o
+[111/140] Building CXX object tests/CMakeFiles/lob_trading_tests.dir/trading/test_trading.cpp.o
+[112/140] Building CXX object tests/CMakeFiles/lob_lockstep_tests.dir/net/test_lockstep.cpp.o
+[113/140] Building CXX object tests/CMakeFiles/lob_market_alloc_tests.dir/pipeline/test_market_alloc.cpp.o
+[114/140] Linking CXX executable tests/lob_io_tests
+[115/140] Building CXX object bench/CMakeFiles/lob_bench.dir/bench_engine.cpp.o
+[116/140] Building CXX object bench/CMakeFiles/lob_itch_survey.dir/itch_survey.cpp.o
+[117/140] Linking CXX executable tests/lob_ouch_tests
+[118/140] Linking CXX executable tests/lob_trading_alloc_tests
+[119/140] Building CXX object bench/CMakeFiles/lob_bench.dir/bench_io.cpp.o
+[120/140] Linking CXX executable tests/lob_book_alloc_tests
+[121/140] Linking CXX executable tests/lob_soup_tests
+[122/140] Linking CXX executable tests/lob_md_tests
+[123/140] Linking CXX executable tests/lob_net_loopback_tests
+[124/140] Linking CXX executable tests/lob_net_tests
+[125/140] Linking CXX executable tests/lob_engine_alloc_tests
+[126/140] Linking CXX executable tests/lob_gateway_tests
+[127/140] Linking CXX executable tests/lob_pipeline_alloc_tests
+[128/140] Linking CXX executable tests/lob_io_alloc_tests
+[129/140] Linking CXX executable tests/lob_pipeline_tests
+[130/140] Linking CXX executable bench/lob_itch_survey
+[131/140] Linking CXX executable tests/lob_market_alloc_tests
+[132/140] Linking CXX executable tests/lob_trading_tests
+[133/140] Linking CXX executable tests/lob_lockstep_tests
+[134/140] Linking CXX executable bench/lob_bench
+[135/140] Building CXX object bench/CMakeFiles/lob_itch_icount.dir/itch_icount.cpp.o
+[136/140] Building CXX object bench/CMakeFiles/lob_itch_bench.dir/itch_bench.cpp.o
+[137/140] Linking CXX executable bench/lob_itch_icount
+[138/140] Linking CXX executable bench/lob_itch_bench
+[139/140] Building CXX object bench/CMakeFiles/lob_t2t.dir/tick_to_trade.cpp.o
+[140/140] Linking CXX executable bench/lob_t2t
+
+===== END build-gcc-release attempt=1 exit_code=0 status=complete 2026-11-05T17:41:00+08:00 =====
+
+===== BEGIN configure-l4-readme attempt=1 2026-11-05T17:41:00+08:00 =====
+$ cmake --preset gcc-release
+Preset CMake variables:
+
+  CMAKE_BUILD_TYPE="Release"
+  CMAKE_CXX_COMPILER="g++"
+
+-- Configuring done (0.9s)
+-- Generating done (2.6s)
+-- Build files have been written to: /mnt/f/codex_in_this/2026-11-05/wsl2-github-zkingom-quant-1-2/work/quant/build/gcc-release
+
+===== END configure-l4-readme attempt=1 exit_code=0 status=complete 2026-11-05T17:41:05+08:00 =====
+
+===== BEGIN build-l4-readme attempt=1 2026-11-05T17:41:05+08:00 =====
+$ cmake --build --preset gcc-release --target lob_t2t
+ninja: no work to do.
+
+===== END build-l4-readme attempt=1 exit_code=0 status=complete 2026-11-05T17:41:06+08:00 =====
+
+Repository guard (after build) 2026-11-05T17:41:06+08:00
+$ git rev-parse HEAD
+ee03bd5a9d8a300a0a33e57a7285f2fbfdb3c2b9
+[exit_code=0]
+$ git branch --show-current
+main
+[exit_code=0]
+$ git status --porcelain=v1 --untracked-files=all
+[exit_code=0]
+
+===== BEGIN git-status-after-build attempt=1 2026-11-05T17:41:11+08:00 =====
+$ git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+nothing to commit, working tree clean
+
+===== END git-status-after-build attempt=1 exit_code=0 status=complete 2026-11-05T17:41:15+08:00 =====
+
+PHASE build COMPLETE 2026-11-05T17:41:15+08:00
+
+Repository guard (before bench) 2026-11-05T17:41:40+08:00
+$ git rev-parse HEAD
+ee03bd5a9d8a300a0a33e57a7285f2fbfdb3c2b9
+[exit_code=0]
+$ git branch --show-current
+main
+[exit_code=0]
+$ git status --porcelain=v1 --untracked-files=all
+[exit_code=0]
+nproc=20; allowed logical CPUs=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]; README CPU numbers unchanged.
+Plan: waterfall x3; L4 default epoll x3; L4 busy-poll x3, sequential.
+No extra warmup runs; only warmup already inside benchmark. No real ITCH input.
+
+Repository guard (waterfall-1) 2026-11-05T17:41:45+08:00
+$ git rev-parse HEAD
+ee03bd5a9d8a300a0a33e57a7285f2fbfdb3c2b9
+[exit_code=0]
+$ git branch --show-current
+main
+[exit_code=0]
+$ git status --porcelain=v1 --untracked-files=all
+[exit_code=0]
+
+===== BEGIN waterfall-1 attempt=1 2026-11-05T17:41:49+08:00 =====
+$ taskset -c 2,4 build/gcc-release/bench/lob_itch_bench --messages 1000000 --reps 5
+clock: ticks overhead 7.2 ns (20 ticks), ns_per_tick 0.3583; steady_clock pair 16 ns
+stream: 1000000 messages, 32956147 bytes, seed 1, 4 instruments (target SYM1)
+event_hash=0xb433903677c7ecd9 book_hash=0x9716d88e7325473b (identical in all modes and reps)
+
+| mode | hop | p50 ns | p99 ns | p99.9 ns | max ns | p99 range over reps |
+|---|---|---|---|---|---|---|
+| single | decode | 17 | 64 | 77 | 41233 | 64–68 |
+| single | book | 11 | 236 | 391 | 33311 | 230–242 |
+| pipeline | decode | 21 | 67 | 79 | 29351 | 66–68 |
+| pipeline | queue | 1364143 | 1724574 | 1782082 | 1783536 | 1606093–2018628 |
+| pipeline | book | 41 | 251 | 392 | 85720 | 249–267 |
+| paced | decode | 14 | 31 | 99 | 32420 | 29–32 |
+| paced | queue | 104 | 5210 | 44354 | 184371 | 2263–5863 |
+| paced | book | 48 | 345 | 616 | 56211 | 333–350 |
+
+| mode | throughput (msg/s, median of 5) | range |
+|---|---|---|
+| single | 9632618 | 9217772–9751915 |
+| pipeline | 11232654 | 10536507–11368585 |
+| paced | 979585 | 979523–979608 |
+
+| trading mode | hop | p50 ns | p99 ns | p99.9 ns | max ns | p99 range over reps |
+|---|---|---|---|---|---|---|
+<!-- optimistic: requests 124887 accepted 71484 fills 48642 filled 2277220 pos 134 pnl 464766900 | conservative: requests 91129 fills 27038 filled 1268521 pos 189 pnl 255089650 -->
+| trading-single | decode | 18 | 33 | 47 | 33561 | 32–37 |
+| trading-single | book | 12 | 258 | 386 | 45413 | 253–260 |
+| trading-single | strategy | 7 | 97 | 109 | 18161 | 97–100 |
+| trading-single | risk | 38 | 44 | 51 | 7564 | 42–44 |
+| trading-single | engine | 11 | 458 | 758 | 22218 | 441–509 |
+| trading-pipeline | decode | 21 | 59 | 75 | 25125 | 57–82 |
+| trading-pipeline | queue | 2729283 | 3148823 | 3188557 | 3316825 | 2982842–6059791 |
+| trading-pipeline | book | 38 | 287 | 441 | 82715 | 279–418 |
+| trading-pipeline | strategy | 7 | 100 | 112 | 18610 | 97–108 |
+| trading-pipeline | risk | 40 | 46 | 52 | 9345 | 44–60 |
+| trading-pipeline | engine | 13 | 458 | 778 | 33451 | 441–828 |
+trading hashes identical in single and pipeline modes and all reps
+
+| dispatch | ns per on_book_update (median of 5) | range |
+|---|---|---|
+| CRTP (static) | 10.89 | 10.75–11.25 |
+| virtual | 11.25 | 11.08–14.19 |
+| risk check_new | 5.39 | 5.22–7.08 |
+<!-- sink 8990712 -->
+
+===== END waterfall-1 attempt=1 exit_code=0 status=complete 2026-11-05T17:42:02+08:00 =====
+
+Repository guard (waterfall-2) 2026-11-05T17:42:02+08:00
+$ git rev-parse HEAD
+ee03bd5a9d8a300a0a33e57a7285f2fbfdb3c2b9
+[exit_code=0]
+$ git branch --show-current
+main
+[exit_code=0]
+$ git status --porcelain=v1 --untracked-files=all
+[exit_code=0]
+
+===== BEGIN waterfall-2 attempt=1 2026-11-05T17:42:07+08:00 =====
+$ taskset -c 2,4 build/gcc-release/bench/lob_itch_bench --messages 1000000 --reps 5
+clock: ticks overhead 7.4 ns (20 ticks), ns_per_tick 0.3708; steady_clock pair 17 ns
+stream: 1000000 messages, 32956147 bytes, seed 1, 4 instruments (target SYM1)
+event_hash=0xb433903677c7ecd9 book_hash=0x9716d88e7325473b (identical in all modes and reps)
+
+| mode | hop | p50 ns | p99 ns | p99.9 ns | max ns | p99 range over reps |
+|---|---|---|---|---|---|---|
+| single | decode | 19 | 67 | 77 | 27193 | 66–68 |
+| single | book | 12 | 237 | 351 | 29566 | 237–245 |
+| pipeline | decode | 22 | 68 | 80 | 39215 | 67–69 |
+| pipeline | queue | 1396521 | 1674285 | 1734234 | 1739354 | 1604754–1889405 |
+| pipeline | book | 43 | 262 | 425 | 59239 | 256–266 |
+| paced | decode | 15 | 30 | 92 | 37628 | 29–36 |
+| paced | queue | 118 | 2636 | 36037 | 195247 | 2403–5047 |
+| paced | book | 50 | 348 | 605 | 36079 | 334–355 |
+
+| mode | throughput (msg/s, median of 5) | range |
+|---|---|---|
+| single | 9749645 | 9563118–9792599 |
+| pipeline | 11378678 | 10869288–11494434 |
+| paced | 987062 | 984627–995573 |
+
+| trading mode | hop | p50 ns | p99 ns | p99.9 ns | max ns | p99 range over reps |
+|---|---|---|---|---|---|---|
+<!-- optimistic: requests 124887 accepted 71484 fills 48642 filled 2277220 pos 134 pnl 464766900 | conservative: requests 91129 fills 27038 filled 1268521 pos 189 pnl 255089650 -->
+| trading-single | decode | 19 | 34 | 51 | 29652 | 33–34 |
+| trading-single | book | 12 | 265 | 409 | 32923 | 261–268 |
+| trading-single | strategy | 7 | 102 | 112 | 17136 | 100–103 |
+| trading-single | risk | 39 | 44 | 50 | 432 | 43–45 |
+| trading-single | engine | 13 | 460 | 776 | 34737 | 455–484 |
+| trading-pipeline | decode | 22 | 66 | 83 | 41741 | 66–69 |
+| trading-pipeline | queue | 2831173 | 3138328 | 3253553 | 3282957 | 3100077–3233420 |
+| trading-pipeline | book | 39 | 299 | 475 | 46577 | 297–306 |
+| trading-pipeline | strategy | 7 | 104 | 116 | 25696 | 103–105 |
+| trading-pipeline | risk | 42 | 47 | 53 | 343 | 47–48 |
+| trading-pipeline | engine | 14 | 470 | 797 | 32878 | 464–486 |
+trading hashes identical in single and pipeline modes and all reps
+
+| dispatch | ns per on_book_update (median of 5) | range |
+|---|---|---|
+| CRTP (static) | 10.72 | 10.56–12.23 |
+| virtual | 11.09 | 10.76–11.89 |
+| risk check_new | 6.47 | 5.65–8.54 |
+<!-- sink 8990712 -->
+
+===== END waterfall-2 attempt=1 exit_code=0 status=complete 2026-11-05T17:42:20+08:00 =====
+
+Repository guard (waterfall-3) 2026-11-05T17:42:20+08:00
+$ git rev-parse HEAD
+ee03bd5a9d8a300a0a33e57a7285f2fbfdb3c2b9
+[exit_code=0]
+$ git branch --show-current
+main
+[exit_code=0]
+$ git status --porcelain=v1 --untracked-files=all
+[exit_code=0]
+
+===== BEGIN waterfall-3 attempt=1 2026-11-05T17:42:25+08:00 =====
+$ taskset -c 2,4 build/gcc-release/bench/lob_itch_bench --messages 1000000 --reps 5
+clock: ticks overhead 7.5 ns (20 ticks), ns_per_tick 0.3751; steady_clock pair 17 ns
+stream: 1000000 messages, 32956147 bytes, seed 1, 4 instruments (target SYM1)
+event_hash=0xb433903677c7ecd9 book_hash=0x9716d88e7325473b (identical in all modes and reps)
+
+| mode | hop | p50 ns | p99 ns | p99.9 ns | max ns | p99 range over reps |
+|---|---|---|---|---|---|---|
+| single | decode | 18 | 67 | 77 | 51580 | 67–68 |
+| single | book | 12 | 239 | 406 | 58016 | 238–242 |
+| pipeline | decode | 22 | 71 | 81 | 23591 | 70–71 |
+| pipeline | queue | 1378284 | 1677910 | 1690506 | 1694301 | 1580873–1712289 |
+| pipeline | book | 41 | 256 | 352 | 43217 | 254–259 |
+| paced | decode | 16 | 34 | 121 | 48310 | 28–39 |
+| paced | queue | 65 | 3840 | 27637 | 193319 | 3272–130637 |
+| paced | book | 46 | 356 | 554 | 52005 | 347–377 |
+
+| mode | throughput (msg/s, median of 5) | range |
+|---|---|---|
+| single | 9660997 | 9615299–9676967 |
+| pipeline | 11494367 | 11367391–11663590 |
+| paced | 1008423 | 1003985–1012597 |
+
+| trading mode | hop | p50 ns | p99 ns | p99.9 ns | max ns | p99 range over reps |
+|---|---|---|---|---|---|---|
+<!-- optimistic: requests 124887 accepted 71484 fills 48642 filled 2277220 pos 134 pnl 464766900 | conservative: requests 91129 fills 27038 filled 1268521 pos 189 pnl 255089650 -->
+| trading-single | decode | 18 | 35 | 50 | 23142 | 34–35 |
+| trading-single | book | 12 | 269 | 422 | 26910 | 265–272 |
+| trading-single | strategy | 8 | 106 | 115 | 16535 | 106–110 |
+| trading-single | risk | 40 | 45 | 53 | 4220 | 43–46 |
+| trading-single | engine | 12 | 482 | 813 | 43306 | 468–525 |
+| trading-pipeline | decode | 22 | 66 | 104 | 31748 | 65–76 |
+| trading-pipeline | queue | 2923656 | 3770106 | 4072522 | 4093453 | 3140884–5303678 |
+| trading-pipeline | book | 44 | 312 | 572 | 112095 | 302–371 |
+| trading-pipeline | strategy | 8 | 105 | 119 | 26151 | 102–115 |
+| trading-pipeline | risk | 42 | 50 | 71 | 7215 | 47–61 |
+| trading-pipeline | engine | 15 | 552 | 834 | 41980 | 479–800 |
+trading hashes identical in single and pipeline modes and all reps
+
+| dispatch | ns per on_book_update (median of 5) | range |
+|---|---|---|
+| CRTP (static) | 10.82 | 10.61–11.23 |
+| virtual | 11.21 | 10.80–11.82 |
+| risk check_new | 5.71 | 5.54–8.42 |
+<!-- sink 8990712 -->
+
+===== END waterfall-3 attempt=1 exit_code=0 status=complete 2026-11-05T17:42:38+08:00 =====
+
+Repository guard (l4-epoll-1) 2026-11-05T17:42:38+08:00
+$ git rev-parse HEAD
+ee03bd5a9d8a300a0a33e57a7285f2fbfdb3c2b9
+[exit_code=0]
+$ git branch --show-current
+main
+[exit_code=0]
+$ git status --porcelain=v1 --untracked-files=all
+[exit_code=0]
+
+===== BEGIN l4-epoll-1 attempt=1 2026-11-05T17:42:43+08:00 =====
+$ taskset -c 1,2 build/gcc-release/bench/lob_t2t --client-cpu 1 --server-cpu 2
+  [inproc] requests 23366 fills 8966
+  [loopback] requests 14823 fills 5128
+  [ack] requests 12098 fills 4008
+environment:
+  cpu: 12th Gen Intel(R) Core(TM) i7-12700H
+  online cpus: 20; kernel: Linux 6.6.87.2-microsoft-standard-WSL2; hypervisor flag: yes; constant_tsc: yes
+  compiler: 13.3.0; build: optimized (NDEBUG)
+  threads: book + exchange; pinned client 1 server 2; exchange thread sleeps in epoll_wait
+  clock: ticks overhead 7.4 ns subtracted once per sample; 0.3714 ns/tick
+input: synthetic, 200000 messages, seed 1
+
+| mode     | segment                            |  samples |   p50 ns |   p99 ns | p99.9 ns |     max ns |
+|---|---|---:|---:|---:|---:|---:|
+| inproc   | T1 tick -> decision (new order)    |    13420 |       582 |      1737 |      4335 |      40299 |
+| inproc   | T2 tick -> encoded, new order      |    13420 |       649 |      2553 |      8026 |      40472 |
+| inproc   | T2 tick -> encoded, 1st msg        |     6844 |       368 |      1009 |      3795 |      39449 |
+| loopback | T1 tick -> decision (new order)    |     7433 |      2428 |     30834 |     61488 |     118335 |
+| loopback | T3 tick -> send() ret, new order   |     7433 |      3307 |     38588 |     68262 |     123280 |
+| loopback | T3 tick -> send() ret, 1st msg     |     3796 |      1448 |     23929 |     44569 |      61576 |
+| loopback | T4 client send -> exchange decoded |     7431 |    171407 |    354085 |    694272 |     742623 |
+| ack      | T5 tick -> ack decoded (round trip) |     6069 |    479437 |   1300049 |   1951457 |    2931618 |
+
+===== END l4-epoll-1 attempt=1 exit_code=0 status=complete 2026-11-05T17:42:46+08:00 =====
+
+Repository guard (l4-epoll-2) 2026-11-05T17:42:46+08:00
+$ git rev-parse HEAD
+ee03bd5a9d8a300a0a33e57a7285f2fbfdb3c2b9
+[exit_code=0]
+$ git branch --show-current
+main
+[exit_code=0]
+$ git status --porcelain=v1 --untracked-files=all
+[exit_code=0]
+
+===== BEGIN l4-epoll-2 attempt=1 2026-11-05T17:42:51+08:00 =====
+$ taskset -c 1,2 build/gcc-release/bench/lob_t2t --client-cpu 1 --server-cpu 2
+  [inproc] requests 23366 fills 8966
+  [loopback] requests 12626 fills 3476
+  [ack] requests 12175 fills 4016
+environment:
+  cpu: 12th Gen Intel(R) Core(TM) i7-12700H
+  online cpus: 20; kernel: Linux 6.6.87.2-microsoft-standard-WSL2; hypervisor flag: yes; constant_tsc: yes
+  compiler: 13.3.0; build: optimized (NDEBUG)
+  threads: book + exchange; pinned client 1 server 2; exchange thread sleeps in epoll_wait
+  clock: ticks overhead 7.4 ns subtracted once per sample; 0.3718 ns/tick
+input: synthetic, 200000 messages, seed 1
+
+| mode     | segment                            |  samples |   p50 ns |   p99 ns | p99.9 ns |     max ns |
+|---|---|---:|---:|---:|---:|---:|
+| inproc   | T1 tick -> decision (new order)    |    13420 |       562 |      1605 |      9749 |     153030 |
+| inproc   | T2 tick -> encoded, new order      |    13420 |       610 |      2252 |     24477 |     153843 |
+| inproc   | T2 tick -> encoded, 1st msg        |     6844 |       350 |       848 |      8754 |      51565 |
+| loopback | T1 tick -> decision (new order)    |     6314 |      1734 |      9405 |     38958 |      73816 |
+| loopback | T3 tick -> send() ret, new order   |     6314 |      2327 |     12539 |     50952 |     120338 |
+| loopback | T3 tick -> send() ret, 1st msg     |     3227 |       919 |      6608 |     23401 |      41130 |
+| loopback | T4 client send -> exchange decoded |     6308 |    200714 |    688638 |    837559 |     912716 |
+| ack      | T5 tick -> ack decoded (round trip) |     6125 |    392811 |    805385 |   1215444 |    1459477 |
+
+===== END l4-epoll-2 attempt=1 exit_code=0 status=complete 2026-11-05T17:42:53+08:00 =====
+
+Repository guard (l4-epoll-3) 2026-11-05T17:42:53+08:00
+$ git rev-parse HEAD
+ee03bd5a9d8a300a0a33e57a7285f2fbfdb3c2b9
+[exit_code=0]
+$ git branch --show-current
+main
+[exit_code=0]
+$ git status --porcelain=v1 --untracked-files=all
+[exit_code=0]
+
+===== BEGIN l4-epoll-3 attempt=1 2026-11-05T17:42:58+08:00 =====
+$ taskset -c 1,2 build/gcc-release/bench/lob_t2t --client-cpu 1 --server-cpu 2
+  [inproc] requests 23366 fills 8966
+  [loopback] requests 13528 fills 4367
+  [ack] requests 12391 fills 4021
+environment:
+  cpu: 12th Gen Intel(R) Core(TM) i7-12700H
+  online cpus: 20; kernel: Linux 6.6.87.2-microsoft-standard-WSL2; hypervisor flag: yes; constant_tsc: yes
+  compiler: 13.3.0; build: optimized (NDEBUG)
+  threads: book + exchange; pinned client 1 server 2; exchange thread sleeps in epoll_wait
+  clock: ticks overhead 7.4 ns subtracted once per sample; 0.3721 ns/tick
+input: synthetic, 200000 messages, seed 1
+
+| mode     | segment                            |  samples |   p50 ns |   p99 ns | p99.9 ns |     max ns |
+|---|---|---:|---:|---:|---:|---:|
+| inproc   | T1 tick -> decision (new order)    |    13420 |       589 |      2268 |     25013 |     134095 |
+| inproc   | T2 tick -> encoded, new order      |    13420 |       658 |      3637 |     31410 |     134317 |
+| inproc   | T2 tick -> encoded, 1st msg        |     6844 |       376 |      1607 |     11790 |      41389 |
+| loopback | T1 tick -> decision (new order)    |     6769 |      3035 |     17010 |     43555 |     111637 |
+| loopback | T3 tick -> send() ret, new order   |     6769 |      4082 |     20854 |     90645 |     249278 |
+| loopback | T3 tick -> send() ret, 1st msg     |     3428 |      1928 |     10668 |     25057 |      34451 |
+| loopback | T4 client send -> exchange decoded |     6767 |    161603 |    453346 |    636599 |     686743 |
+| ack      | T5 tick -> ack decoded (round trip) |     6225 |    446873 |    949300 |   1326904 |    2412848 |
+
+===== END l4-epoll-3 attempt=1 exit_code=0 status=complete 2026-11-05T17:43:01+08:00 =====
+
+Repository guard (l4-busy-poll-1) 2026-11-05T17:43:01+08:00
+$ git rev-parse HEAD
+ee03bd5a9d8a300a0a33e57a7285f2fbfdb3c2b9
+[exit_code=0]
+$ git branch --show-current
+main
+[exit_code=0]
+$ git status --porcelain=v1 --untracked-files=all
+[exit_code=0]
+
+===== BEGIN l4-busy-poll-1 attempt=1 2026-11-05T17:43:06+08:00 =====
+$ taskset -c 1,2 build/gcc-release/bench/lob_t2t --client-cpu 1 --server-cpu 2 --busy-poll
+  [inproc] requests 23366 fills 8966
+  [loopback] requests 13818 fills 4458
+  [ack] requests 13230 fills 4506
+environment:
+  cpu: 12th Gen Intel(R) Core(TM) i7-12700H
+  online cpus: 20; kernel: Linux 6.6.87.2-microsoft-standard-WSL2; hypervisor flag: yes; constant_tsc: yes
+  compiler: 13.3.0; build: optimized (NDEBUG)
+  threads: book + exchange; pinned client 1 server 2; exchange thread busy-polls epoll_wait(0)
+  clock: ticks overhead 7.4 ns subtracted once per sample; 0.3721 ns/tick
+input: synthetic, 200000 messages, seed 1
+
+| mode     | segment                            |  samples |   p50 ns |   p99 ns | p99.9 ns |     max ns |
+|---|---|---:|---:|---:|---:|---:|
+| inproc   | T1 tick -> decision (new order)    |    13420 |       563 |      1636 |      9413 |      50942 |
+| inproc   | T2 tick -> encoded, new order      |    13420 |       613 |      2461 |     24396 |      51166 |
+| inproc   | T2 tick -> encoded, 1st msg        |     6844 |       352 |       857 |     10080 |      56517 |
+| loopback | T1 tick -> decision (new order)    |     6913 |      2378 |     13468 |     42117 |     120040 |
+| loopback | T3 tick -> send() ret, new order   |     6913 |      3268 |     17907 |     80827 |     123730 |
+| loopback | T3 tick -> send() ret, 1st msg     |     3543 |      1454 |      9241 |     25422 |      34383 |
+| loopback | T4 client send -> exchange decoded |     6903 |    155555 |    420772 |    644037 |     712785 |
+| ack      | T5 tick -> ack decoded (round trip) |     6746 |    394852 |   1214152 |   1775605 |    3109858 |
+
+===== END l4-busy-poll-1 attempt=1 exit_code=0 status=complete 2026-11-05T17:43:09+08:00 =====
+
+Repository guard (l4-busy-poll-2) 2026-11-05T17:43:09+08:00
+$ git rev-parse HEAD
+ee03bd5a9d8a300a0a33e57a7285f2fbfdb3c2b9
+[exit_code=0]
+$ git branch --show-current
+main
+[exit_code=0]
+$ git status --porcelain=v1 --untracked-files=all
+[exit_code=0]
+
+===== BEGIN l4-busy-poll-2 attempt=1 2026-11-05T17:43:13+08:00 =====
+$ taskset -c 1,2 build/gcc-release/bench/lob_t2t --client-cpu 1 --server-cpu 2 --busy-poll
+  [inproc] requests 23366 fills 8966
+  [loopback] requests 12410 fills 3791
+  [ack] requests 12597 fills 4206
+environment:
+  cpu: 12th Gen Intel(R) Core(TM) i7-12700H
+  online cpus: 20; kernel: Linux 6.6.87.2-microsoft-standard-WSL2; hypervisor flag: yes; constant_tsc: yes
+  compiler: 13.3.0; build: optimized (NDEBUG)
+  threads: book + exchange; pinned client 1 server 2; exchange thread busy-polls epoll_wait(0)
+  clock: ticks overhead 7.4 ns subtracted once per sample; 0.3719 ns/tick
+input: synthetic, 200000 messages, seed 1
+
+| mode     | segment                            |  samples |   p50 ns |   p99 ns | p99.9 ns |     max ns |
+|---|---|---:|---:|---:|---:|---:|
+| inproc   | T1 tick -> decision (new order)    |    13420 |       561 |      1709 |      3349 |      42550 |
+| inproc   | T2 tick -> encoded, new order      |    13420 |       608 |      2338 |      5392 |      43152 |
+| inproc   | T2 tick -> encoded, 1st msg        |     6844 |       348 |       970 |      2296 |      37309 |
+| loopback | T1 tick -> decision (new order)    |     6205 |      1627 |      7736 |     31460 |      69747 |
+| loopback | T3 tick -> send() ret, new order   |     6205 |      2156 |      9733 |     56188 |      70409 |
+| loopback | T3 tick -> send() ret, 1st msg     |     3199 |       878 |      5106 |     16831 |      61804 |
+| loopback | T4 client send -> exchange decoded |     6189 |    260649 |    499124 |    953762 |    1125406 |
+| ack      | T5 tick -> ack decoded (round trip) |     6359 |    464267 |   1566683 |   2301469 |    2565680 |
+
+===== END l4-busy-poll-2 attempt=1 exit_code=0 status=complete 2026-11-05T17:43:16+08:00 =====
+
+Repository guard (l4-busy-poll-3) 2026-11-05T17:43:16+08:00
+$ git rev-parse HEAD
+ee03bd5a9d8a300a0a33e57a7285f2fbfdb3c2b9
+[exit_code=0]
+$ git branch --show-current
+main
+[exit_code=0]
+$ git status --porcelain=v1 --untracked-files=all
+[exit_code=0]
+
+===== BEGIN l4-busy-poll-3 attempt=1 2026-11-05T17:43:21+08:00 =====
+$ taskset -c 1,2 build/gcc-release/bench/lob_t2t --client-cpu 1 --server-cpu 2 --busy-poll
+  [inproc] requests 23366 fills 8966
+  [loopback] requests 12970 fills 3964
+  [ack] requests 13427 fills 4536
+environment:
+  cpu: 12th Gen Intel(R) Core(TM) i7-12700H
+  online cpus: 20; kernel: Linux 6.6.87.2-microsoft-standard-WSL2; hypervisor flag: yes; constant_tsc: yes
+  compiler: 13.3.0; build: optimized (NDEBUG)
+  threads: book + exchange; pinned client 1 server 2; exchange thread busy-polls epoll_wait(0)
+  clock: ticks overhead 7.4 ns subtracted once per sample; 0.3721 ns/tick
+input: synthetic, 200000 messages, seed 1
+
+| mode     | segment                            |  samples |   p50 ns |   p99 ns | p99.9 ns |     max ns |
+|---|---|---:|---:|---:|---:|---:|
+| inproc   | T1 tick -> decision (new order)    |    13420 |       558 |      1472 |      3640 |      30528 |
+| inproc   | T2 tick -> encoded, new order      |    13420 |       606 |      2372 |      6427 |      54781 |
+| inproc   | T2 tick -> encoded, 1st msg        |     6844 |       348 |       821 |      3112 |      51145 |
+| loopback | T1 tick -> decision (new order)    |     6490 |      2398 |     13127 |     38086 |     175726 |
+| loopback | T3 tick -> send() ret, new order   |     6490 |      3300 |     16381 |     87200 |     178115 |
+| loopback | T3 tick -> send() ret, 1st msg     |     3320 |      1355 |      8817 |     22619 |      91716 |
+| loopback | T4 client send -> exchange decoded |     6486 |    166203 |    665978 |   1105899 |    1192400 |
+| ack      | T5 tick -> ack decoded (round trip) |     6869 |    385313 |   1205798 |   1588983 |    1878100 |
+
+===== END l4-busy-poll-3 attempt=1 exit_code=0 status=complete 2026-11-05T17:43:24+08:00 =====
+
+Repository guard (after bench) 2026-11-05T17:43:24+08:00
+$ git rev-parse HEAD
+ee03bd5a9d8a300a0a33e57a7285f2fbfdb3c2b9
+[exit_code=0]
+$ git branch --show-current
+main
+[exit_code=0]
+$ git status --porcelain=v1 --untracked-files=all
+[exit_code=0]
+
+===== BEGIN git-status-after-bench attempt=1 2026-11-05T17:43:29+08:00 =====
+$ git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+nothing to commit, working tree clean
+
+===== END git-status-after-bench attempt=1 exit_code=0 status=complete 2026-11-05T17:43:33+08:00 =====
+
+===== BEGIN remote-main-after attempt=1 2026-11-05T17:43:33+08:00 =====
+$ git ls-remote origin refs/heads/main
+ee03bd5a9d8a300a0a33e57a7285f2fbfdb3c2b9	refs/heads/main
+
+===== END remote-main-after attempt=1 exit_code=0 status=complete 2026-11-05T17:43:35+08:00 =====
+
+===== BEGIN source-hashes-after attempt=1 2026-11-05T17:43:35+08:00 =====
+$ sha256sum README.md CMakePresets.json
+ff84a9c427000f353277dc8773b99edb93124c7eea19f4c7d2194085a2210900  README.md
+868e66fc9b73b54a31c1a2c3ee82b6f04b2cf0614c516a57f20308c27bfe12b4  CMakePresets.json
+
+===== END source-hashes-after attempt=1 exit_code=0 status=complete 2026-11-05T17:43:35+08:00 =====
+
+===== BEGIN binary-hashes-after attempt=1 2026-11-05T17:43:35+08:00 =====
+$ sha256sum build/gcc-release/bench/lob_itch_bench build/gcc-release/bench/lob_t2t
+efb8179007138ca2bb43beba3e43a6f1d3d75114bd7cd25065e4118846b53942  build/gcc-release/bench/lob_itch_bench
+c5fceea81fdb7e19ddbf12e212e559d86806ad61172dbe9b81c80dec7315f8a9  build/gcc-release/bench/lob_t2t
+
+===== END binary-hashes-after attempt=1 exit_code=0 status=complete 2026-11-05T17:43:35+08:00 =====
+
+===== BEGIN memory-after attempt=1 2026-11-05T17:43:35+08:00 =====
+$ free -h
+               total        used        free      shared  buff/cache   available
+Mem:           7.6Gi       768Mi       6.6Gi       3.6Mi       422Mi       6.8Gi
+Swap:          2.0Gi          0B       2.0Gi
+
+===== END memory-after attempt=1 exit_code=0 status=complete 2026-11-05T17:43:35+08:00 =====
+
+PHASE bench COMPLETE 2026-11-05T17:43:35+08:00
+
+===== DERIVED SUMMARY / 派生汇总（原始日志结束，以下为计算结果） =====
+测量环境：本机 WSL2。日期：2026-11-05（Asia/Shanghai，UTC+8）。
+提交：ee03bd5a9d8a300a0a33e57a7285f2fbfdb3c2b9；main；测前及测后远端 main 均为同一哈希；所有源码状态检查干净。
+用户已确认插电、高性能模式、关闭其他程序；powercfg 显示高性能。Ubuntu-24.04，i7-12700H，20 个逻辑 CPU（0–19）。
+内核 6.6.87.2-microsoft-standard-WSL2；GCC 13.3.0；Clang 18.1.3（仅记录，未用于构建）；CMake 3.28.3；Ninja 1.11.1。
+初始内存总量 7.6 GiB、available 6.8 GiB；原始 free -h 在日志开头。仓库和构建位于 Windows F: 的 /mnt/f 挂载路径。
+仅原样执行 README gcc-release 构建命令。未添加编译选项或环境覆盖，未修改源码、参数或阈值。CPU 编号保持 README 原样：瀑布 2,4；L4 client 1 / server 2。
+瀑布 1,000,000 条 × 内部五次，外部完整运行三次；程序自带每模式一次预热。L4 默认与 busy-poll 各三次，默认合成 200,000 条、seed 1；未传 --input。
+九次基准均完整成功，退出码均为 0；无中断、无失败基准、无剔除或挑选。所有三次结果逐项参与中位数与范围。
+波动范围定义为外部三次结果的 [最小值, 最大值]；极差 = 最大值 − 最小值。汇总仅使用程序打印精度，不补造更高精度。
+瀑布的 p50/p99/p99.9/max 是内部五次相应统计量的中位数；外部汇总是三个已打印统计量的中位数，不能当作十五次合并样本的分位数。其 max 不是所有样本的全局最大值。
+程序没有输出内部五次逐次结果或逐事件样本；日志保存了程序实际暴露的全部 stdout/stderr。内部 p99 / throughput / dispatch 范围端点亦全部列入汇总。
+饱和 pipeline 的 queue 是排队时间；paced（默认 1 msg/µs）的 queue 才接近交接成本。risk hop 是一条行情内检查之和，单次风控看 risk check_new。
+L4 T3 是本地 send() 返回，T5 是 tick→确认解码的往返，均非线到线；第一条消息可能是撤单。每次完整进程均包含 inproc、loopback、ack。自由运行的样本数及 requests/fills 可能随调度变化。
+未运行全市场吞吐、真实数据回放、fuzz、额外测试或重新测量脚本；未下载真实 ITCH。默认构建会编译其他应用，但未执行它们。
+准备阶段的非基准诊断错误原文保留：WSL 沙箱访问 E_ACCESSDENIED（授权访问后成功）；CIM 电池查询不可访问；WSL 内 rg 缺失，exit 127。构建和基准无报错，未修补代码。
+
+README commands:
+cmake --preset gcc-release && cmake --build --preset gcc-release
+cmake --preset gcc-release && cmake --build --preset gcc-release --target lob_t2t
+taskset -c 2,4 build/gcc-release/bench/lob_itch_bench --messages 1000000 --reps 5
+taskset -c 1,2 build/gcc-release/bench/lob_t2t --client-cpu 1 --server-cpu 2
+taskset -c 1,2 build/gcc-release/bench/lob_t2t --client-cpu 1 --server-cpu 2 --busy-poll
+
+三次完整运行时间：
+waterfall-1	2026-11-05T17:41:49+08:00	2026-11-05T17:42:02+08:00	exit_code=0
+waterfall-2	2026-11-05T17:42:07+08:00	2026-11-05T17:42:20+08:00	exit_code=0
+waterfall-3	2026-11-05T17:42:25+08:00	2026-11-05T17:42:38+08:00	exit_code=0
+l4-epoll-1	2026-11-05T17:42:43+08:00	2026-11-05T17:42:46+08:00	exit_code=0
+l4-epoll-2	2026-11-05T17:42:51+08:00	2026-11-05T17:42:53+08:00	exit_code=0
+l4-epoll-3	2026-11-05T17:42:58+08:00	2026-11-05T17:43:01+08:00	exit_code=0
+l4-busy-poll-1	2026-11-05T17:43:06+08:00	2026-11-05T17:43:09+08:00	exit_code=0
+l4-busy-poll-2	2026-11-05T17:43:13+08:00	2026-11-05T17:43:16+08:00	exit_code=0
+l4-busy-poll-3	2026-11-05T17:43:21+08:00	2026-11-05T17:43:24+08:00	exit_code=0
+
+汇总表：
+分组	模式	指标	统计量	单位	第1次	第2次	第3次	中位数	波动范围（min–max）	极差
+合成瀑布	calibration	ticks overhead	校准值	ns	7.2	7.4	7.5	7.4	7.2–7.5	0.3
+合成瀑布	calibration	ticks overhead	校准值	ticks	20	20	20	20	20–20	0
+合成瀑布	calibration	ns_per_tick	校准值	ns/tick	0.3583	0.3708	0.3751	0.3708	0.3583–0.3751	0.0168
+合成瀑布	calibration	steady_clock pair	校准值	ns	16	17	17	17	16–17	1
+合成瀑布	single	decode	p50	ns	17	19	18	18	17–19	2
+合成瀑布	single	decode	p99	ns	64	67	67	67	64–67	3
+合成瀑布	single	decode	p99.9	ns	77	77	77	77	77–77	0
+合成瀑布	single	decode	max（内部五次最大值的中位数）	ns	41233	27193	51580	41233	27193–51580	24387
+合成瀑布	single	decode	内部五次 p99 最小值	ns	64	66	67	66	64–67	3
+合成瀑布	single	decode	内部五次 p99 最大值	ns	68	68	68	68	68–68	0
+合成瀑布	single	book	p50	ns	11	12	12	12	11–12	1
+合成瀑布	single	book	p99	ns	236	237	239	237	236–239	3
+合成瀑布	single	book	p99.9	ns	391	351	406	391	351–406	55
+合成瀑布	single	book	max（内部五次最大值的中位数）	ns	33311	29566	58016	33311	29566–58016	28450
+合成瀑布	single	book	内部五次 p99 最小值	ns	230	237	238	237	230–238	8
+合成瀑布	single	book	内部五次 p99 最大值	ns	242	245	242	242	242–245	3
+合成瀑布	pipeline	decode	p50	ns	21	22	22	22	21–22	1
+合成瀑布	pipeline	decode	p99	ns	67	68	71	68	67–71	4
+合成瀑布	pipeline	decode	p99.9	ns	79	80	81	80	79–81	2
+合成瀑布	pipeline	decode	max（内部五次最大值的中位数）	ns	29351	39215	23591	29351	23591–39215	15624
+合成瀑布	pipeline	decode	内部五次 p99 最小值	ns	66	67	70	67	66–70	4
+合成瀑布	pipeline	decode	内部五次 p99 最大值	ns	68	69	71	69	68–71	3
+合成瀑布	pipeline	queue	p50	ns	1364143	1396521	1378284	1378284	1364143–1396521	32378
+合成瀑布	pipeline	queue	p99	ns	1724574	1674285	1677910	1677910	1674285–1724574	50289
+合成瀑布	pipeline	queue	p99.9	ns	1782082	1734234	1690506	1734234	1690506–1782082	91576
+合成瀑布	pipeline	queue	max（内部五次最大值的中位数）	ns	1783536	1739354	1694301	1739354	1694301–1783536	89235
+合成瀑布	pipeline	queue	内部五次 p99 最小值	ns	1606093	1604754	1580873	1604754	1580873–1606093	25220
+合成瀑布	pipeline	queue	内部五次 p99 最大值	ns	2018628	1889405	1712289	1889405	1712289–2018628	306339
+合成瀑布	pipeline	book	p50	ns	41	43	41	41	41–43	2
+合成瀑布	pipeline	book	p99	ns	251	262	256	256	251–262	11
+合成瀑布	pipeline	book	p99.9	ns	392	425	352	392	352–425	73
+合成瀑布	pipeline	book	max（内部五次最大值的中位数）	ns	85720	59239	43217	59239	43217–85720	42503
+合成瀑布	pipeline	book	内部五次 p99 最小值	ns	249	256	254	254	249–256	7
+合成瀑布	pipeline	book	内部五次 p99 最大值	ns	267	266	259	266	259–267	8
+合成瀑布	paced	decode	p50	ns	14	15	16	15	14–16	2
+合成瀑布	paced	decode	p99	ns	31	30	34	31	30–34	4
+合成瀑布	paced	decode	p99.9	ns	99	92	121	99	92–121	29
+合成瀑布	paced	decode	max（内部五次最大值的中位数）	ns	32420	37628	48310	37628	32420–48310	15890
+合成瀑布	paced	decode	内部五次 p99 最小值	ns	29	29	28	29	28–29	1
+合成瀑布	paced	decode	内部五次 p99 最大值	ns	32	36	39	36	32–39	7
+合成瀑布	paced	queue	p50	ns	104	118	65	104	65–118	53
+合成瀑布	paced	queue	p99	ns	5210	2636	3840	3840	2636–5210	2574
+合成瀑布	paced	queue	p99.9	ns	44354	36037	27637	36037	27637–44354	16717
+合成瀑布	paced	queue	max（内部五次最大值的中位数）	ns	184371	195247	193319	193319	184371–195247	10876
+合成瀑布	paced	queue	内部五次 p99 最小值	ns	2263	2403	3272	2403	2263–3272	1009
+合成瀑布	paced	queue	内部五次 p99 最大值	ns	5863	5047	130637	5863	5047–130637	125590
+合成瀑布	paced	book	p50	ns	48	50	46	48	46–50	4
+合成瀑布	paced	book	p99	ns	345	348	356	348	345–356	11
+合成瀑布	paced	book	p99.9	ns	616	605	554	605	554–616	62
+合成瀑布	paced	book	max（内部五次最大值的中位数）	ns	56211	36079	52005	52005	36079–56211	20132
+合成瀑布	paced	book	内部五次 p99 最小值	ns	333	334	347	334	333–347	14
+合成瀑布	paced	book	内部五次 p99 最大值	ns	350	355	377	355	350–377	27
+合成瀑布	single	throughput	内部五次中位数	msg/s	9632618	9749645	9660997	9660997	9632618–9749645	117027
+合成瀑布	single	throughput	内部五次最小值	msg/s	9217772	9563118	9615299	9563118	9217772–9615299	397527
+合成瀑布	single	throughput	内部五次最大值	msg/s	9751915	9792599	9676967	9751915	9676967–9792599	115632
+合成瀑布	pipeline	throughput	内部五次中位数	msg/s	11232654	11378678	11494367	11378678	11232654–11494367	261713
+合成瀑布	pipeline	throughput	内部五次最小值	msg/s	10536507	10869288	11367391	10869288	10536507–11367391	830884
+合成瀑布	pipeline	throughput	内部五次最大值	msg/s	11368585	11494434	11663590	11494434	11368585–11663590	295005
+合成瀑布	paced	throughput	内部五次中位数	msg/s	979585	987062	1008423	987062	979585–1008423	28838
+合成瀑布	paced	throughput	内部五次最小值	msg/s	979523	984627	1003985	984627	979523–1003985	24462
+合成瀑布	paced	throughput	内部五次最大值	msg/s	979608	995573	1012597	995573	979608–1012597	32989
+合成瀑布	trading-single	decode	p50	ns	18	19	18	18	18–19	1
+合成瀑布	trading-single	decode	p99	ns	33	34	35	34	33–35	2
+合成瀑布	trading-single	decode	p99.9	ns	47	51	50	50	47–51	4
+合成瀑布	trading-single	decode	max（内部五次最大值的中位数）	ns	33561	29652	23142	29652	23142–33561	10419
+合成瀑布	trading-single	decode	内部五次 p99 最小值	ns	32	33	34	33	32–34	2
+合成瀑布	trading-single	decode	内部五次 p99 最大值	ns	37	34	35	35	34–37	3
+合成瀑布	trading-single	book	p50	ns	12	12	12	12	12–12	0
+合成瀑布	trading-single	book	p99	ns	258	265	269	265	258–269	11
+合成瀑布	trading-single	book	p99.9	ns	386	409	422	409	386–422	36
+合成瀑布	trading-single	book	max（内部五次最大值的中位数）	ns	45413	32923	26910	32923	26910–45413	18503
+合成瀑布	trading-single	book	内部五次 p99 最小值	ns	253	261	265	261	253–265	12
+合成瀑布	trading-single	book	内部五次 p99 最大值	ns	260	268	272	268	260–272	12
+合成瀑布	trading-single	strategy	p50	ns	7	7	8	7	7–8	1
+合成瀑布	trading-single	strategy	p99	ns	97	102	106	102	97–106	9
+合成瀑布	trading-single	strategy	p99.9	ns	109	112	115	112	109–115	6
+合成瀑布	trading-single	strategy	max（内部五次最大值的中位数）	ns	18161	17136	16535	17136	16535–18161	1626
+合成瀑布	trading-single	strategy	内部五次 p99 最小值	ns	97	100	106	100	97–106	9
+合成瀑布	trading-single	strategy	内部五次 p99 最大值	ns	100	103	110	103	100–110	10
+合成瀑布	trading-single	risk	p50	ns	38	39	40	39	38–40	2
+合成瀑布	trading-single	risk	p99	ns	44	44	45	44	44–45	1
+合成瀑布	trading-single	risk	p99.9	ns	51	50	53	51	50–53	3
+合成瀑布	trading-single	risk	max（内部五次最大值的中位数）	ns	7564	432	4220	4220	432–7564	7132
+合成瀑布	trading-single	risk	内部五次 p99 最小值	ns	42	43	43	43	42–43	1
+合成瀑布	trading-single	risk	内部五次 p99 最大值	ns	44	45	46	45	44–46	2
+合成瀑布	trading-single	engine	p50	ns	11	13	12	12	11–13	2
+合成瀑布	trading-single	engine	p99	ns	458	460	482	460	458–482	24
+合成瀑布	trading-single	engine	p99.9	ns	758	776	813	776	758–813	55
+合成瀑布	trading-single	engine	max（内部五次最大值的中位数）	ns	22218	34737	43306	34737	22218–43306	21088
+合成瀑布	trading-single	engine	内部五次 p99 最小值	ns	441	455	468	455	441–468	27
+合成瀑布	trading-single	engine	内部五次 p99 最大值	ns	509	484	525	509	484–525	41
+合成瀑布	trading-pipeline	decode	p50	ns	21	22	22	22	21–22	1
+合成瀑布	trading-pipeline	decode	p99	ns	59	66	66	66	59–66	7
+合成瀑布	trading-pipeline	decode	p99.9	ns	75	83	104	83	75–104	29
+合成瀑布	trading-pipeline	decode	max（内部五次最大值的中位数）	ns	25125	41741	31748	31748	25125–41741	16616
+合成瀑布	trading-pipeline	decode	内部五次 p99 最小值	ns	57	66	65	65	57–66	9
+合成瀑布	trading-pipeline	decode	内部五次 p99 最大值	ns	82	69	76	76	69–82	13
+合成瀑布	trading-pipeline	queue	p50	ns	2729283	2831173	2923656	2831173	2729283–2923656	194373
+合成瀑布	trading-pipeline	queue	p99	ns	3148823	3138328	3770106	3148823	3138328–3770106	631778
+合成瀑布	trading-pipeline	queue	p99.9	ns	3188557	3253553	4072522	3253553	3188557–4072522	883965
+合成瀑布	trading-pipeline	queue	max（内部五次最大值的中位数）	ns	3316825	3282957	4093453	3316825	3282957–4093453	810496
+合成瀑布	trading-pipeline	queue	内部五次 p99 最小值	ns	2982842	3100077	3140884	3100077	2982842–3140884	158042
+合成瀑布	trading-pipeline	queue	内部五次 p99 最大值	ns	6059791	3233420	5303678	5303678	3233420–6059791	2826371
+合成瀑布	trading-pipeline	book	p50	ns	38	39	44	39	38–44	6
+合成瀑布	trading-pipeline	book	p99	ns	287	299	312	299	287–312	25
+合成瀑布	trading-pipeline	book	p99.9	ns	441	475	572	475	441–572	131
+合成瀑布	trading-pipeline	book	max（内部五次最大值的中位数）	ns	82715	46577	112095	82715	46577–112095	65518
+合成瀑布	trading-pipeline	book	内部五次 p99 最小值	ns	279	297	302	297	279–302	23
+合成瀑布	trading-pipeline	book	内部五次 p99 最大值	ns	418	306	371	371	306–418	112
+合成瀑布	trading-pipeline	strategy	p50	ns	7	7	8	7	7–8	1
+合成瀑布	trading-pipeline	strategy	p99	ns	100	104	105	104	100–105	5
+合成瀑布	trading-pipeline	strategy	p99.9	ns	112	116	119	116	112–119	7
+合成瀑布	trading-pipeline	strategy	max（内部五次最大值的中位数）	ns	18610	25696	26151	25696	18610–26151	7541
+合成瀑布	trading-pipeline	strategy	内部五次 p99 最小值	ns	97	103	102	102	97–103	6
+合成瀑布	trading-pipeline	strategy	内部五次 p99 最大值	ns	108	105	115	108	105–115	10
+合成瀑布	trading-pipeline	risk	p50	ns	40	42	42	42	40–42	2
+合成瀑布	trading-pipeline	risk	p99	ns	46	47	50	47	46–50	4
+合成瀑布	trading-pipeline	risk	p99.9	ns	52	53	71	53	52–71	19
+合成瀑布	trading-pipeline	risk	max（内部五次最大值的中位数）	ns	9345	343	7215	7215	343–9345	9002
+合成瀑布	trading-pipeline	risk	内部五次 p99 最小值	ns	44	47	47	47	44–47	3
+合成瀑布	trading-pipeline	risk	内部五次 p99 最大值	ns	60	48	61	60	48–61	13
+合成瀑布	trading-pipeline	engine	p50	ns	13	14	15	14	13–15	2
+合成瀑布	trading-pipeline	engine	p99	ns	458	470	552	470	458–552	94
+合成瀑布	trading-pipeline	engine	p99.9	ns	778	797	834	797	778–834	56
+合成瀑布	trading-pipeline	engine	max（内部五次最大值的中位数）	ns	33451	32878	41980	33451	32878–41980	9102
+合成瀑布	trading-pipeline	engine	内部五次 p99 最小值	ns	441	464	479	464	441–479	38
+合成瀑布	trading-pipeline	engine	内部五次 p99 最大值	ns	828	486	800	800	486–828	342
+合成瀑布	CRTP (static)	on_book_update	内部五次中位数	ns/call	10.89	10.72	10.82	10.82	10.72–10.89	0.17
+合成瀑布	CRTP (static)	on_book_update	内部五次最小值	ns/call	10.75	10.56	10.61	10.61	10.56–10.75	0.19
+合成瀑布	CRTP (static)	on_book_update	内部五次最大值	ns/call	11.25	12.23	11.23	11.25	11.23–12.23	1.00
+合成瀑布	virtual	on_book_update	内部五次中位数	ns/call	11.25	11.09	11.21	11.21	11.09–11.25	0.16
+合成瀑布	virtual	on_book_update	内部五次最小值	ns/call	11.08	10.76	10.80	10.80	10.76–11.08	0.32
+合成瀑布	virtual	on_book_update	内部五次最大值	ns/call	14.19	11.89	11.82	11.89	11.82–14.19	2.37
+合成瀑布	risk check_new	check_new	内部五次中位数	ns/call	5.39	6.47	5.71	5.71	5.39–6.47	1.08
+合成瀑布	risk check_new	check_new	内部五次最小值	ns/call	5.22	5.65	5.54	5.54	5.22–5.65	0.43
+合成瀑布	risk check_new	check_new	内部五次最大值	ns/call	7.08	8.54	8.42	8.42	7.08–8.54	1.46
+L4 默认 epoll	calibration	ticks overhead	校准值	ns	7.4	7.4	7.4	7.4	7.4–7.4	0.0
+L4 默认 epoll	calibration	ns_per_tick	校准值	ns/tick	0.3714	0.3718	0.3721	0.3718	0.3714–0.3721	0.0007
+L4 默认 epoll	inproc	requests	计数	次	23366	23366	23366	23366	23366–23366	0
+L4 默认 epoll	inproc	fills	计数	次	8966	8966	8966	8966	8966–8966	0
+L4 默认 epoll	loopback	requests	计数	次	14823	12626	13528	13528	12626–14823	2197
+L4 默认 epoll	loopback	fills	计数	次	5128	3476	4367	4367	3476–5128	1652
+L4 默认 epoll	ack	requests	计数	次	12098	12175	12391	12175	12098–12391	293
+L4 默认 epoll	ack	fills	计数	次	4008	4016	4021	4016	4008–4021	13
+L4 默认 epoll	inproc	T1 tick -> decision (new order)	samples	个	13420	13420	13420	13420	13420–13420	0
+L4 默认 epoll	inproc	T1 tick -> decision (new order)	p50	ns	582	562	589	582	562–589	27
+L4 默认 epoll	inproc	T1 tick -> decision (new order)	p99	ns	1737	1605	2268	1737	1605–2268	663
+L4 默认 epoll	inproc	T1 tick -> decision (new order)	p99.9	ns	4335	9749	25013	9749	4335–25013	20678
+L4 默认 epoll	inproc	T1 tick -> decision (new order)	max	ns	40299	153030	134095	134095	40299–153030	112731
+L4 默认 epoll	inproc	T2 tick -> encoded, new order	samples	个	13420	13420	13420	13420	13420–13420	0
+L4 默认 epoll	inproc	T2 tick -> encoded, new order	p50	ns	649	610	658	649	610–658	48
+L4 默认 epoll	inproc	T2 tick -> encoded, new order	p99	ns	2553	2252	3637	2553	2252–3637	1385
+L4 默认 epoll	inproc	T2 tick -> encoded, new order	p99.9	ns	8026	24477	31410	24477	8026–31410	23384
+L4 默认 epoll	inproc	T2 tick -> encoded, new order	max	ns	40472	153843	134317	134317	40472–153843	113371
+L4 默认 epoll	inproc	T2 tick -> encoded, 1st msg	samples	个	6844	6844	6844	6844	6844–6844	0
+L4 默认 epoll	inproc	T2 tick -> encoded, 1st msg	p50	ns	368	350	376	368	350–376	26
+L4 默认 epoll	inproc	T2 tick -> encoded, 1st msg	p99	ns	1009	848	1607	1009	848–1607	759
+L4 默认 epoll	inproc	T2 tick -> encoded, 1st msg	p99.9	ns	3795	8754	11790	8754	3795–11790	7995
+L4 默认 epoll	inproc	T2 tick -> encoded, 1st msg	max	ns	39449	51565	41389	41389	39449–51565	12116
+L4 默认 epoll	loopback	T1 tick -> decision (new order)	samples	个	7433	6314	6769	6769	6314–7433	1119
+L4 默认 epoll	loopback	T1 tick -> decision (new order)	p50	ns	2428	1734	3035	2428	1734–3035	1301
+L4 默认 epoll	loopback	T1 tick -> decision (new order)	p99	ns	30834	9405	17010	17010	9405–30834	21429
+L4 默认 epoll	loopback	T1 tick -> decision (new order)	p99.9	ns	61488	38958	43555	43555	38958–61488	22530
+L4 默认 epoll	loopback	T1 tick -> decision (new order)	max	ns	118335	73816	111637	111637	73816–118335	44519
+L4 默认 epoll	loopback	T3 tick -> send() ret, new order	samples	个	7433	6314	6769	6769	6314–7433	1119
+L4 默认 epoll	loopback	T3 tick -> send() ret, new order	p50	ns	3307	2327	4082	3307	2327–4082	1755
+L4 默认 epoll	loopback	T3 tick -> send() ret, new order	p99	ns	38588	12539	20854	20854	12539–38588	26049
+L4 默认 epoll	loopback	T3 tick -> send() ret, new order	p99.9	ns	68262	50952	90645	68262	50952–90645	39693
+L4 默认 epoll	loopback	T3 tick -> send() ret, new order	max	ns	123280	120338	249278	123280	120338–249278	128940
+L4 默认 epoll	loopback	T3 tick -> send() ret, 1st msg	samples	个	3796	3227	3428	3428	3227–3796	569
+L4 默认 epoll	loopback	T3 tick -> send() ret, 1st msg	p50	ns	1448	919	1928	1448	919–1928	1009
+L4 默认 epoll	loopback	T3 tick -> send() ret, 1st msg	p99	ns	23929	6608	10668	10668	6608–23929	17321
+L4 默认 epoll	loopback	T3 tick -> send() ret, 1st msg	p99.9	ns	44569	23401	25057	25057	23401–44569	21168
+L4 默认 epoll	loopback	T3 tick -> send() ret, 1st msg	max	ns	61576	41130	34451	41130	34451–61576	27125
+L4 默认 epoll	loopback	T4 client send -> exchange decoded	samples	个	7431	6308	6767	6767	6308–7431	1123
+L4 默认 epoll	loopback	T4 client send -> exchange decoded	p50	ns	171407	200714	161603	171407	161603–200714	39111
+L4 默认 epoll	loopback	T4 client send -> exchange decoded	p99	ns	354085	688638	453346	453346	354085–688638	334553
+L4 默认 epoll	loopback	T4 client send -> exchange decoded	p99.9	ns	694272	837559	636599	694272	636599–837559	200960
+L4 默认 epoll	loopback	T4 client send -> exchange decoded	max	ns	742623	912716	686743	742623	686743–912716	225973
+L4 默认 epoll	ack	T5 tick -> ack decoded (round trip)	samples	个	6069	6125	6225	6125	6069–6225	156
+L4 默认 epoll	ack	T5 tick -> ack decoded (round trip)	p50	ns	479437	392811	446873	446873	392811–479437	86626
+L4 默认 epoll	ack	T5 tick -> ack decoded (round trip)	p99	ns	1300049	805385	949300	949300	805385–1300049	494664
+L4 默认 epoll	ack	T5 tick -> ack decoded (round trip)	p99.9	ns	1951457	1215444	1326904	1326904	1215444–1951457	736013
+L4 默认 epoll	ack	T5 tick -> ack decoded (round trip)	max	ns	2931618	1459477	2412848	2412848	1459477–2931618	1472141
+L4 busy-poll	calibration	ticks overhead	校准值	ns	7.4	7.4	7.4	7.4	7.4–7.4	0.0
+L4 busy-poll	calibration	ns_per_tick	校准值	ns/tick	0.3721	0.3719	0.3721	0.3721	0.3719–0.3721	0.0002
+L4 busy-poll	inproc	requests	计数	次	23366	23366	23366	23366	23366–23366	0
+L4 busy-poll	inproc	fills	计数	次	8966	8966	8966	8966	8966–8966	0
+L4 busy-poll	loopback	requests	计数	次	13818	12410	12970	12970	12410–13818	1408
+L4 busy-poll	loopback	fills	计数	次	4458	3791	3964	3964	3791–4458	667
+L4 busy-poll	ack	requests	计数	次	13230	12597	13427	13230	12597–13427	830
+L4 busy-poll	ack	fills	计数	次	4506	4206	4536	4506	4206–4536	330
+L4 busy-poll	inproc	T1 tick -> decision (new order)	samples	个	13420	13420	13420	13420	13420–13420	0
+L4 busy-poll	inproc	T1 tick -> decision (new order)	p50	ns	563	561	558	561	558–563	5
+L4 busy-poll	inproc	T1 tick -> decision (new order)	p99	ns	1636	1709	1472	1636	1472–1709	237
+L4 busy-poll	inproc	T1 tick -> decision (new order)	p99.9	ns	9413	3349	3640	3640	3349–9413	6064
+L4 busy-poll	inproc	T1 tick -> decision (new order)	max	ns	50942	42550	30528	42550	30528–50942	20414
+L4 busy-poll	inproc	T2 tick -> encoded, new order	samples	个	13420	13420	13420	13420	13420–13420	0
+L4 busy-poll	inproc	T2 tick -> encoded, new order	p50	ns	613	608	606	608	606–613	7
+L4 busy-poll	inproc	T2 tick -> encoded, new order	p99	ns	2461	2338	2372	2372	2338–2461	123
+L4 busy-poll	inproc	T2 tick -> encoded, new order	p99.9	ns	24396	5392	6427	6427	5392–24396	19004
+L4 busy-poll	inproc	T2 tick -> encoded, new order	max	ns	51166	43152	54781	51166	43152–54781	11629
+L4 busy-poll	inproc	T2 tick -> encoded, 1st msg	samples	个	6844	6844	6844	6844	6844–6844	0
+L4 busy-poll	inproc	T2 tick -> encoded, 1st msg	p50	ns	352	348	348	348	348–352	4
+L4 busy-poll	inproc	T2 tick -> encoded, 1st msg	p99	ns	857	970	821	857	821–970	149
+L4 busy-poll	inproc	T2 tick -> encoded, 1st msg	p99.9	ns	10080	2296	3112	3112	2296–10080	7784
+L4 busy-poll	inproc	T2 tick -> encoded, 1st msg	max	ns	56517	37309	51145	51145	37309–56517	19208
+L4 busy-poll	loopback	T1 tick -> decision (new order)	samples	个	6913	6205	6490	6490	6205–6913	708
+L4 busy-poll	loopback	T1 tick -> decision (new order)	p50	ns	2378	1627	2398	2378	1627–2398	771
+L4 busy-poll	loopback	T1 tick -> decision (new order)	p99	ns	13468	7736	13127	13127	7736–13468	5732
+L4 busy-poll	loopback	T1 tick -> decision (new order)	p99.9	ns	42117	31460	38086	38086	31460–42117	10657
+L4 busy-poll	loopback	T1 tick -> decision (new order)	max	ns	120040	69747	175726	120040	69747–175726	105979
+L4 busy-poll	loopback	T3 tick -> send() ret, new order	samples	个	6913	6205	6490	6490	6205–6913	708
+L4 busy-poll	loopback	T3 tick -> send() ret, new order	p50	ns	3268	2156	3300	3268	2156–3300	1144
+L4 busy-poll	loopback	T3 tick -> send() ret, new order	p99	ns	17907	9733	16381	16381	9733–17907	8174
+L4 busy-poll	loopback	T3 tick -> send() ret, new order	p99.9	ns	80827	56188	87200	80827	56188–87200	31012
+L4 busy-poll	loopback	T3 tick -> send() ret, new order	max	ns	123730	70409	178115	123730	70409–178115	107706
+L4 busy-poll	loopback	T3 tick -> send() ret, 1st msg	samples	个	3543	3199	3320	3320	3199–3543	344
+L4 busy-poll	loopback	T3 tick -> send() ret, 1st msg	p50	ns	1454	878	1355	1355	878–1454	576
+L4 busy-poll	loopback	T3 tick -> send() ret, 1st msg	p99	ns	9241	5106	8817	8817	5106–9241	4135
+L4 busy-poll	loopback	T3 tick -> send() ret, 1st msg	p99.9	ns	25422	16831	22619	22619	16831–25422	8591
+L4 busy-poll	loopback	T3 tick -> send() ret, 1st msg	max	ns	34383	61804	91716	61804	34383–91716	57333
+L4 busy-poll	loopback	T4 client send -> exchange decoded	samples	个	6903	6189	6486	6486	6189–6903	714
+L4 busy-poll	loopback	T4 client send -> exchange decoded	p50	ns	155555	260649	166203	166203	155555–260649	105094
+L4 busy-poll	loopback	T4 client send -> exchange decoded	p99	ns	420772	499124	665978	499124	420772–665978	245206
+L4 busy-poll	loopback	T4 client send -> exchange decoded	p99.9	ns	644037	953762	1105899	953762	644037–1105899	461862
+L4 busy-poll	loopback	T4 client send -> exchange decoded	max	ns	712785	1125406	1192400	1125406	712785–1192400	479615
+L4 busy-poll	ack	T5 tick -> ack decoded (round trip)	samples	个	6746	6359	6869	6746	6359–6869	510
+L4 busy-poll	ack	T5 tick -> ack decoded (round trip)	p50	ns	394852	464267	385313	394852	385313–464267	78954
+L4 busy-poll	ack	T5 tick -> ack decoded (round trip)	p99	ns	1214152	1566683	1205798	1214152	1205798–1566683	360885
+L4 busy-poll	ack	T5 tick -> ack decoded (round trip)	p99.9	ns	1775605	2301469	1588983	1775605	1588983–2301469	712486
+L4 busy-poll	ack	T5 tick -> ack decoded (round trip)	max	ns	3109858	2565680	1878100	2565680	1878100–3109858	1231758
