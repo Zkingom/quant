@@ -89,6 +89,29 @@ void SimExchange::submit(const OrderRequest& r, const md::Book& book, Reports& o
   run_engine(NewOrder{r.client_id, to_engine(r.side), static_cast<Price>(r.price), static_cast<Quantity>(r.qty)}, out);
 }
 
+std::size_t SimExchange::open_ids(std::span<std::uint64_t> out) const {
+  std::size_t n = 0;
+  for (const OpenOrder& o : open_) {
+    if (o.id != 0 && n < out.size()) out[n++] = o.id;
+  }
+  std::sort(out.begin(), out.begin() + static_cast<std::ptrdiff_t>(n));
+  return n;
+}
+
+void SimExchange::reduce(std::uint64_t id, std::uint32_t new_leaves, Reports& out) {
+  OpenOrder* o = find(id);
+  if (o == nullptr || new_leaves == 0 || new_leaves >= o->leaves) return;
+  const OpenOrder saved = *o;
+  Reports scratch;
+  run_engine(CancelOrder{id}, scratch);  // frees the slot
+  OpenOrder* slot = find(0);
+  *slot = saved;
+  slot->leaves = new_leaves;
+  out.push(Report{Report::Kind::Cancelled, id, saved.side, saved.price, saved.leaves - new_leaves, new_leaves});
+  // Same price as before, so it cannot cross our own orders; any report is forwarded anyway.
+  run_engine(NewOrder{id, to_engine(saved.side), static_cast<Price>(saved.price), static_cast<Quantity>(new_leaves)}, out);
+}
+
 void SimExchange::sweep(Side aggressor, std::uint32_t limit, std::uint64_t qty, Reports& out) {
   if (qty == 0) return;
   const OrderId id = kSyntheticBase + next_synthetic_++;

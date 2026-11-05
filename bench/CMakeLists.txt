@@ -24,3 +24,9 @@ target_link_libraries(lob_itch_icount PRIVATE lob::sim lob::testkit lob_project_
 # (scripts/itch_real_survey.sh; results in MODULE_NOTES/L3.md).
 add_executable(lob_itch_survey itch_survey.cpp)
 target_link_libraries(lob_itch_survey PRIVATE lob::md lob_project_options)
+
+# L4.6: tick-to-trade (in-process / loopback TCP / round trip), BENCHMARK §15.
+# Smoke run keeps it compiling and running; its numbers are not reported.
+add_executable(lob_t2t tick_to_trade.cpp)
+target_link_libraries(lob_t2t PRIVATE lob::netstage lob::testkit lob_project_options)
+add_test(NAME t2t.smoke COMMAND lob_t2t --messages 3000)

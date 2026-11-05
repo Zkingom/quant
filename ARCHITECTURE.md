@@ -223,6 +223,31 @@ L1 的 `core / book / engine / io` 源码不改动；L3' 只新增模块，唯�
 - 基准：`lob_itch_bench`（墙钟，本地）、`lob_itch_icount`（cachegrind 指令数，CI 门槛 `scripts/icount_gate.sh`）。
 - 详见 [MODULE_NOTES/L3.md](MODULE_NOTES/L3.md)、DESIGN §7、BENCHMARK §13–§14、DECISIONS D-046–D-058。
 
+## 4.2 L4：下单链路（OUCH 4.2 / SoupBinTCP 3.00）与 tick-to-trade（✅ 2026-11-05）
+
+L1 冻结语义不变；`TradingStage` 增加交易所模板参数 `Ex`（默认 `SimExchange`，进程内路径与哈希不变，D-059）。
+
+```
+ 订单簿线程（客户端）                                          交易所线程（单线程 epoll）
+ ┌──────────────────────────────────────────┐   回环 TCP    ┌───────────────────────────────────────────────┐
+ │ TradingStage<S, Ex> → RiskGate            │  SoupBinTCP   │ EpollServer：第一个包确定账户；登录接管旧连接   │
+ │   Ex = LockstepExchange / FreeRunExchange │ ───────────▶ │ ServerConnection（sans-IO）：AwaitLogin→LoggedIn│
+ │     OrderGateway：令牌、每单状态机、重连    │  'U' OUCH 入站 │   SessionLog：当天全部出站消息（拉取式重放）     │
+ │     OUCH 编码 → ClientSession（sans-IO）   │ ◀─────────── │ OuchExchange（sans-IO）                         │
+ │       隐式序号、心跳、断线后按序号重登录     │  'S' OUCH 出站 │   自己的 FeedHandler（交易所看到的公共订单簿）  │
+ │   回报 → 与 SimExchange 相同的 sim::Report │               │   SimExchange → L1 MatchingEngine（未改动）      │
+ └──────────────────────────────────────────┘               │   限流 'x'、断线撤单 'Z'、部分撤单 = reduce      │
+        │ 控制队列（SPSC + eventfd）：行情输入 / 逐事件推进 / 屏障 / 收盘 / 停止 ──▶ └──────────────────────┘
+        │ ◀── 屏障回复：{本连接已处理 n 条入站, 出站序号水位 K}（锁步的"静默"）
+```
+
+- 依赖方向：`lob::ouch`、`lob::soup` 无依赖；`lob::net → lob::sim、lob::soup、lob::ouch、lob::concurrent`；
+  `lob::gateway → lob::sim、lob::ouch`；`lob::netstage → lob::net、lob::gateway、lob::pipeline`。
+- 验证：锁步与进程内逐位相同；自由运行查不变量并两端记录重放（D-063）。测试 `lob_ouch_tests`、`lob_soup_tests`、`lob_net_tests`、
+  `lob_net_loopback_tests`、`lob_gateway_tests`、`lob_lockstep_tests`（后两个网络测试带 `concurrency` 标签，进 TSan）；libFuzzer `lob_fuzz_ouch`。
+- 测量：`lob_t2t`（tick-to-trade 分段 T1–T5，进程内与回环分开报告，BENCHMARK §15）。
+- 详见 [docs/design/L4_DESIGN.md](docs/design/L4_DESIGN.md)、[MODULE_NOTES/L4.md](MODULE_NOTES/L4.md)、DECISIONS D-059–D-064。
+
 ## 5. 构建拓扑
 
 - 构建系统：CMake ≥ 3.25 + Ninja，`CMakePresets.json` 定义 GCC/Clang × Debug/Release/ASan+UBSan 六个预设。

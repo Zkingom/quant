@@ -84,8 +84,47 @@ add_library(lob_risk
 add_library(lob::risk ALIAS lob_risk)
 target_link_libraries(lob_risk PUBLIC lob::md PRIVATE lob_project_options)
 
+# L4.1: OUCH 4.2 subset codec (no dependencies).
+add_library(lob_ouch
+  ouch/ouch.cpp)
+add_library(lob::ouch ALIAS lob_ouch)
+target_include_directories(lob_ouch PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_compile_features(lob_ouch PUBLIC cxx_std_20)
+target_link_libraries(lob_ouch PRIVATE lob_project_options)
+
+# L4.2: SoupBinTCP 3.00 framing and sans-IO client / server session state machines.
+add_library(lob_soup
+  soup/soup.cpp
+  soup/client.cpp
+  soup/server.cpp)
+add_library(lob::soup ALIAS lob_soup)
+target_include_directories(lob_soup PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_compile_features(lob_soup PUBLIC cxx_std_20)
+target_link_libraries(lob_soup PRIVATE lob_project_options)
+
 add_library(lob_sim
   sim/sim_exchange.cpp)
 add_library(lob::sim ALIAS lob_sim)
 target_link_libraries(lob_sim PUBLIC lob::engine lob::md lob::strategy lob::risk lob::pipeline
                       PRIVATE lob_project_options)
+
+# L4.3: simulated exchange core (OUCH over SimExchange, sans-IO) and its
+# single-threaded epoll driver.
+add_library(lob_net
+  net/ouch_exchange.cpp
+  net/epoll_server.cpp)
+add_library(lob::net ALIAS lob_net)
+target_link_libraries(lob_net PUBLIC lob::sim lob::soup lob::ouch lob::concurrent PRIVATE lob_project_options)
+
+# L4.4: client order gateway (token mapping, per-order state machine, reconnect rules).
+add_library(lob_gateway
+  gateway/gateway.cpp)
+add_library(lob::gateway ALIAS lob_gateway)
+target_link_libraries(lob_gateway PUBLIC lob::sim lob::ouch PRIVATE lob_project_options)
+
+# L4.5: network order entry behind TradingStage -- lockstep (hash-equal to
+# in-process), free-run (recorded, replayable), offline replay.
+add_library(lob_netstage
+  net/lockstep.cpp)
+add_library(lob::netstage ALIAS lob_netstage)
+target_link_libraries(lob_netstage PUBLIC lob::net lob::gateway lob::pipeline PRIVATE lob_project_options)
