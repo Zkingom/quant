@@ -66,6 +66,10 @@ struct ServerOptions {
   std::size_t out_capacity{1U << 16};
   std::size_t control_capacity{1U << 12};
   bool auto_market_events{true};
+  /// Spin on epoll_wait with a zero timeout instead of sleeping in it (a
+  /// common low-latency setting: the client's send() then does not have to
+  /// wake this thread; costs a whole core). L4.6 measures both.
+  bool busy_poll{false};
 };
 
 struct ServerStats {

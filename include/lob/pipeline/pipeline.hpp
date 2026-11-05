@@ -164,15 +164,20 @@ class BookStage {
       }
       rec_->record(kBook, t_done - t_pop);
     }
+    t_decode_ = it.t_decode;
     ds_.on_feed(it.in, std::span<const md::FeedEvent>(events_), feed_, t_done, rec_, s);
   }
 
   [[nodiscard]] const md::FeedHandler& feed() const noexcept { return feed_; }
+  /// Ticks when decoding of the frame being processed began (t0 of the
+  /// tick-to-trade measurement, L4.6): valid inside the downstream call.
+  [[nodiscard]] const std::uint64_t* t_decode_ptr() const noexcept { return &t_decode_; }
 
  private:
   md::FeedHandler feed_;
   Downstream& ds_;
   LatencyRecorder* rec_;
+  std::uint64_t t_decode_{0};
   std::vector<md::FeedEvent> events_;
 };
 

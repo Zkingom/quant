@@ -1,7 +1,8 @@
 # Deterministic Limit Order Book & Matching Engine
 
 C++20 实现的单线程、确定性、正确性优先的单标的限价订单簿与撮合引擎（L1/L2），
-以及在其上的 L3'：Nasdaq TotalView-ITCH 5.0 行情解码与订单簿重建、无锁 SPSC 多线程流水线、策略与事前风控。
+以及在其上的 L3'：Nasdaq TotalView-ITCH 5.0 行情解码与订单簿重建、无锁 SPSC 多线程流水线、策略与事前风控；
+L4：OUCH 4.2 / SoupBinTCP 3.00 下单链路（订单网关、单线程 epoll 模拟交易所、锁步与进程内逐位相同）与 tick-to-trade 测量。
 目标：价格-时间优先撮合、可复现回放与快照、严格测试（差分 / Golden / Sanitizer / TSan / fuzz）、可审计的基准。
 
 ## 关键数字
@@ -28,8 +29,10 @@ C++20 实现的单线程、确定性、正确性优先的单标的限价订单�
 | 热路径分配 | 0 次 | 解码 → SPSC → 订单簿 → 策略 → 风控（L1 撮合引擎除外，D-046）；全市场模式按实测价位峰值预创建后同样为 0（D-058） |
 | CI 性能门槛（cachegrind Ir，200 k 条） | decode 33.5 M / book 121.3 M / trading 266.3 M 条指令 | 容差 +2%，`scripts/icount_gate.sh` |
 | 交易状态感知 | 只在常规时段 + 个股交易中强制"永不交叉"；停牌 / 集合竞价允许交叉、计数并标记；非交易状态撤单、拒新单 | D-054 |
+| 网络下单 == 进程内（锁步） | 订单 / 成交 / 持仓哈希逐位相同（两种成交模型，单线程与流水线） | OUCH 4.2 + SoupBinTCP + 回环 TCP + epoll 交易所，D-063 |
+| tick-to-trade p50（tick → 本帧第一条消息） | 进程内编码 0.46 µs；回环 `send()` 返回 9.1 µs（交易所线程忙轮询时 3.0 µs）；往返 28 / 18 µs（待本机复测） | `lob_t2t`，BENCHMARK §15；不是线到线 |
 
-## 当前状态（2026-11-04）
+## 当前状态（2026-11-05）
 
 | 模块 | 状态 |
 |---|---|
@@ -51,6 +54,7 @@ C++20 实现的单线程、确定性、正确性优先的单标的限价订单�
 | L3' 恢复交易宽限（D-055，真实数据驱动） | ✅ 2026-11-04：SXTC 两次 LULD 暂停恢复时原规则误判 Stale；加宽限后全天 Live，流水线 / 单线程哈希一致 |
 | L3' 全市场订单簿（D-056）：共享订单池、按 locate 分片多线程 | ✅ 2026-11-04：真实全天 8 713 只股票全部 Live，峰值在途 1 742 866 单，单线程与 4 分片逐股票哈希一致 |
 | L3' 多日验证（2019-01-30 / 08-30 / 12-30，全市场） | ✅ 2026-11-04：三天共 26 040 只股票·日全部 Live、0 Stale；28 次恢复宽限全部解除；每天单线程与 4 分片逐股票哈希一致（见 MODULE_NOTES/L3.md） |
+| L4 下单链路：OUCH 4.2 编解码、SoupBinTCP 会话、epoll 模拟交易所、订单网关、锁步 / 自由运行、tick-to-trade | ✅ 2026-11-05（[docs/design/L4_DESIGN.md](docs/design/L4_DESIGN.md)、[MODULE_NOTES/L4.md](MODULE_NOTES/L4.md)、BENCHMARK §15） |
 
 撮合引擎、回放与恢复已可用；性能数据只适用于 WSL2 上的测量环境（BENCHMARK §1），不代表裸机。掉电持久性未验证，见 DESIGN §6.6。 计划与验收门槛见 [ROADMAP.md](ROADMAP.md)。
 
@@ -290,6 +294,17 @@ libFuzzer（Clang，60 秒）：
 scripts/fuzz_itch.sh 60
 ```
 
+## L4 下单链路（OUCH 4.2 / SoupBinTCP 3.00）
+
+策略的订单经风控后由订单网关编码为 OUCH 4.2、装进 SoupBinTCP，经回环 TCP 到单线程 epoll 的模拟交易所（自己的行情订单簿 + 未改动的 L1 撮合引擎）。
+锁步模式与进程内模拟逐位相同；自由运行模式检查不变量并两端记录重放（`lob_lockstep_tests`）。tick-to-trade（墙钟，本地运行）：
+
+```bash
+cmake --preset gcc-release && cmake --build --preset gcc-release --target lob_t2t
+taskset -c 1,2 build/gcc-release/bench/lob_t2t --client-cpu 1 --server-cpu 2 [--busy-poll] [--input data/itch/FILE --symbol AAPL]
+scripts/fuzz_ouch.sh 60   # OUCH 编解码的 libFuzzer（需要 clang）
+```
+
 ## 文档
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) — 模块划分、依赖与数据流
@@ -299,7 +314,8 @@ scripts/fuzz_itch.sh 60
 - [BENCHMARK.md](BENCHMARK.md) — 基准方法与实测结果
 - [MODULE_NOTES/](MODULE_NOTES/) — 各模块技术说明与修改任务
 - [AI_USAGE.md](AI_USAGE.md) — AI 参与情况披露
-- [docs/INTERVIEW_QA.md](docs/INTERVIEW_QA.md) — L3' 设计问答（memory order、确定性、延迟测量、缺口恢复、风控、指令数门槛）与 10 道追问
+- [docs/INTERVIEW_QA.md](docs/INTERVIEW_QA.md) — L3' 设计问答（memory order、确定性、延迟测量、缺口恢复、风控、指令数门槛）与追问；§8 L4 下单链路（Q13–Q20）
+- [docs/design/L4_DESIGN.md](docs/design/L4_DESIGN.md) — L4 设计：OUCH / SoupBinTCP 的分工、订单号映射与防重复、断线撤单与限流、tick-to-trade 的定义、网络模式的可验证性
 
 ## 目录结构
 

@@ -94,7 +94,8 @@ std::size_t EpollServer::logged_in() const noexcept {
 }
 
 void EpollServer::run() {
-  while (run_once(1000)) {
+  const int wait = opt_.busy_poll ? 0 : 1000;
+  while (run_once(wait)) {
   }
 }
 
