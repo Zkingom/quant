@@ -587,4 +587,20 @@ TEST(TradingStage, ResumeGraceKeepsQuotesOffUntilTheCrossExecutionsArrive) {
   EXPECT_FALSE(t.risk().tripped());
 }
 
+// D-059: cancel-all walks the open orders in ascending client id, whatever
+// the simulator's slot order (the network gateway reproduces that order).
+TEST(SimExchange, OpenIdsAreAscendingWhateverTheSlotOrder) {
+  sim::SimExchange ex{sim::SimConfig{}};
+  md::Book book;
+  sim::Reports out;
+  for (std::uint64_t id : {1U, 2U, 3U}) ex.submit(OrderRequest{OrderRequest::Kind::New, id, Side::Buy, 100, 10}, book, out);
+  ex.submit(OrderRequest{OrderRequest::Kind::Cancel, 1, Side::Buy, 0, 0}, book, out);
+  ex.submit(OrderRequest{OrderRequest::Kind::New, 4, Side::Buy, 100, 10}, book, out);  // reuses the first slot
+  ASSERT_EQ(ex.open_orders()[0].id, 4U);
+  std::array<std::uint64_t, 8> ids{};
+  const std::size_t n = ex.open_ids(ids);
+  EXPECT_EQ(std::vector<std::uint64_t>(ids.begin(), ids.begin() + static_cast<std::ptrdiff_t>(n)),
+            (std::vector<std::uint64_t>{2, 3, 4}));
+}
+
 }  // namespace

@@ -115,3 +115,9 @@ add_library(lob_net
   net/epoll_server.cpp)
 add_library(lob::net ALIAS lob_net)
 target_link_libraries(lob_net PUBLIC lob::sim lob::soup lob::ouch lob::concurrent PRIVATE lob_project_options)
+
+# L4.4: client order gateway (token mapping, per-order state machine, reconnect rules).
+add_library(lob_gateway
+  gateway/gateway.cpp)
+add_library(lob::gateway ALIAS lob_gateway)
+target_link_libraries(lob_gateway PUBLIC lob::sim lob::ouch PRIVATE lob_project_options)

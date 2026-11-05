@@ -29,6 +29,7 @@ std::string_view to_string(TripReason r) noexcept {
     case TripReason::Manual: return "MANUAL";
     case TripReason::StaleBook: return "STALE_BOOK";
     case TripReason::RejectStorm: return "REJECT_STORM";
+    case TripReason::GatewayInconsistent: return "GATEWAY_INCONSISTENT";
   }
   return "?";
 }

@@ -26,8 +26,10 @@
 // report), position (final position, cash, open quantity) -- compared
 // between file replay and the multi-threaded pipeline.
 
+#include <array>
 #include <cstdint>
 #include <span>
+#include <utility>
 
 #include "lob/md/feed.hpp"
 #include "lob/pipeline/pipeline.hpp"
@@ -64,10 +66,22 @@ inline void mix(std::uint64_t& h, std::uint64_t v, int bytes) noexcept {
 
 /// `S` provides book_update / fill / timer (StrategyBase<Derived> or a
 /// VirtualStrategy reference wrapper).
-template <class S>
+///
+/// `Ex` is where risk-approved orders go (L4.4): the in-process SimExchange
+/// (default; identical code to before), or an adapter in front of the OUCH
+/// order gateway (L4.5, lockstep). It provides
+///   submit(const OrderRequest&, const md::Book&, Reports&)
+///   on_market(const md::FeedEvent&, Reports&)
+///   open_ids(std::span<std::uint64_t>) const -> ids of open orders, ascending
+/// and optionally inconsistent() const -> bool (trips the kill switch).
+/// Cancel-all walks open_ids() in ascending client id (D-059): an order
+/// that both implementations reproduce.
+template <class S, class Ex = SimExchange>
 class TradingStage {
  public:
   TradingStage(const TradingConfig& cfg, S& strat) : cfg_(cfg), strat_(strat), risk_(cfg.risk), ex_(cfg.sim) {}
+  TradingStage(const TradingConfig& cfg, S& strat, Ex ex)
+      : cfg_(cfg), strat_(strat), risk_(cfg.risk), ex_(std::move(ex)) {}
 
   void on_feed(const md::FeedInput&, std::span<const md::FeedEvent> events, const md::FeedHandler& feed,
                std::uint64_t, pipeline::LatencyRecorder* rec, bool sampled) {
@@ -88,7 +102,8 @@ class TradingStage {
   [[nodiscard]] const risk::Exposure& exposure() const noexcept { return ex_pos_; }
   [[nodiscard]] const risk::RiskGate& risk() const noexcept { return risk_; }
   [[nodiscard]] risk::RiskGate& risk() noexcept { return risk_; }
-  [[nodiscard]] const SimExchange& exchange() const noexcept { return ex_; }
+  [[nodiscard]] const Ex& exchange() const noexcept { return ex_; }
+  [[nodiscard]] Ex& exchange() noexcept { return ex_; }
   [[nodiscard]] std::uint32_t last_mid() const noexcept { return last_mid_; }
 
   /// FNV over the final position, cash and open quantity.
@@ -118,6 +133,7 @@ class TradingStage {
       ex_.on_market(e, reports_);
       t_engine_ += pipeline::ticks() - a;
       deliver(feed);
+      check_exchange(feed);
     }
     // Every event carries the BBO and the trading phase.
     const bool live = e.state == md::FeedState::Live;
@@ -191,13 +207,24 @@ class TradingStage {
         }
       }
       deliver(feed);
+      check_exchange(feed);
     }
   }
 
   void cancel_all_into(const md::FeedHandler& feed, Reports& out) {
-    for (const OpenOrder& o : ex_.open_orders()) {
-      if (o.id != 0) {
-        ex_.submit(strategy::OrderRequest{strategy::OrderRequest::Kind::Cancel, o.id, o.side, 0, 0}, feed.book(), out);
+    std::array<std::uint64_t, kMaxCancelAll> ids{};
+    const std::size_t n = ex_.open_ids(ids);
+    for (std::size_t i = 0; i < n; ++i) {
+      ex_.submit(strategy::OrderRequest{strategy::OrderRequest::Kind::Cancel, ids[i], Side::Buy, 0, 0}, feed.book(), out);
+    }
+  }
+
+  /// The gateway lost track of the position: stop trading (L4.4).
+  void check_exchange(const md::FeedHandler& feed) {
+    if constexpr (requires(const Ex& e) { e.inconsistent(); }) {
+      if (ex_.inconsistent() && !risk_.tripped()) {
+        risk_.trip(risk::TripReason::GatewayInconsistent);
+        cancel_all(feed);
       }
     }
   }
@@ -236,10 +263,12 @@ class TradingStage {
     }
   }
 
+  static constexpr std::size_t kMaxCancelAll = 256;
+
   TradingConfig cfg_;
   S& strat_;
   risk::RiskGate risk_;
-  SimExchange ex_;
+  Ex ex_;
   risk::Exposure ex_pos_{};
   std::int64_t cash_{0};
   std::uint32_t last_mid_{0};

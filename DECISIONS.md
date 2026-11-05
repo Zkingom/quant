@@ -484,3 +484,15 @@
   余量与按日更新画像是缓解手段。跨日画像在真实数据上的覆盖率**未验证**（只验证了同一份合成流的画像）。
 - 证据：`tests/pipeline/test_market_alloc.cpp`（替换 `operator new`，每个线程的热循环布防）：预创建后单线程与 3 分片 0 次分配且汇总哈希与按需创建相同；
   负对照：按需创建时检出分配（> 11 次）；预留不足的股票 → Stale（`BOOK_REJECTED`）且仍 0 次分配，其余股票不受影响。
+
+### D-059 撤全部按 client_id 升序；`TradingStage<S, Ex>` 的交易所抽象 — 已采纳（2026-11-05，L4.4）
+
+- 问题：`TradingStage` 在不可交易 / 熔断时"撤掉所有挂单"，原来按 `SimExchange` 的槽位顺序遍历。L4 的网络网关看不到交易所内部的槽位，
+  锁步模式要求两条路径产生逐位相同的成交摘要，因此撤单顺序必须是两边都能复现的规范顺序。
+- 选择：两种交易所实现都提供 `open_ids()`，返回在途订单 id **升序**；`TradingStage` 按此顺序撤单。`TradingStage` 增加模板参数
+  `Ex`（默认 `SimExchange`，进程内代码路径不变），接口为 `submit / on_market / open_ids`，可选 `inconsistent()`——网关对账失败时
+  熔断（新增 `TripReason::GatewayInconsistent`）并撤全部。
+- 影响（作者 2026-11-05 确认接受可能的哈希变化）：实测**没有任何已记录的哈希改变**——`tests/trading` 固定的订单 / 成交 / 持仓哈希全部不变，
+  指令数门槛的 trading 工作负载摘要仍为 `0xf36833ca345f0c34`（指令数 −0.57%：撤全部遍历的是排序后的小数组）。原因：做市示例同时在途最多两笔，
+  槽位顺序与 id 顺序恰好一致。新增 `SimExchange.OpenIdsAreAscendingWhateverTheSlotOrder` 覆盖二者不一致的情形。
+- 备选：网关复刻 `SimExchange` 的"首个空槽"分配——两边释放槽位的时机必须完全一致，脆弱，否决。

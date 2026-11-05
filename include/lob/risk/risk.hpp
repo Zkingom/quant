@@ -59,7 +59,10 @@ enum class Verdict : std::uint8_t {
   MaxPosition,
   RateLimit,
 };
-enum class TripReason : std::uint8_t { None, Manual, StaleBook, RejectStorm };
+/// GatewayInconsistent (L4.4): the order gateway received an execution
+/// report it cannot reconcile (unknown token, overfill, message for a
+/// finished order): the position can no longer be trusted.
+enum class TripReason : std::uint8_t { None, Manual, StaleBook, RejectStorm, GatewayInconsistent };
 
 [[nodiscard]] std::string_view to_string(Verdict v) noexcept;
 [[nodiscard]] std::string_view to_string(TripReason r) noexcept;

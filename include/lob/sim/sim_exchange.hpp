@@ -36,6 +36,7 @@
 
 #include <array>
 #include <cstdint>
+#include <span>
 #include <vector>
 
 #include "lob/engine/matching_engine.hpp"
@@ -114,6 +115,8 @@ class SimExchange {
   void on_market(const md::FeedEvent& e, Reports& out);
 
   [[nodiscard]] const std::array<OpenOrder, kMaxOpen>& open_orders() const noexcept { return open_; }
+  /// Ids of the open orders, ascending (the canonical cancel-all order, D-059).
+  std::size_t open_ids(std::span<std::uint64_t> out) const;
   [[nodiscard]] FillModel model() const noexcept { return cfg_.model; }
   [[nodiscard]] const MatchingEngine& engine() const noexcept { return engine_; }
   [[nodiscard]] std::uint64_t synthetic_orders() const noexcept { return synthetic_; }

@@ -120,6 +120,12 @@ lob_add_test_suite(lob_net_loopback_tests
   LIBS lob::net lob::testkit
   LABELS concurrency)
 
+# L4.4: order gateway (one named test per order-state transition, reconnect rules).
+lob_add_test_suite(lob_gateway_tests
+  SOURCES
+    gateway/test_gateway.cpp
+  LIBS lob::gateway lob::net lob::testkit)
+
 # libFuzzer entry (L3' 1e): opt-in, Clang only, not part of CTest. The md
 # sources are compiled into the fuzzer directly so that they carry coverage
 # instrumentation. Run with scripts/fuzz_itch.sh.

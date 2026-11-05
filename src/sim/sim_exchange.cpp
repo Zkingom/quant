@@ -89,6 +89,15 @@ void SimExchange::submit(const OrderRequest& r, const md::Book& book, Reports& o
   run_engine(NewOrder{r.client_id, to_engine(r.side), static_cast<Price>(r.price), static_cast<Quantity>(r.qty)}, out);
 }
 
+std::size_t SimExchange::open_ids(std::span<std::uint64_t> out) const {
+  std::size_t n = 0;
+  for (const OpenOrder& o : open_) {
+    if (o.id != 0 && n < out.size()) out[n++] = o.id;
+  }
+  std::sort(out.begin(), out.begin() + static_cast<std::ptrdiff_t>(n));
+  return n;
+}
+
 void SimExchange::reduce(std::uint64_t id, std::uint32_t new_leaves, Reports& out) {
   OpenOrder* o = find(id);
   if (o == nullptr || new_leaves == 0 || new_leaves >= o->leaves) return;

@@ -74,6 +74,17 @@ inline constexpr std::uint32_t kTifSystemHours = 99'999;
 
 enum class Side : char { Buy = 'B', Sell = 'S', SellShort = 'T', SellShortExempt = 'E' };
 
+// Alpha fields default to spaces (an all-NUL field is invalid on the wire).
+/// Left-justified, space-padded alpha field from a string (truncated to N).
+template <std::size_t N>
+[[nodiscard]] constexpr std::array<char, N> alpha(std::string_view s) noexcept {
+  std::array<char, N> a{};
+  for (std::size_t i = 0; i < N; ++i) a[i] = i < s.size() ? s[i] : ' ';
+  return a;
+}
+[[nodiscard]] constexpr Token make_token(std::string_view s) noexcept { return alpha<14>(s); }
+[[nodiscard]] constexpr Symbol make_symbol(std::string_view s) noexcept { return alpha<8>(s); }
+
 // --- Exact lengths --------------------------------------------------------
 inline constexpr std::size_t kEnterOrderSize = 49;
 inline constexpr std::size_t kReplaceOrderSize = 47;
@@ -91,13 +102,13 @@ inline constexpr std::size_t kMaxMessageSize = kReplacedSize;
 
 /// 'O' Enter Order.
 struct EnterOrder {
-  Token token{};
+  Token token{alpha<14>("")};
   Side side{Side::Buy};
   std::uint32_t shares{0};
-  Symbol stock{};
+  Symbol stock{alpha<8>("")};
   std::uint32_t price{0};
   std::uint32_t time_in_force{0};
-  Firm firm{};
+  Firm firm{alpha<4>("")};
   char display{'A'};
   char capacity{'P'};
   char iso{'N'};  ///< Intermarket Sweep Eligibility
@@ -109,8 +120,8 @@ struct EnterOrder {
 /// 'U' Replace Order. `shares` is the total liable for the whole
 /// order/replace chain, previous executions included (§2.2).
 struct ReplaceOrder {
-  Token existing{};
-  Token replacement{};
+  Token existing{alpha<14>("")};
+  Token replacement{alpha<14>("")};
   std::uint32_t shares{0};
   std::uint32_t price{0};
   std::uint32_t time_in_force{0};
@@ -122,7 +133,7 @@ struct ReplaceOrder {
 /// 'X' Cancel Order. `shares` is the new INTENDED ORDER SIZE (0 = cancel
 /// everything), not a decrement -- so a repeated cancel is harmless (§2.3).
 struct CancelOrder {
-  Token token{};
+  Token token{alpha<14>("")};
   std::uint32_t shares{0};
 };
 
@@ -139,13 +150,13 @@ struct SystemEvent {
 /// 'A' Accepted.
 struct Accepted {
   std::uint64_t timestamp{0};
-  Token token{};
+  Token token{alpha<14>("")};
   Side side{Side::Buy};
   std::uint32_t shares{0};
-  Symbol stock{};
+  Symbol stock{alpha<8>("")};
   std::uint32_t price{0};
   std::uint32_t time_in_force{0};
-  Firm firm{};
+  Firm firm{alpha<4>("")};
   char display{'A'};
   std::uint64_t order_ref{0};  ///< Order Reference Number, day-unique
   char capacity{'P'};
@@ -159,13 +170,13 @@ struct Accepted {
 /// 'U' Replaced. `shares` = shares left on the book after the replace.
 struct Replaced {
   std::uint64_t timestamp{0};
-  Token replacement{};
+  Token replacement{alpha<14>("")};
   Side side{Side::Buy};
   std::uint32_t shares{0};
-  Symbol stock{};
+  Symbol stock{alpha<8>("")};
   std::uint32_t price{0};
   std::uint32_t time_in_force{0};
-  Firm firm{};
+  Firm firm{alpha<4>("")};
   char display{'A'};
   std::uint64_t order_ref{0};
   char capacity{'P'};
@@ -173,14 +184,14 @@ struct Replaced {
   std::uint32_t min_qty{0};
   char cross_type{'N'};
   char order_state{'L'};
-  Token previous{};
+  Token previous{alpha<14>("")};
   char bbo_weight{' '};
 };
 
 /// 'C' Canceled. `decrement` is incremental, not cumulative.
 struct Canceled {
   std::uint64_t timestamp{0};
-  Token token{};
+  Token token{alpha<14>("")};
   std::uint32_t decrement{0};
   char reason{'U'};
 };
@@ -188,7 +199,7 @@ struct Canceled {
 /// 'E' Executed. `shares` is incremental.
 struct Executed {
   std::uint64_t timestamp{0};
-  Token token{};
+  Token token{alpha<14>("")};
   std::uint32_t shares{0};
   std::uint32_t price{0};
   char liquidity{'A'};
@@ -198,7 +209,7 @@ struct Executed {
 /// 'J' Rejected. The token cannot be reused.
 struct Rejected {
   std::uint64_t timestamp{0};
-  Token token{};
+  Token token{alpha<14>("")};
   char reason{'O'};
 };
 
@@ -274,15 +285,5 @@ std::size_t encode(const Rejected& m, std::span<std::uint8_t> out) noexcept;
 std::size_t encode(const Inbound& m, std::span<std::uint8_t> out) noexcept;
 std::size_t encode(const Outbound& m, std::span<std::uint8_t> out) noexcept;
 
-// --- Helpers --------------------------------------------------------------
-/// Left-justified, space-padded alpha field from a string (truncated to N).
-template <std::size_t N>
-[[nodiscard]] constexpr std::array<char, N> alpha(std::string_view s) noexcept {
-  std::array<char, N> a{};
-  for (std::size_t i = 0; i < N; ++i) a[i] = i < s.size() ? s[i] : ' ';
-  return a;
-}
-[[nodiscard]] constexpr Token make_token(std::string_view s) noexcept { return alpha<14>(s); }
-[[nodiscard]] constexpr Symbol make_symbol(std::string_view s) noexcept { return alpha<8>(s); }
 
 }  // namespace lob::ouch
