@@ -263,18 +263,19 @@ def fig_lockstep(lang: str) -> str:
 # Figure 5: tick-to-trade bars (two configurations, black/white patterns)
 
 F5 = {
-    "zh": dict(title="tick-to-trade p50（µs）", rows=["进程内：tick → 本帧第一条消息编码", "回环：tick → 第一条消息 send() 返回", "往返：tick → Accepted 解码"],
+    "zh": dict(title="回环 tick → 第一条消息 send() 返回，p50（µs）", rows=["云端 VM（4 vCPU）", "本机 WSL2（i7-12700H）"],
                sleep="交易所线程睡在 epoll_wait", busy="交易所线程忙轮询"),
-    "en": dict(title="tick-to-trade p50 (µs)", rows=["in-process: tick → first message encoded", "loopback: tick → first message send() returned", "round trip: tick → Accepted decoded"],
+    "en": dict(title="loopback tick → first message send() returned, p50 (µs)", rows=["cloud VM (4 vCPU)", "local WSL2 (i7-12700H)"],
                sleep="exchange thread sleeps in epoll_wait", busy="exchange thread busy-polls"),
 }
 
 
 def fig_t2t(lang: str, values) -> str:
-    """values: [((sleep, label), (busy, label)), ...] in µs for the three rows."""
+    """values: [((sleep, label), (busy, label)), ...] in µs, one pair per row of F5."""
     t = F5[lang]
     b = []
-    x0, scale, bar = 300, 11.0, 13
+    x0, bar = 230, 13
+    scale = 320 / max(max(a, c) for (a, _), (c, _) in values)
     for i, (row, ((a, la), (c, lc))) in enumerate(zip(t["rows"], values)):
         y = 20 + i * 46
         b.append(text(x0 - 8, y + 17, row, 9.5, anchor="end"))
@@ -282,10 +283,11 @@ def fig_t2t(lang: str, values) -> str:
         b.append(text(x0 + max(a * scale, 1.5) + 4, y + 10, la, 9, anchor="start"))
         b.append(f'<rect x="{x0}" y="{y+bar+3}" width="{max(c*scale,1.5):.1f}" height="{bar}" fill="url(#hatch)" stroke="#000" stroke-width="1.1"/>')
         b.append(text(x0 + max(c * scale, 1.5) + 4, y + bar + 13, lc, 9, anchor="start"))
-    b.append(f'<line x1="{x0}" y1="14" x2="{x0}" y2="150" stroke="#000" stroke-width="1"/>')
-    y = 160
+    bottom = 20 + len(values) * 46
+    b.append(f'<line x1="{x0}" y1="14" x2="{x0}" y2="{bottom - 10}" stroke="#000" stroke-width="1"/>')
+    y = bottom
     b.append(f'<rect x="20" y="{y}" width="22" height="11" fill="#fff" stroke="#000"/>')
     b.append(text(48, y + 10, t["sleep"], 9, anchor="start"))
     b.append(f'<rect x="300" y="{y}" width="22" height="11" fill="url(#hatch)" stroke="#000"/>')
     b.append(text(328, y + 10, t["busy"], 9, anchor="start"))
-    return _svg(660, 178, "".join(b), t["title"])
+    return _svg(660, bottom + 18, "".join(b), t["title"])

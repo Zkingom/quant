@@ -1,0 +1,4173 @@
+{
+  "environment": "本机 WSL2",
+  "date": "2026-11-05",
+  "commit": "ee03bd5a9d8a300a0a33e57a7285f2fbfdb3c2b9",
+  "notes": [
+    "测量环境：本机 WSL2。日期：2026-11-05（Asia/Shanghai，UTC+8）。",
+    "提交：ee03bd5a9d8a300a0a33e57a7285f2fbfdb3c2b9；main；测前及测后远端 main 均为同一哈希；所有源码状态检查干净。",
+    "用户已确认插电、高性能模式、关闭其他程序；powercfg 显示高性能。Ubuntu-24.04，i7-12700H，20 个逻辑 CPU（0–19）。",
+    "内核 6.6.87.2-microsoft-standard-WSL2；GCC 13.3.0；Clang 18.1.3（仅记录，未用于构建）；CMake 3.28.3；Ninja 1.11.1。",
+    "初始内存总量 7.6 GiB、available 6.8 GiB；原始 free -h 在日志开头。仓库和构建位于 Windows F: 的 /mnt/f 挂载路径。",
+    "仅原样执行 README gcc-release 构建命令。未添加编译选项或环境覆盖，未修改源码、参数或阈值。CPU 编号保持 README 原样：瀑布 2,4；L4 client 1 / server 2。",
+    "瀑布 1,000,000 条 × 内部五次，外部完整运行三次；程序自带每模式一次预热。L4 默认与 busy-poll 各三次，默认合成 200,000 条、seed 1；未传 --input。",
+    "九次基准均完整成功，退出码均为 0；无中断、无失败基准、无剔除或挑选。所有三次结果逐项参与中位数与范围。",
+    "波动范围定义为外部三次结果的 [最小值, 最大值]；极差 = 最大值 − 最小值。汇总仅使用程序打印精度，不补造更高精度。",
+    "瀑布的 p50/p99/p99.9/max 是内部五次相应统计量的中位数；外部汇总是三个已打印统计量的中位数，不能当作十五次合并样本的分位数。其 max 不是所有样本的全局最大值。",
+    "程序没有输出内部五次逐次结果或逐事件样本；日志保存了程序实际暴露的全部 stdout/stderr。内部 p99 / throughput / dispatch 范围端点亦全部列入汇总。",
+    "饱和 pipeline 的 queue 是排队时间；paced（默认 1 msg/µs）的 queue 才接近交接成本。risk hop 是一条行情内检查之和，单次风控看 risk check_new。",
+    "L4 T3 是本地 send() 返回，T5 是 tick→确认解码的往返，均非线到线；第一条消息可能是撤单。每次完整进程均包含 inproc、loopback、ack。自由运行的样本数及 requests/fills 可能随调度变化。",
+    "未运行全市场吞吐、真实数据回放、fuzz、额外测试或重新测量脚本；未下载真实 ITCH。默认构建会编译其他应用，但未执行它们。",
+    "准备阶段的非基准诊断错误原文保留：WSL 沙箱访问 E_ACCESSDENIED（授权访问后成功）；CIM 电池查询不可访问；WSL 内 rg 缺失，exit 127。构建和基准无报错，未修补代码。"
+  ],
+  "commands": [
+    "cmake --preset gcc-release && cmake --build --preset gcc-release",
+    "cmake --preset gcc-release && cmake --build --preset gcc-release --target lob_t2t",
+    "taskset -c 2,4 build/gcc-release/bench/lob_itch_bench --messages 1000000 --reps 5",
+    "taskset -c 1,2 build/gcc-release/bench/lob_t2t --client-cpu 1 --server-cpu 2",
+    "taskset -c 1,2 build/gcc-release/bench/lob_t2t --client-cpu 1 --server-cpu 2 --busy-poll"
+  ],
+  "runs": [
+    {
+      "id": "waterfall-1",
+      "attempt": 1,
+      "kind": "benchmark",
+      "command": [
+        "taskset",
+        "-c",
+        "2,4",
+        "build/gcc-release/bench/lob_itch_bench",
+        "--messages",
+        "1000000",
+        "--reps",
+        "5"
+      ],
+      "start": "2026-11-05T17:41:49+08:00",
+      "status": "complete",
+      "pid": 394,
+      "exit_code": 0,
+      "end": "2026-11-05T17:42:02+08:00"
+    },
+    {
+      "id": "waterfall-2",
+      "attempt": 1,
+      "kind": "benchmark",
+      "command": [
+        "taskset",
+        "-c",
+        "2,4",
+        "build/gcc-release/bench/lob_itch_bench",
+        "--messages",
+        "1000000",
+        "--reps",
+        "5"
+      ],
+      "start": "2026-11-05T17:42:07+08:00",
+      "status": "complete",
+      "pid": 416,
+      "exit_code": 0,
+      "end": "2026-11-05T17:42:20+08:00"
+    },
+    {
+      "id": "waterfall-3",
+      "attempt": 1,
+      "kind": "benchmark",
+      "command": [
+        "taskset",
+        "-c",
+        "2,4",
+        "build/gcc-release/bench/lob_itch_bench",
+        "--messages",
+        "1000000",
+        "--reps",
+        "5"
+      ],
+      "start": "2026-11-05T17:42:25+08:00",
+      "status": "complete",
+      "pid": 441,
+      "exit_code": 0,
+      "end": "2026-11-05T17:42:38+08:00"
+    },
+    {
+      "id": "l4-epoll-1",
+      "attempt": 1,
+      "kind": "benchmark",
+      "command": [
+        "taskset",
+        "-c",
+        "1,2",
+        "build/gcc-release/bench/lob_t2t",
+        "--client-cpu",
+        "1",
+        "--server-cpu",
+        "2"
+      ],
+      "start": "2026-11-05T17:42:43+08:00",
+      "status": "complete",
+      "pid": 463,
+      "exit_code": 0,
+      "end": "2026-11-05T17:42:46+08:00"
+    },
+    {
+      "id": "l4-epoll-2",
+      "attempt": 1,
+      "kind": "benchmark",
+      "command": [
+        "taskset",
+        "-c",
+        "1,2",
+        "build/gcc-release/bench/lob_t2t",
+        "--client-cpu",
+        "1",
+        "--server-cpu",
+        "2"
+      ],
+      "start": "2026-11-05T17:42:51+08:00",
+      "status": "complete",
+      "pid": 469,
+      "exit_code": 0,
+      "end": "2026-11-05T17:42:53+08:00"
+    },
+    {
+      "id": "l4-epoll-3",
+      "attempt": 1,
+      "kind": "benchmark",
+      "command": [
+        "taskset",
+        "-c",
+        "1,2",
+        "build/gcc-release/bench/lob_t2t",
+        "--client-cpu",
+        "1",
+        "--server-cpu",
+        "2"
+      ],
+      "start": "2026-11-05T17:42:58+08:00",
+      "status": "complete",
+      "pid": 475,
+      "exit_code": 0,
+      "end": "2026-11-05T17:43:01+08:00"
+    },
+    {
+      "id": "l4-busy-poll-1",
+      "attempt": 1,
+      "kind": "benchmark",
+      "command": [
+        "taskset",
+        "-c",
+        "1,2",
+        "build/gcc-release/bench/lob_t2t",
+        "--client-cpu",
+        "1",
+        "--server-cpu",
+        "2",
+        "--busy-poll"
+      ],
+      "start": "2026-11-05T17:43:06+08:00",
+      "status": "complete",
+      "pid": 481,
+      "exit_code": 0,
+      "end": "2026-11-05T17:43:09+08:00"
+    },
+    {
+      "id": "l4-busy-poll-2",
+      "attempt": 1,
+      "kind": "benchmark",
+      "command": [
+        "taskset",
+        "-c",
+        "1,2",
+        "build/gcc-release/bench/lob_t2t",
+        "--client-cpu",
+        "1",
+        "--server-cpu",
+        "2",
+        "--busy-poll"
+      ],
+      "start": "2026-11-05T17:43:13+08:00",
+      "status": "complete",
+      "pid": 487,
+      "exit_code": 0,
+      "end": "2026-11-05T17:43:16+08:00"
+    },
+    {
+      "id": "l4-busy-poll-3",
+      "attempt": 1,
+      "kind": "benchmark",
+      "command": [
+        "taskset",
+        "-c",
+        "1,2",
+        "build/gcc-release/bench/lob_t2t",
+        "--client-cpu",
+        "1",
+        "--server-cpu",
+        "2",
+        "--busy-poll"
+      ],
+      "start": "2026-11-05T17:43:21+08:00",
+      "status": "complete",
+      "pid": 493,
+      "exit_code": 0,
+      "end": "2026-11-05T17:43:24+08:00"
+    }
+  ],
+  "parsed_stdout_table_rows": {
+    "waterfall-1": 25,
+    "waterfall-2": 25,
+    "waterfall-3": 25,
+    "l4-epoll-1": 8,
+    "l4-epoll-2": 8,
+    "l4-epoll-3": 8,
+    "l4-busy-poll-1": 8,
+    "l4-busy-poll-2": 8,
+    "l4-busy-poll-3": 8
+  },
+  "summary": [
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "calibration",
+      "metric": "ticks overhead",
+      "stat": "校准值",
+      "unit": "ns",
+      "runs": [
+        "7.2",
+        "7.4",
+        "7.5"
+      ],
+      "median": "7.4",
+      "min": "7.2",
+      "max": "7.5",
+      "spread": "0.3"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "calibration",
+      "metric": "ticks overhead",
+      "stat": "校准值",
+      "unit": "ticks",
+      "runs": [
+        "20",
+        "20",
+        "20"
+      ],
+      "median": "20",
+      "min": "20",
+      "max": "20",
+      "spread": "0"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "calibration",
+      "metric": "ns_per_tick",
+      "stat": "校准值",
+      "unit": "ns/tick",
+      "runs": [
+        "0.3583",
+        "0.3708",
+        "0.3751"
+      ],
+      "median": "0.3708",
+      "min": "0.3583",
+      "max": "0.3751",
+      "spread": "0.0168"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "calibration",
+      "metric": "steady_clock pair",
+      "stat": "校准值",
+      "unit": "ns",
+      "runs": [
+        "16",
+        "17",
+        "17"
+      ],
+      "median": "17",
+      "min": "16",
+      "max": "17",
+      "spread": "1"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "single",
+      "metric": "decode",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "17",
+        "19",
+        "18"
+      ],
+      "median": "18",
+      "min": "17",
+      "max": "19",
+      "spread": "2"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "single",
+      "metric": "decode",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "64",
+        "67",
+        "67"
+      ],
+      "median": "67",
+      "min": "64",
+      "max": "67",
+      "spread": "3"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "single",
+      "metric": "decode",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "77",
+        "77",
+        "77"
+      ],
+      "median": "77",
+      "min": "77",
+      "max": "77",
+      "spread": "0"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "single",
+      "metric": "decode",
+      "stat": "max（内部五次最大值的中位数）",
+      "unit": "ns",
+      "runs": [
+        "41233",
+        "27193",
+        "51580"
+      ],
+      "median": "41233",
+      "min": "27193",
+      "max": "51580",
+      "spread": "24387"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "single",
+      "metric": "decode",
+      "stat": "内部五次 p99 最小值",
+      "unit": "ns",
+      "runs": [
+        "64",
+        "66",
+        "67"
+      ],
+      "median": "66",
+      "min": "64",
+      "max": "67",
+      "spread": "3"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "single",
+      "metric": "decode",
+      "stat": "内部五次 p99 最大值",
+      "unit": "ns",
+      "runs": [
+        "68",
+        "68",
+        "68"
+      ],
+      "median": "68",
+      "min": "68",
+      "max": "68",
+      "spread": "0"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "single",
+      "metric": "book",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "11",
+        "12",
+        "12"
+      ],
+      "median": "12",
+      "min": "11",
+      "max": "12",
+      "spread": "1"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "single",
+      "metric": "book",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "236",
+        "237",
+        "239"
+      ],
+      "median": "237",
+      "min": "236",
+      "max": "239",
+      "spread": "3"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "single",
+      "metric": "book",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "391",
+        "351",
+        "406"
+      ],
+      "median": "391",
+      "min": "351",
+      "max": "406",
+      "spread": "55"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "single",
+      "metric": "book",
+      "stat": "max（内部五次最大值的中位数）",
+      "unit": "ns",
+      "runs": [
+        "33311",
+        "29566",
+        "58016"
+      ],
+      "median": "33311",
+      "min": "29566",
+      "max": "58016",
+      "spread": "28450"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "single",
+      "metric": "book",
+      "stat": "内部五次 p99 最小值",
+      "unit": "ns",
+      "runs": [
+        "230",
+        "237",
+        "238"
+      ],
+      "median": "237",
+      "min": "230",
+      "max": "238",
+      "spread": "8"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "single",
+      "metric": "book",
+      "stat": "内部五次 p99 最大值",
+      "unit": "ns",
+      "runs": [
+        "242",
+        "245",
+        "242"
+      ],
+      "median": "242",
+      "min": "242",
+      "max": "245",
+      "spread": "3"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "pipeline",
+      "metric": "decode",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "21",
+        "22",
+        "22"
+      ],
+      "median": "22",
+      "min": "21",
+      "max": "22",
+      "spread": "1"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "pipeline",
+      "metric": "decode",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "67",
+        "68",
+        "71"
+      ],
+      "median": "68",
+      "min": "67",
+      "max": "71",
+      "spread": "4"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "pipeline",
+      "metric": "decode",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "79",
+        "80",
+        "81"
+      ],
+      "median": "80",
+      "min": "79",
+      "max": "81",
+      "spread": "2"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "pipeline",
+      "metric": "decode",
+      "stat": "max（内部五次最大值的中位数）",
+      "unit": "ns",
+      "runs": [
+        "29351",
+        "39215",
+        "23591"
+      ],
+      "median": "29351",
+      "min": "23591",
+      "max": "39215",
+      "spread": "15624"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "pipeline",
+      "metric": "decode",
+      "stat": "内部五次 p99 最小值",
+      "unit": "ns",
+      "runs": [
+        "66",
+        "67",
+        "70"
+      ],
+      "median": "67",
+      "min": "66",
+      "max": "70",
+      "spread": "4"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "pipeline",
+      "metric": "decode",
+      "stat": "内部五次 p99 最大值",
+      "unit": "ns",
+      "runs": [
+        "68",
+        "69",
+        "71"
+      ],
+      "median": "69",
+      "min": "68",
+      "max": "71",
+      "spread": "3"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "pipeline",
+      "metric": "queue",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "1364143",
+        "1396521",
+        "1378284"
+      ],
+      "median": "1378284",
+      "min": "1364143",
+      "max": "1396521",
+      "spread": "32378"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "pipeline",
+      "metric": "queue",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "1724574",
+        "1674285",
+        "1677910"
+      ],
+      "median": "1677910",
+      "min": "1674285",
+      "max": "1724574",
+      "spread": "50289"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "pipeline",
+      "metric": "queue",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "1782082",
+        "1734234",
+        "1690506"
+      ],
+      "median": "1734234",
+      "min": "1690506",
+      "max": "1782082",
+      "spread": "91576"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "pipeline",
+      "metric": "queue",
+      "stat": "max（内部五次最大值的中位数）",
+      "unit": "ns",
+      "runs": [
+        "1783536",
+        "1739354",
+        "1694301"
+      ],
+      "median": "1739354",
+      "min": "1694301",
+      "max": "1783536",
+      "spread": "89235"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "pipeline",
+      "metric": "queue",
+      "stat": "内部五次 p99 最小值",
+      "unit": "ns",
+      "runs": [
+        "1606093",
+        "1604754",
+        "1580873"
+      ],
+      "median": "1604754",
+      "min": "1580873",
+      "max": "1606093",
+      "spread": "25220"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "pipeline",
+      "metric": "queue",
+      "stat": "内部五次 p99 最大值",
+      "unit": "ns",
+      "runs": [
+        "2018628",
+        "1889405",
+        "1712289"
+      ],
+      "median": "1889405",
+      "min": "1712289",
+      "max": "2018628",
+      "spread": "306339"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "pipeline",
+      "metric": "book",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "41",
+        "43",
+        "41"
+      ],
+      "median": "41",
+      "min": "41",
+      "max": "43",
+      "spread": "2"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "pipeline",
+      "metric": "book",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "251",
+        "262",
+        "256"
+      ],
+      "median": "256",
+      "min": "251",
+      "max": "262",
+      "spread": "11"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "pipeline",
+      "metric": "book",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "392",
+        "425",
+        "352"
+      ],
+      "median": "392",
+      "min": "352",
+      "max": "425",
+      "spread": "73"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "pipeline",
+      "metric": "book",
+      "stat": "max（内部五次最大值的中位数）",
+      "unit": "ns",
+      "runs": [
+        "85720",
+        "59239",
+        "43217"
+      ],
+      "median": "59239",
+      "min": "43217",
+      "max": "85720",
+      "spread": "42503"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "pipeline",
+      "metric": "book",
+      "stat": "内部五次 p99 最小值",
+      "unit": "ns",
+      "runs": [
+        "249",
+        "256",
+        "254"
+      ],
+      "median": "254",
+      "min": "249",
+      "max": "256",
+      "spread": "7"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "pipeline",
+      "metric": "book",
+      "stat": "内部五次 p99 最大值",
+      "unit": "ns",
+      "runs": [
+        "267",
+        "266",
+        "259"
+      ],
+      "median": "266",
+      "min": "259",
+      "max": "267",
+      "spread": "8"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "paced",
+      "metric": "decode",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "14",
+        "15",
+        "16"
+      ],
+      "median": "15",
+      "min": "14",
+      "max": "16",
+      "spread": "2"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "paced",
+      "metric": "decode",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "31",
+        "30",
+        "34"
+      ],
+      "median": "31",
+      "min": "30",
+      "max": "34",
+      "spread": "4"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "paced",
+      "metric": "decode",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "99",
+        "92",
+        "121"
+      ],
+      "median": "99",
+      "min": "92",
+      "max": "121",
+      "spread": "29"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "paced",
+      "metric": "decode",
+      "stat": "max（内部五次最大值的中位数）",
+      "unit": "ns",
+      "runs": [
+        "32420",
+        "37628",
+        "48310"
+      ],
+      "median": "37628",
+      "min": "32420",
+      "max": "48310",
+      "spread": "15890"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "paced",
+      "metric": "decode",
+      "stat": "内部五次 p99 最小值",
+      "unit": "ns",
+      "runs": [
+        "29",
+        "29",
+        "28"
+      ],
+      "median": "29",
+      "min": "28",
+      "max": "29",
+      "spread": "1"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "paced",
+      "metric": "decode",
+      "stat": "内部五次 p99 最大值",
+      "unit": "ns",
+      "runs": [
+        "32",
+        "36",
+        "39"
+      ],
+      "median": "36",
+      "min": "32",
+      "max": "39",
+      "spread": "7"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "paced",
+      "metric": "queue",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "104",
+        "118",
+        "65"
+      ],
+      "median": "104",
+      "min": "65",
+      "max": "118",
+      "spread": "53"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "paced",
+      "metric": "queue",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "5210",
+        "2636",
+        "3840"
+      ],
+      "median": "3840",
+      "min": "2636",
+      "max": "5210",
+      "spread": "2574"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "paced",
+      "metric": "queue",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "44354",
+        "36037",
+        "27637"
+      ],
+      "median": "36037",
+      "min": "27637",
+      "max": "44354",
+      "spread": "16717"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "paced",
+      "metric": "queue",
+      "stat": "max（内部五次最大值的中位数）",
+      "unit": "ns",
+      "runs": [
+        "184371",
+        "195247",
+        "193319"
+      ],
+      "median": "193319",
+      "min": "184371",
+      "max": "195247",
+      "spread": "10876"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "paced",
+      "metric": "queue",
+      "stat": "内部五次 p99 最小值",
+      "unit": "ns",
+      "runs": [
+        "2263",
+        "2403",
+        "3272"
+      ],
+      "median": "2403",
+      "min": "2263",
+      "max": "3272",
+      "spread": "1009"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "paced",
+      "metric": "queue",
+      "stat": "内部五次 p99 最大值",
+      "unit": "ns",
+      "runs": [
+        "5863",
+        "5047",
+        "130637"
+      ],
+      "median": "5863",
+      "min": "5047",
+      "max": "130637",
+      "spread": "125590"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "paced",
+      "metric": "book",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "48",
+        "50",
+        "46"
+      ],
+      "median": "48",
+      "min": "46",
+      "max": "50",
+      "spread": "4"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "paced",
+      "metric": "book",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "345",
+        "348",
+        "356"
+      ],
+      "median": "348",
+      "min": "345",
+      "max": "356",
+      "spread": "11"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "paced",
+      "metric": "book",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "616",
+        "605",
+        "554"
+      ],
+      "median": "605",
+      "min": "554",
+      "max": "616",
+      "spread": "62"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "paced",
+      "metric": "book",
+      "stat": "max（内部五次最大值的中位数）",
+      "unit": "ns",
+      "runs": [
+        "56211",
+        "36079",
+        "52005"
+      ],
+      "median": "52005",
+      "min": "36079",
+      "max": "56211",
+      "spread": "20132"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "paced",
+      "metric": "book",
+      "stat": "内部五次 p99 最小值",
+      "unit": "ns",
+      "runs": [
+        "333",
+        "334",
+        "347"
+      ],
+      "median": "334",
+      "min": "333",
+      "max": "347",
+      "spread": "14"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "paced",
+      "metric": "book",
+      "stat": "内部五次 p99 最大值",
+      "unit": "ns",
+      "runs": [
+        "350",
+        "355",
+        "377"
+      ],
+      "median": "355",
+      "min": "350",
+      "max": "377",
+      "spread": "27"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "single",
+      "metric": "throughput",
+      "stat": "内部五次中位数",
+      "unit": "msg/s",
+      "runs": [
+        "9632618",
+        "9749645",
+        "9660997"
+      ],
+      "median": "9660997",
+      "min": "9632618",
+      "max": "9749645",
+      "spread": "117027"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "single",
+      "metric": "throughput",
+      "stat": "内部五次最小值",
+      "unit": "msg/s",
+      "runs": [
+        "9217772",
+        "9563118",
+        "9615299"
+      ],
+      "median": "9563118",
+      "min": "9217772",
+      "max": "9615299",
+      "spread": "397527"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "single",
+      "metric": "throughput",
+      "stat": "内部五次最大值",
+      "unit": "msg/s",
+      "runs": [
+        "9751915",
+        "9792599",
+        "9676967"
+      ],
+      "median": "9751915",
+      "min": "9676967",
+      "max": "9792599",
+      "spread": "115632"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "pipeline",
+      "metric": "throughput",
+      "stat": "内部五次中位数",
+      "unit": "msg/s",
+      "runs": [
+        "11232654",
+        "11378678",
+        "11494367"
+      ],
+      "median": "11378678",
+      "min": "11232654",
+      "max": "11494367",
+      "spread": "261713"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "pipeline",
+      "metric": "throughput",
+      "stat": "内部五次最小值",
+      "unit": "msg/s",
+      "runs": [
+        "10536507",
+        "10869288",
+        "11367391"
+      ],
+      "median": "10869288",
+      "min": "10536507",
+      "max": "11367391",
+      "spread": "830884"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "pipeline",
+      "metric": "throughput",
+      "stat": "内部五次最大值",
+      "unit": "msg/s",
+      "runs": [
+        "11368585",
+        "11494434",
+        "11663590"
+      ],
+      "median": "11494434",
+      "min": "11368585",
+      "max": "11663590",
+      "spread": "295005"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "paced",
+      "metric": "throughput",
+      "stat": "内部五次中位数",
+      "unit": "msg/s",
+      "runs": [
+        "979585",
+        "987062",
+        "1008423"
+      ],
+      "median": "987062",
+      "min": "979585",
+      "max": "1008423",
+      "spread": "28838"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "paced",
+      "metric": "throughput",
+      "stat": "内部五次最小值",
+      "unit": "msg/s",
+      "runs": [
+        "979523",
+        "984627",
+        "1003985"
+      ],
+      "median": "984627",
+      "min": "979523",
+      "max": "1003985",
+      "spread": "24462"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "paced",
+      "metric": "throughput",
+      "stat": "内部五次最大值",
+      "unit": "msg/s",
+      "runs": [
+        "979608",
+        "995573",
+        "1012597"
+      ],
+      "median": "995573",
+      "min": "979608",
+      "max": "1012597",
+      "spread": "32989"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "decode",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "18",
+        "19",
+        "18"
+      ],
+      "median": "18",
+      "min": "18",
+      "max": "19",
+      "spread": "1"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "decode",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "33",
+        "34",
+        "35"
+      ],
+      "median": "34",
+      "min": "33",
+      "max": "35",
+      "spread": "2"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "decode",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "47",
+        "51",
+        "50"
+      ],
+      "median": "50",
+      "min": "47",
+      "max": "51",
+      "spread": "4"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "decode",
+      "stat": "max（内部五次最大值的中位数）",
+      "unit": "ns",
+      "runs": [
+        "33561",
+        "29652",
+        "23142"
+      ],
+      "median": "29652",
+      "min": "23142",
+      "max": "33561",
+      "spread": "10419"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "decode",
+      "stat": "内部五次 p99 最小值",
+      "unit": "ns",
+      "runs": [
+        "32",
+        "33",
+        "34"
+      ],
+      "median": "33",
+      "min": "32",
+      "max": "34",
+      "spread": "2"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "decode",
+      "stat": "内部五次 p99 最大值",
+      "unit": "ns",
+      "runs": [
+        "37",
+        "34",
+        "35"
+      ],
+      "median": "35",
+      "min": "34",
+      "max": "37",
+      "spread": "3"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "book",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "12",
+        "12",
+        "12"
+      ],
+      "median": "12",
+      "min": "12",
+      "max": "12",
+      "spread": "0"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "book",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "258",
+        "265",
+        "269"
+      ],
+      "median": "265",
+      "min": "258",
+      "max": "269",
+      "spread": "11"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "book",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "386",
+        "409",
+        "422"
+      ],
+      "median": "409",
+      "min": "386",
+      "max": "422",
+      "spread": "36"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "book",
+      "stat": "max（内部五次最大值的中位数）",
+      "unit": "ns",
+      "runs": [
+        "45413",
+        "32923",
+        "26910"
+      ],
+      "median": "32923",
+      "min": "26910",
+      "max": "45413",
+      "spread": "18503"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "book",
+      "stat": "内部五次 p99 最小值",
+      "unit": "ns",
+      "runs": [
+        "253",
+        "261",
+        "265"
+      ],
+      "median": "261",
+      "min": "253",
+      "max": "265",
+      "spread": "12"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "book",
+      "stat": "内部五次 p99 最大值",
+      "unit": "ns",
+      "runs": [
+        "260",
+        "268",
+        "272"
+      ],
+      "median": "268",
+      "min": "260",
+      "max": "272",
+      "spread": "12"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "strategy",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "7",
+        "7",
+        "8"
+      ],
+      "median": "7",
+      "min": "7",
+      "max": "8",
+      "spread": "1"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "strategy",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "97",
+        "102",
+        "106"
+      ],
+      "median": "102",
+      "min": "97",
+      "max": "106",
+      "spread": "9"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "strategy",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "109",
+        "112",
+        "115"
+      ],
+      "median": "112",
+      "min": "109",
+      "max": "115",
+      "spread": "6"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "strategy",
+      "stat": "max（内部五次最大值的中位数）",
+      "unit": "ns",
+      "runs": [
+        "18161",
+        "17136",
+        "16535"
+      ],
+      "median": "17136",
+      "min": "16535",
+      "max": "18161",
+      "spread": "1626"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "strategy",
+      "stat": "内部五次 p99 最小值",
+      "unit": "ns",
+      "runs": [
+        "97",
+        "100",
+        "106"
+      ],
+      "median": "100",
+      "min": "97",
+      "max": "106",
+      "spread": "9"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "strategy",
+      "stat": "内部五次 p99 最大值",
+      "unit": "ns",
+      "runs": [
+        "100",
+        "103",
+        "110"
+      ],
+      "median": "103",
+      "min": "100",
+      "max": "110",
+      "spread": "10"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "risk",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "38",
+        "39",
+        "40"
+      ],
+      "median": "39",
+      "min": "38",
+      "max": "40",
+      "spread": "2"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "risk",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "44",
+        "44",
+        "45"
+      ],
+      "median": "44",
+      "min": "44",
+      "max": "45",
+      "spread": "1"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "risk",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "51",
+        "50",
+        "53"
+      ],
+      "median": "51",
+      "min": "50",
+      "max": "53",
+      "spread": "3"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "risk",
+      "stat": "max（内部五次最大值的中位数）",
+      "unit": "ns",
+      "runs": [
+        "7564",
+        "432",
+        "4220"
+      ],
+      "median": "4220",
+      "min": "432",
+      "max": "7564",
+      "spread": "7132"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "risk",
+      "stat": "内部五次 p99 最小值",
+      "unit": "ns",
+      "runs": [
+        "42",
+        "43",
+        "43"
+      ],
+      "median": "43",
+      "min": "42",
+      "max": "43",
+      "spread": "1"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "risk",
+      "stat": "内部五次 p99 最大值",
+      "unit": "ns",
+      "runs": [
+        "44",
+        "45",
+        "46"
+      ],
+      "median": "45",
+      "min": "44",
+      "max": "46",
+      "spread": "2"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "engine",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "11",
+        "13",
+        "12"
+      ],
+      "median": "12",
+      "min": "11",
+      "max": "13",
+      "spread": "2"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "engine",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "458",
+        "460",
+        "482"
+      ],
+      "median": "460",
+      "min": "458",
+      "max": "482",
+      "spread": "24"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "engine",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "758",
+        "776",
+        "813"
+      ],
+      "median": "776",
+      "min": "758",
+      "max": "813",
+      "spread": "55"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "engine",
+      "stat": "max（内部五次最大值的中位数）",
+      "unit": "ns",
+      "runs": [
+        "22218",
+        "34737",
+        "43306"
+      ],
+      "median": "34737",
+      "min": "22218",
+      "max": "43306",
+      "spread": "21088"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "engine",
+      "stat": "内部五次 p99 最小值",
+      "unit": "ns",
+      "runs": [
+        "441",
+        "455",
+        "468"
+      ],
+      "median": "455",
+      "min": "441",
+      "max": "468",
+      "spread": "27"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-single",
+      "metric": "engine",
+      "stat": "内部五次 p99 最大值",
+      "unit": "ns",
+      "runs": [
+        "509",
+        "484",
+        "525"
+      ],
+      "median": "509",
+      "min": "484",
+      "max": "525",
+      "spread": "41"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "decode",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "21",
+        "22",
+        "22"
+      ],
+      "median": "22",
+      "min": "21",
+      "max": "22",
+      "spread": "1"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "decode",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "59",
+        "66",
+        "66"
+      ],
+      "median": "66",
+      "min": "59",
+      "max": "66",
+      "spread": "7"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "decode",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "75",
+        "83",
+        "104"
+      ],
+      "median": "83",
+      "min": "75",
+      "max": "104",
+      "spread": "29"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "decode",
+      "stat": "max（内部五次最大值的中位数）",
+      "unit": "ns",
+      "runs": [
+        "25125",
+        "41741",
+        "31748"
+      ],
+      "median": "31748",
+      "min": "25125",
+      "max": "41741",
+      "spread": "16616"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "decode",
+      "stat": "内部五次 p99 最小值",
+      "unit": "ns",
+      "runs": [
+        "57",
+        "66",
+        "65"
+      ],
+      "median": "65",
+      "min": "57",
+      "max": "66",
+      "spread": "9"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "decode",
+      "stat": "内部五次 p99 最大值",
+      "unit": "ns",
+      "runs": [
+        "82",
+        "69",
+        "76"
+      ],
+      "median": "76",
+      "min": "69",
+      "max": "82",
+      "spread": "13"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "queue",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "2729283",
+        "2831173",
+        "2923656"
+      ],
+      "median": "2831173",
+      "min": "2729283",
+      "max": "2923656",
+      "spread": "194373"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "queue",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "3148823",
+        "3138328",
+        "3770106"
+      ],
+      "median": "3148823",
+      "min": "3138328",
+      "max": "3770106",
+      "spread": "631778"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "queue",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "3188557",
+        "3253553",
+        "4072522"
+      ],
+      "median": "3253553",
+      "min": "3188557",
+      "max": "4072522",
+      "spread": "883965"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "queue",
+      "stat": "max（内部五次最大值的中位数）",
+      "unit": "ns",
+      "runs": [
+        "3316825",
+        "3282957",
+        "4093453"
+      ],
+      "median": "3316825",
+      "min": "3282957",
+      "max": "4093453",
+      "spread": "810496"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "queue",
+      "stat": "内部五次 p99 最小值",
+      "unit": "ns",
+      "runs": [
+        "2982842",
+        "3100077",
+        "3140884"
+      ],
+      "median": "3100077",
+      "min": "2982842",
+      "max": "3140884",
+      "spread": "158042"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "queue",
+      "stat": "内部五次 p99 最大值",
+      "unit": "ns",
+      "runs": [
+        "6059791",
+        "3233420",
+        "5303678"
+      ],
+      "median": "5303678",
+      "min": "3233420",
+      "max": "6059791",
+      "spread": "2826371"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "book",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "38",
+        "39",
+        "44"
+      ],
+      "median": "39",
+      "min": "38",
+      "max": "44",
+      "spread": "6"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "book",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "287",
+        "299",
+        "312"
+      ],
+      "median": "299",
+      "min": "287",
+      "max": "312",
+      "spread": "25"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "book",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "441",
+        "475",
+        "572"
+      ],
+      "median": "475",
+      "min": "441",
+      "max": "572",
+      "spread": "131"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "book",
+      "stat": "max（内部五次最大值的中位数）",
+      "unit": "ns",
+      "runs": [
+        "82715",
+        "46577",
+        "112095"
+      ],
+      "median": "82715",
+      "min": "46577",
+      "max": "112095",
+      "spread": "65518"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "book",
+      "stat": "内部五次 p99 最小值",
+      "unit": "ns",
+      "runs": [
+        "279",
+        "297",
+        "302"
+      ],
+      "median": "297",
+      "min": "279",
+      "max": "302",
+      "spread": "23"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "book",
+      "stat": "内部五次 p99 最大值",
+      "unit": "ns",
+      "runs": [
+        "418",
+        "306",
+        "371"
+      ],
+      "median": "371",
+      "min": "306",
+      "max": "418",
+      "spread": "112"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "strategy",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "7",
+        "7",
+        "8"
+      ],
+      "median": "7",
+      "min": "7",
+      "max": "8",
+      "spread": "1"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "strategy",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "100",
+        "104",
+        "105"
+      ],
+      "median": "104",
+      "min": "100",
+      "max": "105",
+      "spread": "5"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "strategy",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "112",
+        "116",
+        "119"
+      ],
+      "median": "116",
+      "min": "112",
+      "max": "119",
+      "spread": "7"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "strategy",
+      "stat": "max（内部五次最大值的中位数）",
+      "unit": "ns",
+      "runs": [
+        "18610",
+        "25696",
+        "26151"
+      ],
+      "median": "25696",
+      "min": "18610",
+      "max": "26151",
+      "spread": "7541"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "strategy",
+      "stat": "内部五次 p99 最小值",
+      "unit": "ns",
+      "runs": [
+        "97",
+        "103",
+        "102"
+      ],
+      "median": "102",
+      "min": "97",
+      "max": "103",
+      "spread": "6"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "strategy",
+      "stat": "内部五次 p99 最大值",
+      "unit": "ns",
+      "runs": [
+        "108",
+        "105",
+        "115"
+      ],
+      "median": "108",
+      "min": "105",
+      "max": "115",
+      "spread": "10"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "risk",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "40",
+        "42",
+        "42"
+      ],
+      "median": "42",
+      "min": "40",
+      "max": "42",
+      "spread": "2"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "risk",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "46",
+        "47",
+        "50"
+      ],
+      "median": "47",
+      "min": "46",
+      "max": "50",
+      "spread": "4"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "risk",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "52",
+        "53",
+        "71"
+      ],
+      "median": "53",
+      "min": "52",
+      "max": "71",
+      "spread": "19"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "risk",
+      "stat": "max（内部五次最大值的中位数）",
+      "unit": "ns",
+      "runs": [
+        "9345",
+        "343",
+        "7215"
+      ],
+      "median": "7215",
+      "min": "343",
+      "max": "9345",
+      "spread": "9002"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "risk",
+      "stat": "内部五次 p99 最小值",
+      "unit": "ns",
+      "runs": [
+        "44",
+        "47",
+        "47"
+      ],
+      "median": "47",
+      "min": "44",
+      "max": "47",
+      "spread": "3"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "risk",
+      "stat": "内部五次 p99 最大值",
+      "unit": "ns",
+      "runs": [
+        "60",
+        "48",
+        "61"
+      ],
+      "median": "60",
+      "min": "48",
+      "max": "61",
+      "spread": "13"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "engine",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "13",
+        "14",
+        "15"
+      ],
+      "median": "14",
+      "min": "13",
+      "max": "15",
+      "spread": "2"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "engine",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "458",
+        "470",
+        "552"
+      ],
+      "median": "470",
+      "min": "458",
+      "max": "552",
+      "spread": "94"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "engine",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "778",
+        "797",
+        "834"
+      ],
+      "median": "797",
+      "min": "778",
+      "max": "834",
+      "spread": "56"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "engine",
+      "stat": "max（内部五次最大值的中位数）",
+      "unit": "ns",
+      "runs": [
+        "33451",
+        "32878",
+        "41980"
+      ],
+      "median": "33451",
+      "min": "32878",
+      "max": "41980",
+      "spread": "9102"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "engine",
+      "stat": "内部五次 p99 最小值",
+      "unit": "ns",
+      "runs": [
+        "441",
+        "464",
+        "479"
+      ],
+      "median": "464",
+      "min": "441",
+      "max": "479",
+      "spread": "38"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "trading-pipeline",
+      "metric": "engine",
+      "stat": "内部五次 p99 最大值",
+      "unit": "ns",
+      "runs": [
+        "828",
+        "486",
+        "800"
+      ],
+      "median": "800",
+      "min": "486",
+      "max": "828",
+      "spread": "342"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "CRTP (static)",
+      "metric": "on_book_update",
+      "stat": "内部五次中位数",
+      "unit": "ns/call",
+      "runs": [
+        "10.89",
+        "10.72",
+        "10.82"
+      ],
+      "median": "10.82",
+      "min": "10.72",
+      "max": "10.89",
+      "spread": "0.17"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "CRTP (static)",
+      "metric": "on_book_update",
+      "stat": "内部五次最小值",
+      "unit": "ns/call",
+      "runs": [
+        "10.75",
+        "10.56",
+        "10.61"
+      ],
+      "median": "10.61",
+      "min": "10.56",
+      "max": "10.75",
+      "spread": "0.19"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "CRTP (static)",
+      "metric": "on_book_update",
+      "stat": "内部五次最大值",
+      "unit": "ns/call",
+      "runs": [
+        "11.25",
+        "12.23",
+        "11.23"
+      ],
+      "median": "11.25",
+      "min": "11.23",
+      "max": "12.23",
+      "spread": "1.00"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "virtual",
+      "metric": "on_book_update",
+      "stat": "内部五次中位数",
+      "unit": "ns/call",
+      "runs": [
+        "11.25",
+        "11.09",
+        "11.21"
+      ],
+      "median": "11.21",
+      "min": "11.09",
+      "max": "11.25",
+      "spread": "0.16"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "virtual",
+      "metric": "on_book_update",
+      "stat": "内部五次最小值",
+      "unit": "ns/call",
+      "runs": [
+        "11.08",
+        "10.76",
+        "10.80"
+      ],
+      "median": "10.80",
+      "min": "10.76",
+      "max": "11.08",
+      "spread": "0.32"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "virtual",
+      "metric": "on_book_update",
+      "stat": "内部五次最大值",
+      "unit": "ns/call",
+      "runs": [
+        "14.19",
+        "11.89",
+        "11.82"
+      ],
+      "median": "11.89",
+      "min": "11.82",
+      "max": "14.19",
+      "spread": "2.37"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "risk check_new",
+      "metric": "check_new",
+      "stat": "内部五次中位数",
+      "unit": "ns/call",
+      "runs": [
+        "5.39",
+        "6.47",
+        "5.71"
+      ],
+      "median": "5.71",
+      "min": "5.39",
+      "max": "6.47",
+      "spread": "1.08"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "risk check_new",
+      "metric": "check_new",
+      "stat": "内部五次最小值",
+      "unit": "ns/call",
+      "runs": [
+        "5.22",
+        "5.65",
+        "5.54"
+      ],
+      "median": "5.54",
+      "min": "5.22",
+      "max": "5.65",
+      "spread": "0.43"
+    },
+    {
+      "group": "waterfall",
+      "group_label": "合成瀑布",
+      "mode": "risk check_new",
+      "metric": "check_new",
+      "stat": "内部五次最大值",
+      "unit": "ns/call",
+      "runs": [
+        "7.08",
+        "8.54",
+        "8.42"
+      ],
+      "median": "8.42",
+      "min": "7.08",
+      "max": "8.54",
+      "spread": "1.46"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "calibration",
+      "metric": "ticks overhead",
+      "stat": "校准值",
+      "unit": "ns",
+      "runs": [
+        "7.4",
+        "7.4",
+        "7.4"
+      ],
+      "median": "7.4",
+      "min": "7.4",
+      "max": "7.4",
+      "spread": "0.0"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "calibration",
+      "metric": "ns_per_tick",
+      "stat": "校准值",
+      "unit": "ns/tick",
+      "runs": [
+        "0.3714",
+        "0.3718",
+        "0.3721"
+      ],
+      "median": "0.3718",
+      "min": "0.3714",
+      "max": "0.3721",
+      "spread": "0.0007"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "inproc",
+      "metric": "requests",
+      "stat": "计数",
+      "unit": "次",
+      "runs": [
+        "23366",
+        "23366",
+        "23366"
+      ],
+      "median": "23366",
+      "min": "23366",
+      "max": "23366",
+      "spread": "0"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "inproc",
+      "metric": "fills",
+      "stat": "计数",
+      "unit": "次",
+      "runs": [
+        "8966",
+        "8966",
+        "8966"
+      ],
+      "median": "8966",
+      "min": "8966",
+      "max": "8966",
+      "spread": "0"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "loopback",
+      "metric": "requests",
+      "stat": "计数",
+      "unit": "次",
+      "runs": [
+        "14823",
+        "12626",
+        "13528"
+      ],
+      "median": "13528",
+      "min": "12626",
+      "max": "14823",
+      "spread": "2197"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "loopback",
+      "metric": "fills",
+      "stat": "计数",
+      "unit": "次",
+      "runs": [
+        "5128",
+        "3476",
+        "4367"
+      ],
+      "median": "4367",
+      "min": "3476",
+      "max": "5128",
+      "spread": "1652"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "ack",
+      "metric": "requests",
+      "stat": "计数",
+      "unit": "次",
+      "runs": [
+        "12098",
+        "12175",
+        "12391"
+      ],
+      "median": "12175",
+      "min": "12098",
+      "max": "12391",
+      "spread": "293"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "ack",
+      "metric": "fills",
+      "stat": "计数",
+      "unit": "次",
+      "runs": [
+        "4008",
+        "4016",
+        "4021"
+      ],
+      "median": "4016",
+      "min": "4008",
+      "max": "4021",
+      "spread": "13"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "inproc",
+      "metric": "T1 tick -> decision (new order)",
+      "stat": "samples",
+      "unit": "个",
+      "runs": [
+        "13420",
+        "13420",
+        "13420"
+      ],
+      "median": "13420",
+      "min": "13420",
+      "max": "13420",
+      "spread": "0"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "inproc",
+      "metric": "T1 tick -> decision (new order)",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "582",
+        "562",
+        "589"
+      ],
+      "median": "582",
+      "min": "562",
+      "max": "589",
+      "spread": "27"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "inproc",
+      "metric": "T1 tick -> decision (new order)",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "1737",
+        "1605",
+        "2268"
+      ],
+      "median": "1737",
+      "min": "1605",
+      "max": "2268",
+      "spread": "663"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "inproc",
+      "metric": "T1 tick -> decision (new order)",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "4335",
+        "9749",
+        "25013"
+      ],
+      "median": "9749",
+      "min": "4335",
+      "max": "25013",
+      "spread": "20678"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "inproc",
+      "metric": "T1 tick -> decision (new order)",
+      "stat": "max",
+      "unit": "ns",
+      "runs": [
+        "40299",
+        "153030",
+        "134095"
+      ],
+      "median": "134095",
+      "min": "40299",
+      "max": "153030",
+      "spread": "112731"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "inproc",
+      "metric": "T2 tick -> encoded, new order",
+      "stat": "samples",
+      "unit": "个",
+      "runs": [
+        "13420",
+        "13420",
+        "13420"
+      ],
+      "median": "13420",
+      "min": "13420",
+      "max": "13420",
+      "spread": "0"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "inproc",
+      "metric": "T2 tick -> encoded, new order",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "649",
+        "610",
+        "658"
+      ],
+      "median": "649",
+      "min": "610",
+      "max": "658",
+      "spread": "48"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "inproc",
+      "metric": "T2 tick -> encoded, new order",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "2553",
+        "2252",
+        "3637"
+      ],
+      "median": "2553",
+      "min": "2252",
+      "max": "3637",
+      "spread": "1385"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "inproc",
+      "metric": "T2 tick -> encoded, new order",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "8026",
+        "24477",
+        "31410"
+      ],
+      "median": "24477",
+      "min": "8026",
+      "max": "31410",
+      "spread": "23384"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "inproc",
+      "metric": "T2 tick -> encoded, new order",
+      "stat": "max",
+      "unit": "ns",
+      "runs": [
+        "40472",
+        "153843",
+        "134317"
+      ],
+      "median": "134317",
+      "min": "40472",
+      "max": "153843",
+      "spread": "113371"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "inproc",
+      "metric": "T2 tick -> encoded, 1st msg",
+      "stat": "samples",
+      "unit": "个",
+      "runs": [
+        "6844",
+        "6844",
+        "6844"
+      ],
+      "median": "6844",
+      "min": "6844",
+      "max": "6844",
+      "spread": "0"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "inproc",
+      "metric": "T2 tick -> encoded, 1st msg",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "368",
+        "350",
+        "376"
+      ],
+      "median": "368",
+      "min": "350",
+      "max": "376",
+      "spread": "26"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "inproc",
+      "metric": "T2 tick -> encoded, 1st msg",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "1009",
+        "848",
+        "1607"
+      ],
+      "median": "1009",
+      "min": "848",
+      "max": "1607",
+      "spread": "759"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "inproc",
+      "metric": "T2 tick -> encoded, 1st msg",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "3795",
+        "8754",
+        "11790"
+      ],
+      "median": "8754",
+      "min": "3795",
+      "max": "11790",
+      "spread": "7995"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "inproc",
+      "metric": "T2 tick -> encoded, 1st msg",
+      "stat": "max",
+      "unit": "ns",
+      "runs": [
+        "39449",
+        "51565",
+        "41389"
+      ],
+      "median": "41389",
+      "min": "39449",
+      "max": "51565",
+      "spread": "12116"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "loopback",
+      "metric": "T1 tick -> decision (new order)",
+      "stat": "samples",
+      "unit": "个",
+      "runs": [
+        "7433",
+        "6314",
+        "6769"
+      ],
+      "median": "6769",
+      "min": "6314",
+      "max": "7433",
+      "spread": "1119"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "loopback",
+      "metric": "T1 tick -> decision (new order)",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "2428",
+        "1734",
+        "3035"
+      ],
+      "median": "2428",
+      "min": "1734",
+      "max": "3035",
+      "spread": "1301"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "loopback",
+      "metric": "T1 tick -> decision (new order)",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "30834",
+        "9405",
+        "17010"
+      ],
+      "median": "17010",
+      "min": "9405",
+      "max": "30834",
+      "spread": "21429"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "loopback",
+      "metric": "T1 tick -> decision (new order)",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "61488",
+        "38958",
+        "43555"
+      ],
+      "median": "43555",
+      "min": "38958",
+      "max": "61488",
+      "spread": "22530"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "loopback",
+      "metric": "T1 tick -> decision (new order)",
+      "stat": "max",
+      "unit": "ns",
+      "runs": [
+        "118335",
+        "73816",
+        "111637"
+      ],
+      "median": "111637",
+      "min": "73816",
+      "max": "118335",
+      "spread": "44519"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "loopback",
+      "metric": "T3 tick -> send() ret, new order",
+      "stat": "samples",
+      "unit": "个",
+      "runs": [
+        "7433",
+        "6314",
+        "6769"
+      ],
+      "median": "6769",
+      "min": "6314",
+      "max": "7433",
+      "spread": "1119"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "loopback",
+      "metric": "T3 tick -> send() ret, new order",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "3307",
+        "2327",
+        "4082"
+      ],
+      "median": "3307",
+      "min": "2327",
+      "max": "4082",
+      "spread": "1755"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "loopback",
+      "metric": "T3 tick -> send() ret, new order",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "38588",
+        "12539",
+        "20854"
+      ],
+      "median": "20854",
+      "min": "12539",
+      "max": "38588",
+      "spread": "26049"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "loopback",
+      "metric": "T3 tick -> send() ret, new order",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "68262",
+        "50952",
+        "90645"
+      ],
+      "median": "68262",
+      "min": "50952",
+      "max": "90645",
+      "spread": "39693"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "loopback",
+      "metric": "T3 tick -> send() ret, new order",
+      "stat": "max",
+      "unit": "ns",
+      "runs": [
+        "123280",
+        "120338",
+        "249278"
+      ],
+      "median": "123280",
+      "min": "120338",
+      "max": "249278",
+      "spread": "128940"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "loopback",
+      "metric": "T3 tick -> send() ret, 1st msg",
+      "stat": "samples",
+      "unit": "个",
+      "runs": [
+        "3796",
+        "3227",
+        "3428"
+      ],
+      "median": "3428",
+      "min": "3227",
+      "max": "3796",
+      "spread": "569"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "loopback",
+      "metric": "T3 tick -> send() ret, 1st msg",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "1448",
+        "919",
+        "1928"
+      ],
+      "median": "1448",
+      "min": "919",
+      "max": "1928",
+      "spread": "1009"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "loopback",
+      "metric": "T3 tick -> send() ret, 1st msg",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "23929",
+        "6608",
+        "10668"
+      ],
+      "median": "10668",
+      "min": "6608",
+      "max": "23929",
+      "spread": "17321"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "loopback",
+      "metric": "T3 tick -> send() ret, 1st msg",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "44569",
+        "23401",
+        "25057"
+      ],
+      "median": "25057",
+      "min": "23401",
+      "max": "44569",
+      "spread": "21168"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "loopback",
+      "metric": "T3 tick -> send() ret, 1st msg",
+      "stat": "max",
+      "unit": "ns",
+      "runs": [
+        "61576",
+        "41130",
+        "34451"
+      ],
+      "median": "41130",
+      "min": "34451",
+      "max": "61576",
+      "spread": "27125"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "loopback",
+      "metric": "T4 client send -> exchange decoded",
+      "stat": "samples",
+      "unit": "个",
+      "runs": [
+        "7431",
+        "6308",
+        "6767"
+      ],
+      "median": "6767",
+      "min": "6308",
+      "max": "7431",
+      "spread": "1123"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "loopback",
+      "metric": "T4 client send -> exchange decoded",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "171407",
+        "200714",
+        "161603"
+      ],
+      "median": "171407",
+      "min": "161603",
+      "max": "200714",
+      "spread": "39111"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "loopback",
+      "metric": "T4 client send -> exchange decoded",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "354085",
+        "688638",
+        "453346"
+      ],
+      "median": "453346",
+      "min": "354085",
+      "max": "688638",
+      "spread": "334553"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "loopback",
+      "metric": "T4 client send -> exchange decoded",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "694272",
+        "837559",
+        "636599"
+      ],
+      "median": "694272",
+      "min": "636599",
+      "max": "837559",
+      "spread": "200960"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "loopback",
+      "metric": "T4 client send -> exchange decoded",
+      "stat": "max",
+      "unit": "ns",
+      "runs": [
+        "742623",
+        "912716",
+        "686743"
+      ],
+      "median": "742623",
+      "min": "686743",
+      "max": "912716",
+      "spread": "225973"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "ack",
+      "metric": "T5 tick -> ack decoded (round trip)",
+      "stat": "samples",
+      "unit": "个",
+      "runs": [
+        "6069",
+        "6125",
+        "6225"
+      ],
+      "median": "6125",
+      "min": "6069",
+      "max": "6225",
+      "spread": "156"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "ack",
+      "metric": "T5 tick -> ack decoded (round trip)",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "479437",
+        "392811",
+        "446873"
+      ],
+      "median": "446873",
+      "min": "392811",
+      "max": "479437",
+      "spread": "86626"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "ack",
+      "metric": "T5 tick -> ack decoded (round trip)",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "1300049",
+        "805385",
+        "949300"
+      ],
+      "median": "949300",
+      "min": "805385",
+      "max": "1300049",
+      "spread": "494664"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "ack",
+      "metric": "T5 tick -> ack decoded (round trip)",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "1951457",
+        "1215444",
+        "1326904"
+      ],
+      "median": "1326904",
+      "min": "1215444",
+      "max": "1951457",
+      "spread": "736013"
+    },
+    {
+      "group": "l4-epoll",
+      "group_label": "L4 默认 epoll",
+      "mode": "ack",
+      "metric": "T5 tick -> ack decoded (round trip)",
+      "stat": "max",
+      "unit": "ns",
+      "runs": [
+        "2931618",
+        "1459477",
+        "2412848"
+      ],
+      "median": "2412848",
+      "min": "1459477",
+      "max": "2931618",
+      "spread": "1472141"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "calibration",
+      "metric": "ticks overhead",
+      "stat": "校准值",
+      "unit": "ns",
+      "runs": [
+        "7.4",
+        "7.4",
+        "7.4"
+      ],
+      "median": "7.4",
+      "min": "7.4",
+      "max": "7.4",
+      "spread": "0.0"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "calibration",
+      "metric": "ns_per_tick",
+      "stat": "校准值",
+      "unit": "ns/tick",
+      "runs": [
+        "0.3721",
+        "0.3719",
+        "0.3721"
+      ],
+      "median": "0.3721",
+      "min": "0.3719",
+      "max": "0.3721",
+      "spread": "0.0002"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "inproc",
+      "metric": "requests",
+      "stat": "计数",
+      "unit": "次",
+      "runs": [
+        "23366",
+        "23366",
+        "23366"
+      ],
+      "median": "23366",
+      "min": "23366",
+      "max": "23366",
+      "spread": "0"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "inproc",
+      "metric": "fills",
+      "stat": "计数",
+      "unit": "次",
+      "runs": [
+        "8966",
+        "8966",
+        "8966"
+      ],
+      "median": "8966",
+      "min": "8966",
+      "max": "8966",
+      "spread": "0"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "loopback",
+      "metric": "requests",
+      "stat": "计数",
+      "unit": "次",
+      "runs": [
+        "13818",
+        "12410",
+        "12970"
+      ],
+      "median": "12970",
+      "min": "12410",
+      "max": "13818",
+      "spread": "1408"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "loopback",
+      "metric": "fills",
+      "stat": "计数",
+      "unit": "次",
+      "runs": [
+        "4458",
+        "3791",
+        "3964"
+      ],
+      "median": "3964",
+      "min": "3791",
+      "max": "4458",
+      "spread": "667"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "ack",
+      "metric": "requests",
+      "stat": "计数",
+      "unit": "次",
+      "runs": [
+        "13230",
+        "12597",
+        "13427"
+      ],
+      "median": "13230",
+      "min": "12597",
+      "max": "13427",
+      "spread": "830"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "ack",
+      "metric": "fills",
+      "stat": "计数",
+      "unit": "次",
+      "runs": [
+        "4506",
+        "4206",
+        "4536"
+      ],
+      "median": "4506",
+      "min": "4206",
+      "max": "4536",
+      "spread": "330"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "inproc",
+      "metric": "T1 tick -> decision (new order)",
+      "stat": "samples",
+      "unit": "个",
+      "runs": [
+        "13420",
+        "13420",
+        "13420"
+      ],
+      "median": "13420",
+      "min": "13420",
+      "max": "13420",
+      "spread": "0"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "inproc",
+      "metric": "T1 tick -> decision (new order)",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "563",
+        "561",
+        "558"
+      ],
+      "median": "561",
+      "min": "558",
+      "max": "563",
+      "spread": "5"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "inproc",
+      "metric": "T1 tick -> decision (new order)",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "1636",
+        "1709",
+        "1472"
+      ],
+      "median": "1636",
+      "min": "1472",
+      "max": "1709",
+      "spread": "237"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "inproc",
+      "metric": "T1 tick -> decision (new order)",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "9413",
+        "3349",
+        "3640"
+      ],
+      "median": "3640",
+      "min": "3349",
+      "max": "9413",
+      "spread": "6064"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "inproc",
+      "metric": "T1 tick -> decision (new order)",
+      "stat": "max",
+      "unit": "ns",
+      "runs": [
+        "50942",
+        "42550",
+        "30528"
+      ],
+      "median": "42550",
+      "min": "30528",
+      "max": "50942",
+      "spread": "20414"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "inproc",
+      "metric": "T2 tick -> encoded, new order",
+      "stat": "samples",
+      "unit": "个",
+      "runs": [
+        "13420",
+        "13420",
+        "13420"
+      ],
+      "median": "13420",
+      "min": "13420",
+      "max": "13420",
+      "spread": "0"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "inproc",
+      "metric": "T2 tick -> encoded, new order",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "613",
+        "608",
+        "606"
+      ],
+      "median": "608",
+      "min": "606",
+      "max": "613",
+      "spread": "7"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "inproc",
+      "metric": "T2 tick -> encoded, new order",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "2461",
+        "2338",
+        "2372"
+      ],
+      "median": "2372",
+      "min": "2338",
+      "max": "2461",
+      "spread": "123"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "inproc",
+      "metric": "T2 tick -> encoded, new order",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "24396",
+        "5392",
+        "6427"
+      ],
+      "median": "6427",
+      "min": "5392",
+      "max": "24396",
+      "spread": "19004"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "inproc",
+      "metric": "T2 tick -> encoded, new order",
+      "stat": "max",
+      "unit": "ns",
+      "runs": [
+        "51166",
+        "43152",
+        "54781"
+      ],
+      "median": "51166",
+      "min": "43152",
+      "max": "54781",
+      "spread": "11629"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "inproc",
+      "metric": "T2 tick -> encoded, 1st msg",
+      "stat": "samples",
+      "unit": "个",
+      "runs": [
+        "6844",
+        "6844",
+        "6844"
+      ],
+      "median": "6844",
+      "min": "6844",
+      "max": "6844",
+      "spread": "0"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "inproc",
+      "metric": "T2 tick -> encoded, 1st msg",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "352",
+        "348",
+        "348"
+      ],
+      "median": "348",
+      "min": "348",
+      "max": "352",
+      "spread": "4"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "inproc",
+      "metric": "T2 tick -> encoded, 1st msg",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "857",
+        "970",
+        "821"
+      ],
+      "median": "857",
+      "min": "821",
+      "max": "970",
+      "spread": "149"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "inproc",
+      "metric": "T2 tick -> encoded, 1st msg",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "10080",
+        "2296",
+        "3112"
+      ],
+      "median": "3112",
+      "min": "2296",
+      "max": "10080",
+      "spread": "7784"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "inproc",
+      "metric": "T2 tick -> encoded, 1st msg",
+      "stat": "max",
+      "unit": "ns",
+      "runs": [
+        "56517",
+        "37309",
+        "51145"
+      ],
+      "median": "51145",
+      "min": "37309",
+      "max": "56517",
+      "spread": "19208"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "loopback",
+      "metric": "T1 tick -> decision (new order)",
+      "stat": "samples",
+      "unit": "个",
+      "runs": [
+        "6913",
+        "6205",
+        "6490"
+      ],
+      "median": "6490",
+      "min": "6205",
+      "max": "6913",
+      "spread": "708"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "loopback",
+      "metric": "T1 tick -> decision (new order)",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "2378",
+        "1627",
+        "2398"
+      ],
+      "median": "2378",
+      "min": "1627",
+      "max": "2398",
+      "spread": "771"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "loopback",
+      "metric": "T1 tick -> decision (new order)",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "13468",
+        "7736",
+        "13127"
+      ],
+      "median": "13127",
+      "min": "7736",
+      "max": "13468",
+      "spread": "5732"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "loopback",
+      "metric": "T1 tick -> decision (new order)",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "42117",
+        "31460",
+        "38086"
+      ],
+      "median": "38086",
+      "min": "31460",
+      "max": "42117",
+      "spread": "10657"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "loopback",
+      "metric": "T1 tick -> decision (new order)",
+      "stat": "max",
+      "unit": "ns",
+      "runs": [
+        "120040",
+        "69747",
+        "175726"
+      ],
+      "median": "120040",
+      "min": "69747",
+      "max": "175726",
+      "spread": "105979"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "loopback",
+      "metric": "T3 tick -> send() ret, new order",
+      "stat": "samples",
+      "unit": "个",
+      "runs": [
+        "6913",
+        "6205",
+        "6490"
+      ],
+      "median": "6490",
+      "min": "6205",
+      "max": "6913",
+      "spread": "708"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "loopback",
+      "metric": "T3 tick -> send() ret, new order",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "3268",
+        "2156",
+        "3300"
+      ],
+      "median": "3268",
+      "min": "2156",
+      "max": "3300",
+      "spread": "1144"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "loopback",
+      "metric": "T3 tick -> send() ret, new order",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "17907",
+        "9733",
+        "16381"
+      ],
+      "median": "16381",
+      "min": "9733",
+      "max": "17907",
+      "spread": "8174"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "loopback",
+      "metric": "T3 tick -> send() ret, new order",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "80827",
+        "56188",
+        "87200"
+      ],
+      "median": "80827",
+      "min": "56188",
+      "max": "87200",
+      "spread": "31012"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "loopback",
+      "metric": "T3 tick -> send() ret, new order",
+      "stat": "max",
+      "unit": "ns",
+      "runs": [
+        "123730",
+        "70409",
+        "178115"
+      ],
+      "median": "123730",
+      "min": "70409",
+      "max": "178115",
+      "spread": "107706"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "loopback",
+      "metric": "T3 tick -> send() ret, 1st msg",
+      "stat": "samples",
+      "unit": "个",
+      "runs": [
+        "3543",
+        "3199",
+        "3320"
+      ],
+      "median": "3320",
+      "min": "3199",
+      "max": "3543",
+      "spread": "344"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "loopback",
+      "metric": "T3 tick -> send() ret, 1st msg",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "1454",
+        "878",
+        "1355"
+      ],
+      "median": "1355",
+      "min": "878",
+      "max": "1454",
+      "spread": "576"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "loopback",
+      "metric": "T3 tick -> send() ret, 1st msg",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "9241",
+        "5106",
+        "8817"
+      ],
+      "median": "8817",
+      "min": "5106",
+      "max": "9241",
+      "spread": "4135"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "loopback",
+      "metric": "T3 tick -> send() ret, 1st msg",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "25422",
+        "16831",
+        "22619"
+      ],
+      "median": "22619",
+      "min": "16831",
+      "max": "25422",
+      "spread": "8591"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "loopback",
+      "metric": "T3 tick -> send() ret, 1st msg",
+      "stat": "max",
+      "unit": "ns",
+      "runs": [
+        "34383",
+        "61804",
+        "91716"
+      ],
+      "median": "61804",
+      "min": "34383",
+      "max": "91716",
+      "spread": "57333"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "loopback",
+      "metric": "T4 client send -> exchange decoded",
+      "stat": "samples",
+      "unit": "个",
+      "runs": [
+        "6903",
+        "6189",
+        "6486"
+      ],
+      "median": "6486",
+      "min": "6189",
+      "max": "6903",
+      "spread": "714"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "loopback",
+      "metric": "T4 client send -> exchange decoded",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "155555",
+        "260649",
+        "166203"
+      ],
+      "median": "166203",
+      "min": "155555",
+      "max": "260649",
+      "spread": "105094"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "loopback",
+      "metric": "T4 client send -> exchange decoded",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "420772",
+        "499124",
+        "665978"
+      ],
+      "median": "499124",
+      "min": "420772",
+      "max": "665978",
+      "spread": "245206"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "loopback",
+      "metric": "T4 client send -> exchange decoded",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "644037",
+        "953762",
+        "1105899"
+      ],
+      "median": "953762",
+      "min": "644037",
+      "max": "1105899",
+      "spread": "461862"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "loopback",
+      "metric": "T4 client send -> exchange decoded",
+      "stat": "max",
+      "unit": "ns",
+      "runs": [
+        "712785",
+        "1125406",
+        "1192400"
+      ],
+      "median": "1125406",
+      "min": "712785",
+      "max": "1192400",
+      "spread": "479615"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "ack",
+      "metric": "T5 tick -> ack decoded (round trip)",
+      "stat": "samples",
+      "unit": "个",
+      "runs": [
+        "6746",
+        "6359",
+        "6869"
+      ],
+      "median": "6746",
+      "min": "6359",
+      "max": "6869",
+      "spread": "510"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "ack",
+      "metric": "T5 tick -> ack decoded (round trip)",
+      "stat": "p50",
+      "unit": "ns",
+      "runs": [
+        "394852",
+        "464267",
+        "385313"
+      ],
+      "median": "394852",
+      "min": "385313",
+      "max": "464267",
+      "spread": "78954"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "ack",
+      "metric": "T5 tick -> ack decoded (round trip)",
+      "stat": "p99",
+      "unit": "ns",
+      "runs": [
+        "1214152",
+        "1566683",
+        "1205798"
+      ],
+      "median": "1214152",
+      "min": "1205798",
+      "max": "1566683",
+      "spread": "360885"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "ack",
+      "metric": "T5 tick -> ack decoded (round trip)",
+      "stat": "p99.9",
+      "unit": "ns",
+      "runs": [
+        "1775605",
+        "2301469",
+        "1588983"
+      ],
+      "median": "1775605",
+      "min": "1588983",
+      "max": "2301469",
+      "spread": "712486"
+    },
+    {
+      "group": "l4-busy-poll",
+      "group_label": "L4 busy-poll",
+      "mode": "ack",
+      "metric": "T5 tick -> ack decoded (round trip)",
+      "stat": "max",
+      "unit": "ns",
+      "runs": [
+        "3109858",
+        "2565680",
+        "1878100"
+      ],
+      "median": "2565680",
+      "min": "1878100",
+      "max": "3109858",
+      "spread": "1231758"
+    }
+  ],
+  "raw_log": "quant_wsl2_raw_2026-11-05.txt",
+  "raw_log_sha256": "8a46e5258d721019f974dc57cf3cc5d27c0c83c01f15cba303ad9262eb39a3d7"
+}

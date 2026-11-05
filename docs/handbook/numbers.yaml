@@ -7,17 +7,19 @@
 #                tick-to-trade); printed with a dagger and explained in the
 #                page footer. remeasure.sh updates these from YOUR machine.
 #   measured_on  where the value now in this file was measured
+#   kept         true = a measurement of a named environment kept for
+#                comparison; never re-measured, ignored by the footer
 #
 # Edit non-wallclock values only when the source file changes, and keep
 # `source` pointing at it. Wall-clock values: run docs/handbook/remeasure.sh.
 
 meta:
-  repo_state: "main fcecac3 (2026-11-05)"
+  repo_state: "main ee03bd5 (2026-11-05)"
   # The footer of the handbooks is derived from `measured_on` below: every
   # wall-clock number starting with "local" -> "measured locally <date>";
   # some -> "partly re-measured"; none -> "pending local re-measurement".
   # remeasure.sh records the machine it ran on here:
-  wallclock_local_env: null
+  wallclock_local_env: "12th Gen Intel(R) Core(TM) i7-12700H, 20 CPUs, Linux 6.6.87.2-microsoft-standard-WSL2"
 
 numbers:
   # ---------------------------------------------------------------- project
@@ -58,15 +60,15 @@ numbers:
 
   # ---------------------------------------------------------------- L3'
   itch_types: {zh: "11", en: "11", source: "include/lob/md/itch.hpp (S R A F E C X D U H Q)", wallclock: false}
-  itch_single_tput: {zh: "7.7–8.9 M 条/s", en: "7.7–8.9 M messages/s", source: "README.md (key numbers); BENCHMARK.md §13", label_zh: "ITCH 回放吞吐（单线程）", label_en: "ITCH replay throughput (single thread)", wallclock: true, measured_on: "cloud VM 4 vCPU, 2026-11-04"}
-  decode_p50: {zh: "14–21 ns", en: "14–21 ns", source: "README.md (key numbers)", label_zh: "解码一跳 p50", label_en: "decode hop p50", wallclock: true, measured_on: "cloud VM 4 vCPU, 2026-11-04"}
-  decode_p99: {zh: "48–80 ns", en: "48–80 ns", source: "README.md (key numbers)", label_zh: "解码一跳 p99", label_en: "decode hop p99", wallclock: true, measured_on: "cloud VM 4 vCPU, 2026-11-04"}
-  book_p50: {zh: "9–13 ns", en: "9–13 ns", source: "README.md (key numbers)", label_zh: "订单簿一跳 p50", label_en: "book hop p50", wallclock: true, measured_on: "cloud VM 4 vCPU, 2026-11-04"}
-  book_p99: {zh: "223–265 ns", en: "223–265 ns", source: "README.md (key numbers)", label_zh: "订单簿一跳 p99", label_en: "book hop p99", wallclock: true, measured_on: "cloud VM 4 vCPU, 2026-11-04"}
-  handoff_p50: {zh: "350–650 ns", en: "350–650 ns", source: "README.md (key numbers) (paced, 1 msg/µs)", label_zh: "跨线程交接 p50（限速）", label_en: "cross-thread handoff p50 (paced)", wallclock: true, measured_on: "cloud VM 4 vCPU, 2026-11-04"}
-  risk_check_ns: {zh: "≈ 8 ns", en: "about 8 ns", source: "README.md (key numbers); BENCHMARK.md §14", label_zh: "风控单次检查", label_en: "one risk check", wallclock: true, measured_on: "cloud VM 4 vCPU, 2026-11-04"}
-  crtp_ns: {zh: "13.3", en: "13.3", source: "BENCHMARK.md §14", label_zh: "CRTP 策略调用（ns）", label_en: "CRTP strategy call (ns)", wallclock: true, measured_on: "cloud VM 4 vCPU, 2026-11-04"}
-  virtual_ns: {zh: "13.1", en: "13.1", source: "BENCHMARK.md §14", label_zh: "虚函数策略调用（ns）", label_en: "virtual strategy call (ns)", wallclock: true, measured_on: "cloud VM 4 vCPU, 2026-11-04"}
+  itch_single_tput: {zh: "9.7 M 条/s", en: "9.7 M messages/s", source: "BENCHMARK.md §13.1 (single mode, median of 3 runs)", label_zh: "ITCH 回放吞吐（单线程）", label_en: "ITCH replay throughput (single thread)", wallclock: true, measured_on: "local 2026-11-05"}
+  decode_p50: {zh: "18 ns", en: "18 ns", source: "BENCHMARK.md §13.1 (single mode, median of 3 runs)", label_zh: "解码一跳 p50", label_en: "decode hop p50", wallclock: true, measured_on: "local 2026-11-05"}
+  decode_p99: {zh: "67 ns", en: "67 ns", source: "BENCHMARK.md §13.1 (single mode, median of 3 runs)", label_zh: "解码一跳 p99", label_en: "decode hop p99", wallclock: true, measured_on: "local 2026-11-05"}
+  book_p50: {zh: "12 ns", en: "12 ns", source: "BENCHMARK.md §13.1 (single mode, median of 3 runs)", label_zh: "订单簿一跳 p50", label_en: "book hop p50", wallclock: true, measured_on: "local 2026-11-05"}
+  book_p99: {zh: "237 ns", en: "237 ns", source: "BENCHMARK.md §13.1 (single mode, median of 3 runs)", label_zh: "订单簿一跳 p99", label_en: "book hop p99", wallclock: true, measured_on: "local 2026-11-05"}
+  handoff_p50: {zh: "104 ns", en: "104 ns", source: "BENCHMARK.md §13.1 (paced queue p50, median of 3 runs)", label_zh: "跨线程交接 p50（限速）", label_en: "cross-thread handoff p50 (paced)", wallclock: true, measured_on: "local 2026-11-05"}
+  risk_check_ns: {zh: "≈ 6 ns", en: "about 6 ns", source: "BENCHMARK.md §14.1 (median of 3 runs)", label_zh: "风控单次检查", label_en: "one risk check", wallclock: true, measured_on: "local 2026-11-05"}
+  crtp_ns: {zh: "10.8", en: "10.8", source: "BENCHMARK.md §14.1 (median of 3 runs)", label_zh: "CRTP 策略调用（ns）", label_en: "CRTP strategy call (ns)", wallclock: true, measured_on: "local 2026-11-05"}
+  virtual_ns: {zh: "11.2", en: "11.2", source: "BENCHMARK.md §14.1 (median of 3 runs)", label_zh: "虚函数策略调用（ns）", label_en: "virtual strategy call (ns)", wallclock: true, measured_on: "local 2026-11-05"}
   replay_rss: {zh: "≈ 47 MB", en: "about 47 MB", source: "README.md (key numbers); BENCHMARK.md §13 (memory bound)", wallclock: false}
   icount_decode: {zh: "33.5 M", en: "33.5 M", source: "bench/icount_baseline.txt", wallclock: false}
   icount_book: {zh: "121.3 M", en: "121.3 M", source: "bench/icount_baseline.txt", wallclock: false}
@@ -106,12 +108,19 @@ numbers:
   net_tests: {zh: "26 + 7", en: "26 + 7", source: "MODULE_NOTES/L4.md L4.3", wallclock: false}
   gateway_tests: {zh: "27", en: "27", source: "MODULE_NOTES/L4.md L4.4", wallclock: false}
   lockstep_tests: {zh: "5", en: "5", source: "MODULE_NOTES/L4.md L4.5", wallclock: false}
-  t2t_inproc_first: {zh: "0.46 µs", en: "0.46 µs", source: "BENCHMARK.md §15", label_zh: "进程内 tick → 第一条消息编码", label_en: "in-process tick → first message encoded", wallclock: true, measured_on: "cloud VM 4 vCPU, 2026-11-05"}
-  t2t_loop_first: {zh: "9.1 µs", en: "9.1 µs", source: "BENCHMARK.md §15 (exchange thread sleeps)", label_zh: "回环 tick → 第一条消息 send()", label_en: "loopback tick → first message send()", wallclock: true, measured_on: "cloud VM 4 vCPU, 2026-11-05"}
-  t2t_loop_first_busy: {zh: "3.0 µs", en: "3.0 µs", source: "BENCHMARK.md §15 (exchange thread busy-polls)", label_zh: "同上，交易所线程忙轮询", label_en: "same, exchange thread busy-polls", wallclock: true, measured_on: "cloud VM 4 vCPU, 2026-11-05"}
-  t2t_rtt: {zh: "28 µs", en: "28 µs", source: "BENCHMARK.md §15", label_zh: "往返 tick → Accepted", label_en: "round trip tick → Accepted", wallclock: true, measured_on: "cloud VM 4 vCPU, 2026-11-05"}
-  t2t_rtt_busy: {zh: "18 µs", en: "18 µs", source: "BENCHMARK.md §15", label_zh: "往返，交易所线程忙轮询", label_en: "round trip, busy-polling exchange", wallclock: true, measured_on: "cloud VM 4 vCPU, 2026-11-05"}
-  t2t_wire: {zh: "8.0 µs", en: "8.0 µs", source: "BENCHMARK.md §15 (T4, sleeping)", label_zh: "客户端 send() → 交易所解码", label_en: "client send() → exchange decoded", wallclock: true, measured_on: "cloud VM 4 vCPU, 2026-11-05"}
+  t2t_inproc_first: {zh: "0.37 µs", en: "0.37 µs", source: "BENCHMARK.md §15.1", label_zh: "进程内 tick → 第一条消息编码", label_en: "in-process tick → first message encoded", wallclock: true, measured_on: "local 2026-11-05"}
+  t2t_loop_first: {zh: "1.4 µs", en: "1.4 µs", source: "BENCHMARK.md §15.1 (exchange thread sleeps)", label_zh: "回环 tick → 第一条消息 send()", label_en: "loopback tick → first message send()", wallclock: true, measured_on: "local 2026-11-05"}
+  t2t_loop_first_busy: {zh: "1.4 µs", en: "1.4 µs", source: "BENCHMARK.md §15.1 (exchange thread busy-polls)", label_zh: "同上，交易所线程忙轮询", label_en: "same, exchange thread busy-polls", wallclock: true, measured_on: "local 2026-11-05"}
+  t2t_rtt: {zh: "447 µs", en: "447 µs", source: "BENCHMARK.md §15.1", label_zh: "往返 tick → Accepted", label_en: "round trip tick → Accepted", wallclock: true, measured_on: "local 2026-11-05"}
+  t2t_rtt_busy: {zh: "395 µs", en: "395 µs", source: "BENCHMARK.md §15.1", label_zh: "往返，交易所线程忙轮询", label_en: "round trip, busy-polling exchange", wallclock: true, measured_on: "local 2026-11-05"}
+  t2t_wire: {zh: "171 µs", en: "171 µs", source: "BENCHMARK.md §15.1 (T4, sleeping)", label_zh: "客户端 send() → 交易所解码", label_en: "client send() → exchange decoded", wallclock: true, measured_on: "local 2026-11-05"}
+  # Cloud-VM tick-to-trade, kept for comparison (the wake-up finding holds
+  # there and not on the local WSL2, BENCHMARK §15 vs §15.1). `kept: true`:
+  # remeasure.py never overwrites these and the footer ignores them.
+  t2t_loop_first_cloud: {zh: "9.1 µs", en: "9.1 µs", source: "BENCHMARK.md §15 (exchange thread sleeps)", label_zh: "云端：回环 tick → 第一条消息 send()", label_en: "cloud: loopback tick → first message send()", wallclock: true, kept: true, measured_on: "cloud VM 4 vCPU, 2026-11-05"}
+  t2t_loop_first_busy_cloud: {zh: "3.0 µs", en: "3.0 µs", source: "BENCHMARK.md §15 (exchange thread busy-polls)", label_zh: "云端：同上，交易所线程忙轮询", label_en: "cloud: same, busy-polling exchange", wallclock: true, kept: true, measured_on: "cloud VM 4 vCPU, 2026-11-05"}
+  t2t_rtt_cloud: {zh: "28 µs", en: "28 µs", source: "BENCHMARK.md §15", label_zh: "云端：往返 tick → Accepted", label_en: "cloud: round trip tick → Accepted", wallclock: true, kept: true, measured_on: "cloud VM 4 vCPU, 2026-11-05"}
+  t2t_rtt_busy_cloud: {zh: "18 µs", en: "18 µs", source: "BENCHMARK.md §15", label_zh: "云端：往返，交易所线程忙轮询", label_en: "cloud: round trip, busy-polling exchange", wallclock: true, kept: true, measured_on: "cloud VM 4 vCPU, 2026-11-05"}
 
   # ---------------------------------------------------------------- figures used in the prose
   soak_check_every: {zh: "1 000", en: "1,000", source: "MODULE_NOTES/M4_testkit.md §7.1", wallclock: false}
@@ -124,13 +133,13 @@ numbers:
   e1_loc: {zh: "+7 / −2 行", en: "+7 / −2 lines", source: "BENCHMARK.md §12 (commit 1456fed)", wallclock: false}
   e1_pairs: {zh: "5 对", en: "five pairs", source: "DECISIONS.md D-042", wallclock: false}
   replay_inputs: {zh: "33 MB 到 984 MB", en: "33 MB to 984 MB", source: "BENCHMARK.md §13 (memory bound)", wallclock: false}
-  queue_saturated: {zh: "约 1.7 ms", en: "about 1.7 ms", source: "BENCHMARK.md §13 (pipeline queue p50)", label_zh: "饱和模式的队列一跳", label_en: "queue hop, saturated mode", wallclock: true, measured_on: "cloud VM 4 vCPU, 2026-11-04"}
-  handoff_spread: {zh: "15 倍", en: "15x", source: "BENCHMARK.md §13 (paced queue p99 range over reps)", label_zh: "交接 p99 的重复间差异", label_en: "handoff p99 spread over repetitions", wallclock: true, measured_on: "cloud VM 4 vCPU, 2026-11-04"}
+  queue_saturated: {zh: "约 1.4 ms", en: "about 1.4 ms", source: "BENCHMARK.md §13.1 (pipeline queue p50)", label_zh: "饱和模式的队列一跳", label_en: "queue hop, saturated mode", wallclock: true, measured_on: "local 2026-11-05"}
+  handoff_spread: {zh: "2.1–40 倍", en: "2.1–40x", source: "BENCHMARK.md §13.1 (paced queue p99 range over reps, per run)", label_zh: "交接 p99 的重复间差异", label_en: "handoff p99 spread over repetitions", wallclock: true, measured_on: "local 2026-11-05"}
   grace_observed: {zh: "233–264 µs", en: "233–264 µs", source: "MODULE_NOTES/L3.md (SXTC, two resumes)", wallclock: false}
   grace_margin: {zh: "约 4 000 倍", en: "about 4,000 times", source: "docs/INTERVIEW_QA.md Q10", wallclock: false}
   profile_margin: {zh: "2 倍", en: "2x", source: "DECISIONS.md D-058 (default margin)", wallclock: false}
   soup_heartbeat: {zh: "1 秒", en: "1 second", source: "SoupBinTCP 3.00 §1.3; docs/design/L4_DESIGN.md §2.1", wallclock: false}
   soup_timeout: {zh: "15 秒", en: "15 seconds", source: "SoupBinTCP 3.00 §1.3; docs/design/L4_DESIGN.md §2.1", wallclock: false}
   drops: {zh: "三", en: "three", source: "MODULE_NOTES/L4.md L4.5", wallclock: false}
-  send_cost: {zh: "约 3 µs", en: "about 3 µs", source: "BENCHMARK.md §15 (second send of a frame, 2.8–3.4 µs)", label_zh: "一次回环 send()", label_en: "one loopback send()", wallclock: true, measured_on: "cloud VM 4 vCPU, 2026-11-05"}
+  send_cost: {zh: "约 0.88 µs", en: "about 0.88 µs", source: "BENCHMARK.md §15.1 (loopback T3 new order minus T1)", label_zh: "一次回环 send()", label_en: "one loopback send()", wallclock: true, measured_on: "local 2026-11-05"}
   e1_ratio: {zh: "约 150–250 倍", en: "150–250 times", source: "BENCHMARK.md §9 (attribution)", label_zh: "E1 倍数（随流长度变化）", label_en: "E1 ratio (depends on stream length)", wallclock: true, measured_on: "author WSL2, 2026-10-21 (alternating A/B)"}
