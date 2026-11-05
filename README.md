@@ -318,6 +318,8 @@ scripts/fuzz_ouch.sh 60   # OUCH 编解码的 libFuzzer（需要 clang）
 - [MODULE_NOTES/](MODULE_NOTES/) — 各模块技术说明与修改任务
 - [AI_USAGE.md](AI_USAGE.md) — AI 参与情况披露
 - [docs/INTERVIEW_QA.md](docs/INTERVIEW_QA.md) — L3' 设计问答（memory order、确定性、延迟测量、缺口恢复、风控、指令数门槛）与追问；§8 L4 下单链路（Q13–Q20）
+- **复习手册（打印版 PDF）**：[中文版](docs/handbook/handbook-zh.pdf) · [English](docs/handbook/handbook-en.pdf) —— 覆盖 L1–L4 的设计、验证、关键故事与面试问答；
+  数字集中在 [docs/handbook/numbers.yaml](docs/handbook/numbers.yaml)（逐项注明出处），本机复测并重新生成：`docs/handbook/remeasure.sh`（见 [docs/handbook/README.md](docs/handbook/README.md)）
 - [docs/design/L4_DESIGN.md](docs/design/L4_DESIGN.md) — L4 设计：OUCH / SoupBinTCP 的分工、订单号映射与防重复、断线撤单与限流、tick-to-trade 的定义、网络模式的可验证性
 - [docs/design/L5_DESIGN.md](docs/design/L5_DESIGN.md) — L5 设计草案（**未实现**，未来计划）：MoldUDP64 A/B 组播仲裁
 
