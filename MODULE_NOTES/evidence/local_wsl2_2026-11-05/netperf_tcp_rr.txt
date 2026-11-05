@@ -1,0 +1,18 @@
+Platform loopback baseline on the same machine (author's WSL2, i7-12700H), 2026-11-05.
+Pasted by the author from the terminal. netserver was the instance the Ubuntu package
+started at install time (a second, pinned `taskset -c 2 netserver` failed because port
+12865 was taken), so the server side was NOT pinned. One run.
+
+$ taskset -c 2 netserver
+Unable to start netserver with  'IN(6)ADDR_ANY' port '12865' and family AF_UNSPEC
+$ taskset -c 1 netperf -H 127.0.0.1 -t TCP_RR -l 10
+MIGRATED TCP REQUEST/RESPONSE TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo : first burst 0
+Local /Remote
+Socket Size   Request  Resp.   Elapsed  Trans.
+Send   Recv   Size     Size    Time     Rate
+bytes  Bytes  bytes    bytes   secs.    per sec
+
+16384  131072 1        1       11.39    4037.44
+16384  131072
+
+Round trip = 1 / 4037.44 per second = 247.7 us.
