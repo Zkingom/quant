@@ -1,6 +1,7 @@
 # L5 设计：UDP 组播与 A/B 双路仲裁
 
-> 状态：**设计待确认**（2026-11-05）。确认前不写实现代码。
+> 状态：**设计草案，未实现**（2026-11-05 编写）。项目范围到 L4 为止（作者 2026-11-05 决定），本文件只作为未来计划保留；
+> 文中的组件、文件名、测试与默认值都是提议，仓库里没有对应代码。
 > 范围：MoldUDP64 A/B 组播回放发送器（可注入丢包、乱序、重复、延迟）；接收端仲裁（去重、补洞）；两路都缺时向最小 MoldUDP64
 > 重传服务请求；接入流水线取代文件输入；tick-to-trade 扩展为"收到 UDP 包 → 发出订单"。不改动 L1 冻结语义；L3' / L4 的接口只增不改。
 > 依据：Nasdaq **MoldUDP64 Protocol Specification v1.00**（2026-11-05 下载核对）。规范未写的地方标为【本项目约定】。
@@ -116,20 +117,20 @@
 - 报告两种情况：无故障；A 路丢 1%（B 补上）——后者显示仲裁的尾部代价。同样扣计时开销、标环境、待本机复测。
 - 限制：回环组播不经过网卡和交换机，两路"物理隔离"在这里只是两个 socket；不能说明真实 A/B 的到达时间差。
 
-## 8. 实现计划（子阶段；每个子阶段提交推送并更新 ROADMAP；阶段末 `check.sh --tsan` 全绿 → PR → CI → 合并）
+## 8. 实现计划（提议，未执行）
 
 | 子阶段 | 内容 | 主要文件（拟） |
 |---|---|---|
-| L5.0 | 本设计文档 + ROADMAP | `docs/design/L5_DESIGN.md` |
+| L5.0 | 本设计文档（草案） | `docs/design/L5_DESIGN.md` |
 | L5.1 | MoldUDP64 编码（下行包切包、请求包）+ 往返 / 截断测试 | `include/lob/md/mold.hpp`（只增） |
 | L5.2 | 仲裁器 sans-IO + 具名状态转换测试 | `include/lob/feed/arbiter.hpp`、`src/feed/arbiter.cpp`、`tests/feed/test_arbiter.cpp` |
 | L5.3 | 重传服务 sans-IO + 发送器 + 故障注入器；故障矩阵与"等价于直接读文件"门槛（无 socket） | `include/lob/feed/{rewinder,sender,faults}.hpp`、`tests/feed/test_fault_matrix.cpp` |
 | L5.4 | UDP 驱动（组播收发、`recvmmsg`、单播重传）+ 流水线消息源；回环组播端到端（TSan） | `src/feed/udp.cpp`、`include/lob/pipeline/message_source.hpp`、`tests/feed/test_udp_loopback.cpp` |
 | L5.5 | tick-to-trade 扩展（`lob_t2t --udp`）；独立进程的 `lob_ouch_server`（L4 推迟项：行情改由组播分发后两个进程可以共享行情）；文档 → PR | `bench/tick_to_trade.cpp`、`apps/lob_ouch_server.cpp`、DECISIONS、MODULE_NOTES/L5、ARCHITECTURE、README、INTERVIEW_QA（6–8 题）、AI_USAGE、BENCHMARK |
 
-验证节奏（作者 2026-11-05 要求加速）：子阶段用 gcc-debug 全量 + 相关测试在 ASan / TSan 下运行；阶段末一次完整的 `check.sh --tsan`。
+若将来实施，验证节奏：子阶段用 gcc-debug 全量 + 相关测试在 ASan / TSan 下运行；阶段末一次完整的 `check.sh --tsan`。
 
-## 9. 需要作者确认的点
+## 9. 开放问题（未决；实施前需要决定）
 
 1. **仲裁窗口与重试的默认值**【本项目约定】：等待另一路 200 µs（行情时间无关，用接收端单调时钟），重传请求超时 5 ms、最多 3 次、指数退避；
    测试里用假时钟覆盖各种取值。
