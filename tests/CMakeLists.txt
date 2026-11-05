@@ -103,6 +103,12 @@ lob_add_test_suite(lob_ouch_tests
   LIBS lob::ouch lob::testkit)
 target_compile_definitions(lob_ouch_tests PRIVATE LOB_GOLDEN_DIR="${CMAKE_CURRENT_SOURCE_DIR}/golden")
 
+# L4.2: SoupBinTCP framing and session state machines (one named test per transition).
+lob_add_test_suite(lob_soup_tests
+  SOURCES
+    soup/test_soup.cpp
+  LIBS lob::soup lob::testkit)
+
 # libFuzzer entry (L3' 1e): opt-in, Clang only, not part of CTest. The md
 # sources are compiled into the fuzzer directly so that they carry coverage
 # instrumentation. Run with scripts/fuzz_itch.sh.

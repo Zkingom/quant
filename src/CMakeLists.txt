@@ -92,6 +92,16 @@ target_include_directories(lob_ouch PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_compile_features(lob_ouch PUBLIC cxx_std_20)
 target_link_libraries(lob_ouch PRIVATE lob_project_options)
 
+# L4.2: SoupBinTCP 3.00 framing and sans-IO client / server session state machines.
+add_library(lob_soup
+  soup/soup.cpp
+  soup/client.cpp
+  soup/server.cpp)
+add_library(lob::soup ALIAS lob_soup)
+target_include_directories(lob_soup PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_compile_features(lob_soup PUBLIC cxx_std_20)
+target_link_libraries(lob_soup PRIVATE lob_project_options)
+
 add_library(lob_sim
   sim/sim_exchange.cpp)
 add_library(lob::sim ALIAS lob_sim)

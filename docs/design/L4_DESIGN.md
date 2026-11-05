@@ -214,6 +214,8 @@ Disconnected ─connect()─▶ Connecting ─connected─▶ LoginSent ─'A'�
                          Disconnected ◀─────────────┴────────────────────────────────────────┘ （可重连，保留会话与序号）
 ```
 LoggedIn 内：每收一条 `S` → 期望序号 + 1 并交给上层；`H` 只更新接收时间；`+` 忽略；空闲 1 s → 发 `R`。
+（实现补记，L4.2：Login Accepted 的序号或会话与请求不符 → 终态 `Failed`（`SequenceMismatch`），不自动重连；
+发送缓冲容量固定，满时 `send()` 返回 false 由上层保留消息；服务端出站消息从会话日志按缓冲余量**拉取**，客户端 15 s 不读 → `SlowConsumer` 关闭。）
 
 **服务端（每连接）**
 ```
