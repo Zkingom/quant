@@ -109,6 +109,17 @@ lob_add_test_suite(lob_soup_tests
     soup/test_soup.cpp
   LIBS lob::soup lob::testkit)
 
+# L4.3: exchange core (sans-IO) and the epoll server over loopback TCP (threads: TSan too).
+lob_add_test_suite(lob_net_tests
+  SOURCES
+    net/test_ouch_exchange.cpp
+  LIBS lob::net lob::testkit)
+lob_add_test_suite(lob_net_loopback_tests
+  SOURCES
+    net/test_net_loopback.cpp
+  LIBS lob::net lob::testkit
+  LABELS concurrency)
+
 # libFuzzer entry (L3' 1e): opt-in, Clang only, not part of CTest. The md
 # sources are compiled into the fuzzer directly so that they carry coverage
 # instrumentation. Run with scripts/fuzz_itch.sh.

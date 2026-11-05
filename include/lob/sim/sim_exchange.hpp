@@ -101,6 +101,14 @@ class SimExchange {
   /// A risk-approved request. `book` is the market book at this moment
   /// (queue position for the conservative model).
   void submit(const OrderRequest& r, const md::Book& book, Reports& out);
+  /// Partial cancel (L4.3, OUCH Cancel with a non-zero intended size): the
+  /// order's open quantity becomes `new_leaves` (0 < new_leaves < leaves;
+  /// otherwise nothing happens). The L1 engine has no reduce, so the order
+  /// is cancelled and re-entered with the same id (dead ids may be reused):
+  /// it keeps its place in the PUBLIC queue (the conservative model's
+  /// queue_ahead / cutoff are kept) but goes behind our own orders at that
+  /// price. Reports one Cancelled with qty = decrement, leaves = new_leaves.
+  void reduce(std::uint64_t id, std::uint32_t new_leaves, Reports& out);
   /// A market BookUpdate event (extended FeedEvent fields: side, price,
   /// shares, prev_*). Produces fills of our resting orders.
   void on_market(const md::FeedEvent& e, Reports& out);

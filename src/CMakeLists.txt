@@ -107,3 +107,11 @@ add_library(lob_sim
 add_library(lob::sim ALIAS lob_sim)
 target_link_libraries(lob_sim PUBLIC lob::engine lob::md lob::strategy lob::risk lob::pipeline
                       PRIVATE lob_project_options)
+
+# L4.3: simulated exchange core (OUCH over SimExchange, sans-IO) and its
+# single-threaded epoll driver.
+add_library(lob_net
+  net/ouch_exchange.cpp
+  net/epoll_server.cpp)
+add_library(lob::net ALIAS lob_net)
+target_link_libraries(lob_net PUBLIC lob::sim lob::soup lob::ouch lob::concurrent PRIVATE lob_project_options)
