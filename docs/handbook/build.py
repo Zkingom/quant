@@ -190,7 +190,7 @@ def to_html(src: str, lang: str, data: dict) -> str:
     if lang == "zh":
         cover = f"""<section class="cover"><h1>{TITLE['zh'].split(' · ')[0]}</h1>
 <p class="sub">复习手册：做了什么、为什么这样设计、怎么证明它是对的</p>
-<div class="meta">范围：L1 核心撮合 · L2 性能工程 · L3′ 行情与流水线 · L4 下单链路（L5、L6 为未来计划）<br>
+<div class="meta">范围：L1 核心撮合 · L2 性能工程 · L3′ 行情与流水线 · L4 下单链路（L5 实施中，L6 为未来计划）<br>
 仓库状态：{meta['repo_state']} · 生成日期：{today}<br>
 所有数字来自 docs/handbook/numbers.yaml（每项注明出处）；带 {DAGGER} 的是墙钟数字。<br>
 配套英文版 handbook-en.pdf 使用同一大纲与章节编号。</div></section>"""
@@ -199,7 +199,7 @@ def to_html(src: str, lang: str, data: dict) -> str:
     else:
         cover = f"""<section class="cover"><h1>{TITLE['en'].split(' · ')[0]}</h1>
 <p class="sub">Review handbook: what was built, why it is designed this way, and how we know it is right</p>
-<div class="meta">Scope: L1 core matching · L2 performance engineering · L3′ market data &amp; pipeline · L4 order entry (L5 and L6 are future plans)<br>
+<div class="meta">Scope: L1 core matching · L2 performance engineering · L3′ market data &amp; pipeline · L4 order entry (L5 in progress, L6 a future plan)<br>
 Repository: {meta['repo_state']} · generated {today}<br>
 Every number comes from docs/handbook/numbers.yaml, with its source; {DAGGER} marks wall-clock numbers.<br>
 The Chinese edition (handbook-zh.pdf) uses the same outline and section numbers.</div></section>"""

@@ -248,10 +248,14 @@ L1 冻结语义不变；`TradingStage` 增加交易所模板参数 `Ex`（默认
 - 测量：`lob_t2t`（tick-to-trade 分段 T1–T5，进程内与回环分开报告，BENCHMARK §15）。
 - 详见 [docs/design/L4_DESIGN.md](docs/design/L4_DESIGN.md)、[MODULE_NOTES/L4.md](MODULE_NOTES/L4.md)、DECISIONS D-059–D-064。
 
-## 4.3 未来计划（📝 未实现）
+## 4.3 L5：UDP 组播与 A/B 双路仲裁（📝 实施中，2026-11-07 起）
 
-项目范围到 L4 为止（D-065）。L5 UDP 组播与 A/B 双路仲裁只有设计草案（[docs/design/L5_DESIGN.md](docs/design/L5_DESIGN.md)），
-L6 微观结构信号研究没有设计；两者都不在代码中（ROADMAP §2.5）。
+范围于 2026-11-07 从 L4 扩展到 L5（D-066，取代 D-065 中关于 L5 的部分）。设计：[docs/design/L5_DESIGN.md](docs/design/L5_DESIGN.md)（§3 组件、§4 仲裁器状态机）；
+进度与证据：[MODULE_NOTES/L5.md](MODULE_NOTES/L5.md)；分阶段门槛：ROADMAP §2.5。各子阶段完成后，本节按实际代码改写为 ✅ 的事实描述。
+
+## 4.4 未来计划（📝 未实现）
+
+L6 微观结构信号研究没有设计；独立进程的 `lob_ouch_server` 未实现（D-064、D-066）。两者都不在代码中（ROADMAP §2.6）。
 
 ## 5. 构建拓扑
 

@@ -1,6 +1,6 @@
 # 复习手册 / Review handbooks
 
-Two printable PDFs that cover the whole project (L1, L2, L3′, L4; L5 and L6 as future plans), with the same outline and section numbers:
+Two printable PDFs that cover the whole project (L1, L2, L3′, L4; L5 in progress since 2026-11-07, L6 a future plan), with the same outline and section numbers:
 
 - [handbook-zh.pdf](handbook-zh.pdf) — 中文版
 - [handbook-en.pdf](handbook-en.pdf) — English edition (written to be said out loud in interviews, not a translation)

@@ -56,9 +56,10 @@ L4：OUCH 4.2 / SoupBinTCP 3.00 下单链路（订单网关、单线程 epoll �
 | L3' 全市场订单簿（D-056）：共享订单池、按 locate 分片多线程 | ✅ 2026-11-04：真实全天 8 713 只股票全部 Live，峰值在途 1 742 866 单，单线程与 4 分片逐股票哈希一致 |
 | L3' 多日验证（2019-01-30 / 08-30 / 12-30，全市场） | ✅ 2026-11-04：三天共 26 040 只股票·日全部 Live、0 Stale；28 次恢复宽限全部解除；每天单线程与 4 分片逐股票哈希一致（见 MODULE_NOTES/L3.md） |
 | L4 下单链路：OUCH 4.2 编解码、SoupBinTCP 会话、epoll 模拟交易所、订单网关、锁步 / 自由运行、tick-to-trade | ✅ 2026-11-05（[docs/design/L4_DESIGN.md](docs/design/L4_DESIGN.md)、[MODULE_NOTES/L4.md](MODULE_NOTES/L4.md)、BENCHMARK §15） |
+| L5 UDP 组播与 A/B 双路仲裁：MoldUDP64 编码、仲裁器、故障注入与重传服务、真实回环组播、`lob_t2t --udp` | 🚧 进行中（2026-11-07 起，D-066；设计 [docs/design/L5_DESIGN.md](docs/design/L5_DESIGN.md)、进度 [MODULE_NOTES/L5.md](MODULE_NOTES/L5.md)） |
 
-项目范围到 L4 为止。**未来计划（未实施）**：L5 UDP 组播与 A/B 双路仲裁（仅有设计草案 [docs/design/L5_DESIGN.md](docs/design/L5_DESIGN.md)）、
-L6 微观结构信号研究（无设计），见 [ROADMAP.md](ROADMAP.md) §2.5。
+范围：2026-11-05 曾定在 L4 为止（D-065），2026-11-07 扩展到 L5（D-066），分阶段计划与门槛见 [ROADMAP.md](ROADMAP.md) §2.5。
+**未来计划（未实施）**：L6 微观结构信号研究（无设计）、独立进程的 `lob_ouch_server`，见 ROADMAP §2.6。
 
 撮合引擎、回放与恢复已可用；性能数据只适用于 WSL2 上的测量环境（BENCHMARK §1），不代表裸机。掉电持久性未验证，见 DESIGN §6.6。 计划与验收门槛见 [ROADMAP.md](ROADMAP.md)。
 
@@ -314,7 +315,7 @@ scripts/fuzz_ouch.sh 60   # OUCH 编解码的 libFuzzer（需要 clang）
 - [ARCHITECTURE.md](ARCHITECTURE.md) — 模块划分、依赖与数据流
 - [DESIGN.md](DESIGN.md) — 数据结构、撮合语义、复杂度
 - [DECISIONS.md](DECISIONS.md) — 工程决策与权衡
-- [ROADMAP.md](ROADMAP.md) — 实施顺序、L1–L4 验收门槛与未来计划（L5、L6，未实施）
+- [ROADMAP.md](ROADMAP.md) — 实施顺序、L1–L5 验收门槛（L5 进行中）与未来计划（L6，未实施）
 - [BENCHMARK.md](BENCHMARK.md) — 基准方法与实测结果
 - [MODULE_NOTES/](MODULE_NOTES/) — 各模块技术说明与修改任务
 - [AI_USAGE.md](AI_USAGE.md) — AI 参与情况披露
@@ -322,7 +323,7 @@ scripts/fuzz_ouch.sh 60   # OUCH 编解码的 libFuzzer（需要 clang）
 - **复习手册（打印版 PDF）**：[中文版](docs/handbook/handbook-zh.pdf) · [English](docs/handbook/handbook-en.pdf) —— 覆盖 L1–L4 的设计、验证、关键故事与面试问答；
   数字集中在 [docs/handbook/numbers.yaml](docs/handbook/numbers.yaml)（逐项注明出处），本机复测并重新生成：`docs/handbook/remeasure.sh`（见 [docs/handbook/README.md](docs/handbook/README.md)）
 - [docs/design/L4_DESIGN.md](docs/design/L4_DESIGN.md) — L4 设计：OUCH / SoupBinTCP 的分工、订单号映射与防重复、断线撤单与限流、tick-to-trade 的定义、网络模式的可验证性
-- [docs/design/L5_DESIGN.md](docs/design/L5_DESIGN.md) — L5 设计草案（**未实现**，未来计划）：MoldUDP64 A/B 组播仲裁
+- [docs/design/L5_DESIGN.md](docs/design/L5_DESIGN.md) — L5 设计（2026-11-07 确认，实施中）：MoldUDP64 A/B 组播仲裁、重传服务、故障注入与等价门槛
 
 ## 目录结构
 

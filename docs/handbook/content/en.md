@@ -1,6 +1,6 @@
 ## 0 How to use this handbook
 
-This handbook covers every level the ROADMAP completed: **L1 core matching**, **L2 performance engineering**, **L3′ market data and pipeline**, and **L4 order entry**. L5 and L6 are future plans (chapter 11).
+This handbook covers every level the ROADMAP completed: **L1 core matching**, **L2 performance engineering**, **L3′ market data and pipeline**, and **L4 order entry**. L5 is being implemented since 2026-11-07 (chapter 11); L6 is a future plan.
 Each chapter follows the same order: **what I built → why it is designed this way → how I know it is right**. The boxed paragraphs are written to be said out loud.
 
 <div class="box say" markdown="1">
@@ -314,14 +314,14 @@ Definition: from the start of decoding the ITCH frame to the OUCH bytes being ha
 
 **Q12 What would you do differently?** Bring real data in earlier — rules should be tested against data first; set up controlled-variable measurements like "new order vs first message" from the start; and the next steps are pooling the book's nodes and taking over a previous instance's live orders.
 
-## 11 Future plans: L5 and L6 (not implemented)
+## 11 L5 in progress; L6 as a future plan
 
-The project scope ends at L4 (D-065). These two are recorded only as future directions:
+On 2026-11-05 the scope was set to end at L4 (D-065); on 2026-11-07 it was extended to L5 (D-066). L6 stays a future plan.
 
-- **L5 UDP multicast with A/B line arbitration**: the exchange sends the same MoldUDP64 sequenced stream on two independent paths; the receiver deduplicates by message sequence number, takes whichever copy arrives first and delivers strictly in order. When both lines miss a message it waits a bounded window, then asks a retransmission server for the smallest range; if that fails too, the existing recovery state machine (Recovering → Stale) takes over instead of a second recovery mechanism. The bar: for any recoverable combination of faults, the message sequence handed to the pipeline is byte-identical to reading the file directly. There's a design draft (`docs/design/L5_DESIGN.md`, not implemented).
-- **L6 microstructure signal research**: export features from the reconstructed book (columnar files tied to the book hash), test them in and out of sample, and report without claiming trading profits. No design yet.
+- **L5 UDP multicast with A/B line arbitration (in progress)**: the exchange sends the same MoldUDP64 sequenced stream on two independent paths; the receiver deduplicates by message sequence number, takes whichever copy arrives first and delivers strictly in order. When both lines miss a message it waits a bounded window (200 µs), then asks a retransmission server for the smallest range (5 ms timeout, at most 3 tries); if that fails too, the existing recovery state machine (Recovering → Stale) takes over instead of a second recovery mechanism (D-067). The bar: for any recoverable combination of faults, the message sequence handed to the pipeline is byte-identical to reading the file directly. Seven sub-stages: L5.0 scope and docs → L5.1 MoldUDP64 encoding → L5.2 arbiter → L5.3 fault injection and retransmission server → L5.4 real UDP → L5.5 local measurement and `lob_t2t --udp` → L5.6 docs (design `docs/design/L5_DESIGN.md`, progress `MODULE_NOTES/L5.md`). Loopback multicast is confirmed to work on my WSL2; the kernel receive buffer holds only about 200 KB, so the real-socket tests need flow control to be deterministic.
+- **L6 microstructure signal research (future plan)**: export features from the reconstructed book (columnar files tied to the book hash), test them in and out of sample, and report without claiming trading profits. No design yet. A standalone `lob_ouch_server` process also stays a future plan.
 
-## A Wall-clock numbers at a glance
+## A Wall-clock numbers at a glance {.newpage}
 
 These are all numbers marked † in this handbook, where they were measured and where they come from; the sources of all other numbers are in `docs/handbook/numbers.yaml`.
 

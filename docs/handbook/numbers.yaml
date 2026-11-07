@@ -14,7 +14,7 @@
 # `source` pointing at it. Wall-clock values: run docs/handbook/remeasure.sh.
 
 meta:
-  repo_state: "main ee03bd5 (2026-11-05)"
+  repo_state: "main ecd2398 + L5.0 (2026-11-07)"
   # The footer of the handbooks is derived from `measured_on` below: every
   # wall-clock number starting with "local" -> "measured locally <date>";
   # some -> "partly re-measured"; none -> "pending local re-measurement".
@@ -23,7 +23,7 @@ meta:
 
 numbers:
   # ---------------------------------------------------------------- project
-  decisions_total: {zh: "65", en: "65", source: "DECISIONS.md (D-001 … D-065)", wallclock: false}
+  decisions_total: {zh: "67", en: "67", source: "DECISIONS.md (D-001 … D-067)", wallclock: false}
   tests_per_preset: {zh: "501", en: "501", source: "scripts/check.sh output, 2026-11-05 (PR #7 description: six presets 501/501)", wallclock: false}
   tsan_tests: {zh: "79", en: "79", source: "scripts/check.sh --tsan output, 2026-11-05 (PR #6 description: gcc-tsan / clang-tsan 79/79)", wallclock: false}
   presets: {zh: "6", en: "6", source: "CMakePresets.json; scripts/check.sh", wallclock: false}

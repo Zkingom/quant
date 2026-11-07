@@ -1,7 +1,7 @@
 # L5 设计：UDP 组播与 A/B 双路仲裁
 
-> 状态：**设计草案，未实现**（2026-11-05 编写）。项目范围到 L4 为止（作者 2026-11-05 决定），本文件只作为未来计划保留；
-> 文中的组件、文件名、测试与默认值都是提议，仓库里没有对应代码。
+> 状态：**已确认，实施中**（2026-11-05 编写草案；2026-11-07 作者决定实施 L5（D-066），§8 计划与 §9 全部按推荐确认（D-067））。
+> 各子阶段完成后，对应部分以代码与 MODULE_NOTES/L5.md 为准；本文件中与实现不同之处会在实现时改正并注明。
 > 范围：MoldUDP64 A/B 组播回放发送器（可注入丢包、乱序、重复、延迟）；接收端仲裁（去重、补洞）；两路都缺时向最小 MoldUDP64
 > 重传服务请求；接入流水线取代文件输入；tick-to-trade 扩展为"收到 UDP 包 → 发出订单"。不改动 L1 冻结语义；L3' / L4 的接口只增不改。
 > 依据：Nasdaq **MoldUDP64 Protocol Specification v1.00**（2026-11-05 下载核对）。规范未写的地方标为【本项目约定】。
@@ -107,7 +107,10 @@
 3. **仲裁器状态机**：每个转换一个具名测试（`InSync_OutOfOrderPacket_GoesGapWait`、`GapWait_OtherLineFills_GoesInSync`、
    `GapWait_WindowExpires_SendsMinimalRequest`、`Requesting_RetriesExhausted_GoesUnrecoverable`、`Heartbeat_AheadOfNext_OpensGap` 等）。
 4. **真实 socket**：回环组播（`IP_MULTICAST_LOOP`，接口 127.0.0.1）+ 单播重传，发送线程、接收线程、订单簿线程，标签 `concurrency` 进 TSan；
-   【本项目约定】环境不支持组播（加入组失败）时测试 `GTEST_SKIP` 并说明原因，sans-IO 矩阵照常运行（本容器已验证回环组播可用）。
+   【本项目约定】环境不支持组播（加入组失败）时测试 `GTEST_SKIP` 并说明原因，sans-IO 矩阵照常运行。
+   环境实测：2026-11-05 草案编写时的云端容器可用；**作者本机 WSL2**（Ubuntu 24.04，内核 6.6.87.2，`networkingMode=mirrored`）2026-11-07 实测可用：
+   两个组在 127.0.0.1 上各 200/200 个包、按序，单播应答可达；`lo` 没有 `MULTICAST` 标志但不影响。接收缓冲上限 212 992 字节
+   （`rmem_max`），无读者时 10 万个 1 KB 包的突发只剩 93 个——真实 socket 测试必须有流控才能确定（L5.4 决定）。详见 MODULE_NOTES/L5.md §L5.0。
 5. **负对照**：故意让仲裁器"缺口超时后直接跳过"→ 等价测试必须失败；故意交付重复 → 哈希必须不同。
 
 ## 7. tick-to-trade 扩展
@@ -117,24 +120,28 @@
 - 报告两种情况：无故障；A 路丢 1%（B 补上）——后者显示仲裁的尾部代价。同样扣计时开销、标环境、待本机复测。
 - 限制：回环组播不经过网卡和交换机，两路"物理隔离"在这里只是两个 socket；不能说明真实 A/B 的到达时间差。
 
-## 8. 实现计划（提议，未执行）
+## 8. 实现计划（2026-11-07 作者确认）
 
-| 子阶段 | 内容 | 主要文件（拟） |
-|---|---|---|
-| L5.0 | 本设计文档（草案） | `docs/design/L5_DESIGN.md` |
-| L5.1 | MoldUDP64 编码（下行包切包、请求包）+ 往返 / 截断测试 | `include/lob/md/mold.hpp`（只增） |
-| L5.2 | 仲裁器 sans-IO + 具名状态转换测试 | `include/lob/feed/arbiter.hpp`、`src/feed/arbiter.cpp`、`tests/feed/test_arbiter.cpp` |
-| L5.3 | 重传服务 sans-IO + 发送器 + 故障注入器；故障矩阵与"等价于直接读文件"门槛（无 socket） | `include/lob/feed/{rewinder,sender,faults}.hpp`、`tests/feed/test_fault_matrix.cpp` |
-| L5.4 | UDP 驱动（组播收发、`recvmmsg`、单播重传）+ 流水线消息源；回环组播端到端（TSan） | `src/feed/udp.cpp`、`include/lob/pipeline/message_source.hpp`、`tests/feed/test_udp_loopback.cpp` |
-| L5.5 | tick-to-trade 扩展（`lob_t2t --udp`）；独立进程的 `lob_ouch_server`（L4 推迟项：行情改由组播分发后两个进程可以共享行情）；文档 → PR | `bench/tick_to_trade.cpp`、`apps/lob_ouch_server.cpp`、DECISIONS、MODULE_NOTES/L5、ARCHITECTURE、README、INTERVIEW_QA（6–8 题）、AI_USAGE、BENCHMARK |
+每个子阶段：先写测试 → 实现 → 负对照（故意改坏、确认测试失败、恢复，记录在 MODULE_NOTES/L5.md）→ `scripts/check.sh` 六预设全绿
+→ 阶段末 `scripts/check.sh --tsan` → 新决策入 DECISIONS → 新分支 `l5-<n>-…` → PR → CI 绿后合并。
 
-若将来实施，验证节奏：子阶段用 gcc-debug 全量 + 相关测试在 ASan / TSan 下运行；阶段末一次完整的 `check.sh --tsan`。
+| 子阶段 | 交付物 | 测试与验证 | 主要文件（拟） |
+|---|---|---|---|
+| L5.0 | 范围与文档：D-066 / D-067；ROADMAP、README、ARCHITECTURE、手册第 11 章的状态；本文件确认；WSL2 回环组播实测；手册 PDF 重新生成 | `check.sh --tsan` 全绿（只改文档）；组播探测脚本与输出入证据 | `DECISIONS.md`、`MODULE_NOTES/L5.md`、`scripts/mcast_probe.py` |
+| L5.1 | MoldUDP64 下行包分包器（最大负载 1 400 字节，每包 ≤ 0xFFFE 条）、心跳 / 会话结束编码、请求包编解码 | 按规范偏移手写字节样本（同时钉住编码器与现有解码器）、往返、逐字节截断与多余字节、分包性质（拼接 = 输入、每包 ≤ 上限、序号连续、超长消息报错）、固定种子 fuzz | `include/lob/md/mold.hpp`（只增）、`tests/md/test_mold_codec.cpp` |
+| L5.2 | 仲裁器 sans-IO：去重、先到先用、按序交付、有界窗口、最小重传请求、补不齐跳过（含尾部缺口标记）、计数；构造后零分配 | 每个状态转换一个具名测试；与 testkit 朴素参考仲裁器（`std::map`）在随机包 / 故障 / 时间流上逐条比较输出与超时点；零分配（alloc guard） | `include/lob/feed/arbiter.hpp`、`src/feed/arbiter.cpp`、`tests/feed/test_arbiter.cpp` |
+| L5.3 | 发送器（A/B 同一包序列、心跳、会话结束）、故障注入器（每路独立、按种子）、重传服务 sans-IO、虚拟时钟离散事件模拟 | 故障矩阵：交付序列与直接读文件逐字节相同，FeedHandler / TradingStage 各哈希相同；补不齐 → `Recovering` / `Stale`、从不发布错误订单簿 | `include/lob/feed/{rewinder,sender,faults}.hpp`、`tests/feed/test_fault_matrix.cpp` |
+| L5.4 | UDP 驱动（加入组播组、`recvmmsg`、`SO_RXQ_OVFL`、单播重传）+ 流水线消息源（`ChunkSource` 的兄弟接口） | 回环组播端到端与读文件逐字节相同（流控下内核丢包为 0）；不限速用例把内核丢包当故障；`concurrency` 标签进 TSan；连续 30 次无失败；组播不可用时跳过 | `src/feed/udp.cpp`、`include/lob/pipeline/message_source.hpp`、`tests/feed/test_udp_loopback.cpp` |
+| L5.5 | 本机测量：仲裁开销、`lob_t2t --udp`（t0 = 收到 UDP 包，新增 T_arb 段，无故障 / A 路丢 1%）；CI 指令数场景 | 只在作者本机 WSL2 测，写明机器与方法（BENCHMARK §16）；指令数基线按 L3.md 的更新流程 | `bench/tick_to_trade.cpp`、`bench/itch_icount.cpp`、`BENCHMARK.md` |
+| L5.6 | 文档：ARCHITECTURE、README、INTERVIEW_QA（6–8 题）、AI_USAGE、MODULE_NOTES/L5；手册第 11 章改为已实现章节、`numbers.yaml` | `docs/handbook/build.sh` 重新生成两份 PDF，逐页渲染检查 | `docs/handbook/content/{zh,en}.md`、`numbers.yaml` |
 
-## 9. 开放问题（未决；实施前需要决定）
+独立进程的 `lob_ouch_server` 不在 L5 内（作者 2026-11-07 决定，D-066），留作未来计划（ROADMAP §2.6）。
+
+## 9. 已决问题（2026-11-07 作者确认，全部按推荐；D-066、D-067）
 
 1. **仲裁窗口与重试的默认值**【本项目约定】：等待另一路 200 µs（行情时间无关，用接收端单调时钟），重传请求超时 5 ms、最多 3 次、指数退避；
    测试里用假时钟覆盖各种取值。
 2. **补不齐时仲裁器跳过缺口、交给 `FeedHandler` 走现有恢复**（不在仲裁器里另做一套恢复）。
 3. **重排缓冲区固定 65 536 条**，满了按补不齐处理（不扩容）。
 4. **组播不可用的环境里真实 socket 测试跳过**（sans-IO 矩阵照常是硬门槛）。
-5. **独立进程的 `lob_ouch_server` 放在 L5.5**（L4 推迟项）。
+5. **独立进程的 `lob_ouch_server` 不放进 L5**（原提议放在 L5.5）；`lob_t2t --udp` 放在 L5.5。

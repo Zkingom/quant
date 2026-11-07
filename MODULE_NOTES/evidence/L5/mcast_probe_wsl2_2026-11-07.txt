@@ -1,0 +1,21 @@
+== environment
+kernel: 6.6.87.2-microsoft-standard-WSL2
+wsl: networkingMode=mirrored
+lo: 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+net.core.rmem_default = 212992
+net.core.rmem_max = 212992
+== A/B probe on 127.0.0.1, run 1
+  group 239.255.0.1:31001: 200/200 received, in order: True
+  group 239.255.0.2:31002: 200/200 received, in order: True
+  unicast reply to the sender ('127.0.0.1', 45524): received
+== A/B probe on 127.0.0.1, run 2
+  group 239.255.0.1:31001: 200/200 received, in order: True
+  group 239.255.0.2:31002: 200/200 received, in order: True
+  unicast reply to the sender ('127.0.0.1', 44856): received
+== A/B probe on 127.0.0.1, run 3
+  group 239.255.0.1:31001: 200/200 received, in order: True
+  group 239.255.0.2:31002: 200/200 received, in order: True
+  unicast reply to the sender ('127.0.0.1', 44730): received
+== burst on 127.0.0.1
+  SO_RCVBUF 212992 B; burst of 100000 x 1008 B with no reader: 93 received, 99907 lost; kernel drop counter (SO_RXQ_OVFL) = 99907
+== result: multicast usable (3/3 runs)
