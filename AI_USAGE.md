@@ -268,6 +268,8 @@
   （`scripts/mcast_probe.py`，结果见 MODULE_NOTES/L5.md §L5.0）；起草 D-066 / D-067，更新 ROADMAP、README、ARCHITECTURE、设计文档与手册第 11 章的状态。
 - 发现并处理：本地 `main` 与 `origin/main` 分叉（本地有 5 个从未推送的旧 L3 网关提交，已被 D-046 废弃）；本地 main 保存为分支
   `backup/local-main-old-l3` 后对齐 origin，未丢弃任何提交。
+- L5.1：先写测试（`tests/md/test_mold_codec.cpp`，13 个），再在 `mold.hpp` 中只增不改地实现编码器；做 9 个负对照（见 MODULE_NOTES/L5.md §L5.1）；
+  起草 D-068（1 400 字节的含义、零长度消息与零条请求的处理）。
 
 **作者决策**
 - 2026-11-07：继续实施 L5（D-066，取代 D-065 中关于 L5 的部分），L6 仍为未来计划；工作方式沿用本项目规矩（计划确认后再写代码；每阶段先写测试、
